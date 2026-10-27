@@ -5,6 +5,7 @@ const SUPA_URL = "https://exfxqtgcvbfpvgiykupk.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4ZnhxdGdjdmJmcHZnaXlrdXBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NzgzNjQsImV4cCI6MjA5MDQ1NDM2NH0.cCqvsJ1fgZ4xs0x-q57iHIjbpwrBBO8GvZ1X2h-6LBo";
 const DEMO_SLUG = "demo";
 const OUR_WA = "+201055602979"; // UR TURN sales WhatsApp
+const BRAND = { instagram:"", email:"", owner:"", reg:"" }; // fill in: instagram handle (no @), email, legal owner name, commercial reg. no.
 const DEMO_KEY = "7d4ff772fa0a253cfabc7855"; // demo shop only: settings are locked on the server
 const BASE = location.origin + location.pathname.replace(/index\.html$/,"");
 const P = new URLSearchParams(location.search);
@@ -204,7 +205,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 
 // ---------- subscriptions ----------
 // Prices in EGP. Change them here.
-const PLANS={ m1:{months:1,price:450}, m3:{months:3,price:1200,hidden:true}, m12:{months:12,price:4500} };
+const PLANS={ m1:{months:1,price:1500}, m3:{months:3,price:4000,hidden:true}, m12:{months:12,price:15000} };
 const daysLeft=ts=>Math.ceil((new Date(ts).getTime()-Date.now())/864e5);
 const fmtDate=ts=>new Date(ts).toLocaleDateString(lang==="ar"?"ar-EG":"en-GB",{day:"numeric",month:"long",year:"numeric"});
 function waNum(n){ let d=String(n||"").replace(/\D/g,""); if(d.startsWith("00")) d=d.slice(2); if(/^01\d{9}$/.test(d)) d="2"+d; return d; }
@@ -589,7 +590,7 @@ ar:{
  q5:"إذا زبون ما بده يستخدم جواله؟",a5:"عادي، الكاشير بيضيف رقمه وبينادي عليه متل ما كان.",
  q6:"كيف بدفع؟",a6:"شهري أو سنوي، كاش أو إنستاباي أو فودافون كاش. ومنبعتلك تذكير على واتساب قبل التجديد.",
  endT:"شوفه بعينك بدقيقة",endS:"افتح العرض الحي على جوالك، أو امسح الكود وكلّمنا واتساب.",ctaWa:"كلّمنا واتساب",
- foot:"© 2026 UR TURN. صُنع بحب للكافيهات ☕"
+ foot:"© 2026 UR TURN. صُنع بحب للكافيهات ☕",ctT:"تواصل معنا",ctS:"منرد عليك بسرعة، وبنجي نركّبلك بنفس اليوم.",ctWa:"واتساب",ctIg:"انستغرام",ctEm:"الإيميل",owned:n=>`UR TURN مملوكة لـ ${n}`,regNo:n=>`سجل تجاري رقم ${n}`,rights:"جميع الحقوق محفوظة",navContact:"تواصل"
 },
 en:{
  navHow:"How it works",navPrice:"Pricing",navFaq:"FAQ",
@@ -628,12 +629,12 @@ en:{
  q5:"What if a customer doesn’t want to use their phone?",a5:"No problem. The cashier adds the number and calls it out like before.",
  q6:"How do I pay?",a6:"Monthly or yearly, by cash, InstaPay or Vodafone Cash. We remind you on WhatsApp before renewal.",
  endT:"See it for yourself in a minute",endS:"Open the live demo on your phone, or scan to message us on WhatsApp.",ctaWa:"Message us on WhatsApp",
- foot:"© 2026 UR TURN. Made with love for cafés ☕"
+ foot:"© 2026 UR TURN. Made with love for cafés ☕",ctT:"Contact us",ctS:"We reply fast and can set you up the same day.",ctWa:"WhatsApp",ctIg:"Instagram",ctEm:"Email",owned:n=>`UR TURN is owned by ${n}`,regNo:n=>`Commercial reg. no. ${n}`,rights:"All rights reserved",navContact:"Contact"
 }};
 const L=k=>{ const v=(LP[lang]||LP.ar)[k]; return v===undefined?k:v; };
 function homePage(){
   topbar("home");
-  $("#tabs").insertAdjacentHTML("beforeend",`<a href="#how">${L("navHow")}</a><a href="#price">${L("navPrice")}</a><a href="#faq">${L("navFaq")}</a>`);
+  $("#tabs").insertAdjacentHTML("beforeend",`<a href="#how">${L("navHow")}</a><a href="#price">${L("navPrice")}</a><a href="#faq">${L("navFaq")}</a><a href="#contact">${L("navContact")}</a>`);
   const wa=(m)=>esc(waLink(OUR_WA,m||t("trialWaMsg")));
   const check=`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const cross=`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`;
@@ -682,7 +683,15 @@ function homePage(){
   <section class="wrap lp-sec"><div class="lp-end"><div><h2>${L("endT")}</h2><p>${L("endS")}</p>
       <div class="cta"><a class="btn signal lg" href="?v=demo">${L("ctaDemo")}</a><a class="btn ghost lg on-dark" href="${wa()}" target="_blank" rel="noopener">${L("ctaWa")}</a></div></div>
     <div class="qr">${qrSVG(waLink(OUR_WA,t("trialWaMsg")))}</div></div></section>
-  <footer class="wrap lp-foot"><span>${L("foot")}</span><a href="${wa()}" target="_blank" rel="noopener" dir="ltr">WhatsApp ${esc(OUR_WA)}</a></footer>
+  <section class="wrap lp-sec" id="contact"><h2>${L("ctT")}</h2><p class="lp-lead">${L("ctS")}</p><div class="lp-contact">
+    <a href="${wa()}" target="_blank" rel="noopener"><span class="e">💬</span><b>${L("ctWa")}</b><span dir="ltr">${esc(OUR_WA)}</span></a>
+    ${BRAND.instagram?`<a href="https://instagram.com/${esc(BRAND.instagram)}" target="_blank" rel="noopener"><span class="e">📸</span><b>${L("ctIg")}</b><span dir="ltr">@${esc(BRAND.instagram)}</span></a>`:""}
+    ${BRAND.email?`<a href="mailto:${esc(BRAND.email)}"><span class="e">✉️</span><b>${L("ctEm")}</b><span dir="ltr">${esc(BRAND.email)}</span></a>`:""}
+  </div></section>
+  <footer class="lp-footer"><div class="wrap">
+    <div class="brandline"><img src="icon.svg" width="28" height="28" alt="">UR TURN</div>
+    <div class="legal">${BRAND.owner?`<span>${esc(L("owned")(BRAND.owner))}</span>`:""}${BRAND.reg?`<span>${esc(L("regNo")(BRAND.reg))}</span>`:""}<span>© 2026 UR TURN · ${L("rights")}</span></div>
+  </div></footer>
   </div>`;
 }
 async function loadShop(slug){ try{ return await Api.shop(slug); }catch(e){ return undefined; } }
