@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>UR TURN</title>
+<meta name="description" content="UR TURN: جوال الزبون صار البيجر. نظام نداء ذكي للمقاهي والمطاعم بدون تطبيق.">
+<meta name="theme-color" content="#14181C">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top" id="topbar" hidden>
+  <div class="wrap">
+    <a class="logo" href="./"><img src="icon.svg" width="32" height="32" alt="">UR TURN</a>
+    <nav class="tabs" id="tabs"></nav>
+    <div class="tools"><button class="btn lang" id="langBtn" type="button">English</button></div>
+  </div>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast" hidden></div>
+<script src="qrcode.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
