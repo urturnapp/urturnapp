@@ -33,7 +33,7 @@ ar:{
  whyTitle:"ليش UR TURN",
  w1:"ما في أجهزة بيجر تنكسر أو تضيع أو تحتاج شحن.",w2:"تقييمات أكثر على جوجل لأننا نطلبها لحظة الاستلام.",
  w3:"يشتغل مع أي كاشير، والكاشير شغله زر واحد.",w4:"كل محل باسمه وشعاره ولونه ورابطه.",
- trialTitle:"أسبوع تجربة مجاني",etaLabel:"الوقت المتوقع لطلبك",etaSoon:"قرّب يجهز، خليك قريب ⏳",etaSet:"وقت التحضير:",fHours:"ساعات العمل (الشفت)",fOpen:"بيفتح",fClose:"بيسكّر",hoursHint:"برّا هالوقت الزبون ما بيقدر يسجّل طلب. فاضي = 24 ساعة. العداد اليومي بيبدأ من وقت الفتح.",closedTitle:"المحل مسكّر هلق 🌙",closedP:(a,b)=>`بنستقبل الطلبات من ${a} لـ ${b}. نشوفك قريب!`,shopClosedNow:"خارج ساعات العمل",etaSent:"✓ انبعتت، الزبون لسا ما شافها",etaSeen:"✓✓ الزبون شافها",minShort:"د",etaLeft:x=>`باقي ${x}`,trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
+ trialTitle:"أسبوع تجربة مجاني",etaLabel:"الوقت المتوقع لطلبك",etaSoon:"قرّب يجهز، خليك قريب ⏳",etaSet:"وقت التحضير:",autoReset:(a,b)=>`🔄 العداد بيتصفّر لحاله الساعة ${a} (بعد ${b})`,hShort:"س",mShort:"د",fHours:"ساعات العمل (الشفت)",fOpen:"بيفتح",fClose:"بيسكّر",hoursHint:"برّا هالوقت الزبون ما بيقدر يسجّل طلب. فاضي = 24 ساعة. العداد اليومي بيبدأ من وقت الفتح.",closedTitle:"المحل مسكّر هلق 🌙",closedP:(a,b)=>`بنستقبل الطلبات من ${a} لـ ${b}. نشوفك قريب!`,shopClosedNow:"خارج ساعات العمل",etaSent:"✓ انبعتت، الزبون لسا ما شافها",etaSeen:"✓✓ الزبون شافها",minShort:"د",etaLeft:x=>`باقي ${x}`,trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
  demoHint:"اكتب رقم فاتورة بجوال الزبون، بعدين اضغط «جاهز» من شاشة الكاشير. وجرّب كمان تفتح صفحة الزبون من جوال ثاني.",
  customerPhone:"جوال الزبون",
  welcome:"أهلاً فيك! اكتب رقم الفاتورة وخلّيك مرتاح، رح نبلغك لما يجهز طلبك.",
@@ -100,7 +100,7 @@ en:{
  whyTitle:"Why UR TURN",
  w1:"No pager devices to break, lose or charge.",w2:"More Google reviews, asked for at pickup.",
  w3:"Works with any cashier; one button to use.",w4:"Each shop with its own name, logo, color and link.",
- trialTitle:"Free first week",etaLabel:"Estimated time",etaSoon:"Almost ready, stay close ⏳",etaSet:"Prep time:",fHours:"Working hours (shift)",fOpen:"Opens",fClose:"Closes",hoursHint:"Outside these hours customers can't place orders. Empty = 24h. The daily counter starts at opening time.",closedTitle:"We're closed right now 🌙",closedP:(a,b)=>`We take orders from ${a} to ${b}. See you soon!`,shopClosedNow:"Outside working hours",etaSent:"✓ Sent, not seen yet",etaSeen:"✓✓ Seen by customer",minShort:"min",etaLeft:x=>`${x} left`,trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
+ trialTitle:"Free first week",etaLabel:"Estimated time",etaSoon:"Almost ready, stay close ⏳",etaSet:"Prep time:",autoReset:(a,b)=>`🔄 Counter resets automatically at ${a} (in ${b})`,hShort:"h",mShort:"m",fHours:"Working hours (shift)",fOpen:"Opens",fClose:"Closes",hoursHint:"Outside these hours customers can't place orders. Empty = 24h. The daily counter starts at opening time.",closedTitle:"We're closed right now 🌙",closedP:(a,b)=>`We take orders from ${a} to ${b}. See you soon!`,shopClosedNow:"Outside working hours",etaSent:"✓ Sent, not seen yet",etaSeen:"✓✓ Seen by customer",minShort:"min",etaLeft:x=>`${x} left`,trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
  demoHint:"Enter a receipt number on the customer phone, then tap “Ready” on the cashier screen. Also try opening the customer page on another phone.",
  customerPhone:"Customer phone",
  welcome:"Welcome! Enter your receipt number and relax. We'll alert you when your order is ready.",
@@ -394,7 +394,7 @@ function Customer(root,shop,opts){
 function Cashier(root,store,key){
   root.innerHTML=`<div class="panel">
     <div class="panel-head"><h2>${t("cashierTitle")}</h2></div>
-    <div class="stats"><div class="stat"><b data-s="w">0</b><span>${t("stWaiting")}</span></div><div class="stat"><b data-s="r">0</b><span>${t("stReady")}</span></div><div class="stat"><b data-s="d">0</b><span>${t("stDone")}</span></div></div>
+    <div class="stats"><div class="stat"><b data-s="w">0</b><span>${t("stWaiting")}</span></div><div class="stat"><b data-s="r">0</b><span>${t("stReady")}</span></div><div class="stat"><b data-s="d">0</b><span>${t("stDone")}</span></div></div><div class="auto-reset" data-autoreset></div>
     <div class="col-title">${t("colWaiting")} <span class="count" data-c="w">0</span></div><div class="orders" data-l="w"></div>
     <div class="col-title">${t("colReady")} <span class="count" data-c="r">0</span></div><div class="orders" data-l="r"></div>
     <form class="add-row" data-f="add" style="margin-top:18px"><input id="cash-add" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="${t("addPh")}" aria-label="${t("addPh")}"><button class="btn" type="submit">${t("addBtn")}</button></form>
@@ -410,7 +410,7 @@ function Cashier(root,store,key){
   }
   function render(){
     const w=store.byStatus("waiting"), r=store.byStatus("ready").sort((a,b)=>String(a.ready_at).localeCompare(String(b.ready_at)));
-    const today=dayStart(store.shop);
+    const today=dayStart(store.shop); { const nx=new Date(+today+864e5), left=Math.max(0,nx-Date.now()), h=Math.floor(left/36e5), m=Math.round((left%36e5)/6e4); const el=root.querySelector("[data-autoreset]"); if(el) el.textContent=t("autoReset",nx.toLocaleTimeString(lang==="ar"?"ar-EG":"en-GB",{hour:"numeric",minute:"2-digit",hour12:true}),(h?h+" "+t("hShort")+" ":"")+m+" "+t("mShort")); }
     const dl=store.byStatus("done").filter(o=>new Date(o.done_at||0)>=today).length; const d=Math.max(dl,store.doneCount||0);
     root.querySelector('[data-s="w"]').textContent=w.length; root.querySelector('[data-s="r"]').textContent=r.length; root.querySelector('[data-s="d"]').textContent=d;
     root.querySelector('[data-c="w"]').textContent=w.length; root.querySelector('[data-c="r"]').textContent=r.length;

@@ -464,3 +464,4 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .ios-tip{background:#EEF4FF;color:#1E3A8A;margin-top:14px;line-height:1.7}
 .eta-pick .seen{flex-basis:100%;font-size:12px;color:var(--muted);font-weight:600}.eta-pick .seen.ok{color:#15803D}
 .ios-tip{position:relative;padding-inline-end:34px}.ios-x{position:absolute;top:6px;inset-inline-end:6px;border:0;background:transparent;color:inherit;font-size:14px;cursor:pointer;padding:4px 8px;opacity:.7}
+.auto-reset{font-size:12.5px;color:var(--muted);margin:-4px 0 10px;text-align:center}
