@@ -278,7 +278,7 @@ const ETA_CHOICES=[5,10,15,20];
 function ShopStore(shop){
   const st={shop,orders:[],listeners:new Set(),timer:null,failing:false};
   // Light polling: active orders every tick; full day list and shop info only now and then.
-  let lastFull=0, lastShop=Date.now(), lastCount=0;
+  let lastFull=0, lastShop=Date.now(), lastCount=0, lastLogo=Date.now();
   st.refresh=async(full)=>{
     try{
       const since=+dayStart(st.shop), now=Date.now();
@@ -287,7 +287,7 @@ function ShopStore(shop){
       const [act,all,s,dc]=await Promise.all([
         doFull?null:Api.active(shop.id,since),
         doFull?Api.orders(shop.id,since):null,
-        now-lastShop>60000?Api.shopLite(shop.slug):null,
+        now-lastShop>30000?(now-lastLogo>300000?(lastLogo=now,Api.shop(shop.slug)):Api.shopLite(shop.slug)):null,
         needCount?Api.doneCount(shop.id,since).catch(()=>null):null]);
       if(needCount){ lastCount=now; if(dc!=null) st.doneCount=dc; }
       if(doFull){ st.orders=all; lastFull=now; }
@@ -861,6 +861,16 @@ async function demoPage(){
   app.querySelector("[data-restart]").addEventListener("click",()=>{ c.reset(); store.refresh(); });
   store.listeners.add(()=>c.poll()); store.start(2000);
 }
+
+// ---------- auto-update: reload open pages when a new version is published ----------
+function watchVersion(){
+  const cur=(document.querySelector('script[src*="app.js?v="]')||{}).src||""; const mine=(cur.match(/v=(\d+)/)||[])[1]; if(!mine) return;
+  setInterval(async()=>{
+    if(document.visibilityState!=="visible") return;
+    try{ const r=await fetch(BASE+"index.html?_="+Date.now(),{cache:"no-store"}); if(!r.ok) return; const v=((await r.text()).match(/app\.js\?v=(\d+)/)||[])[1];
+      if(v&&v!==mine){ const busy=Ring.on||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)); if(!busy) location.reload(); }
+    }catch(e){} },120000);
+}
 async function customerPage(){
   const shop=await loadShop(SLUG);
   if(shop===undefined){ msg(t("netErr")); setTimeout(customerPage,4000); return; }
@@ -868,7 +878,13 @@ async function customerPage(){
   applyShop(shop); document.title=shop.name+" · UR TURN";
   try{ const ps=await rpc("urturn_public_status",{p_slug:SLUG}); if(ps&&ps.locked){ msg(t("custPaused")); return; } }catch(e){}
   app.innerHTML=`<div class="cust-full" id="fullCust"></div>`;
-  Customer($("#fullCust"),shop,{});
+  const c=Customer($("#fullCust"),shop,{});
+  let n=0;
+  setInterval(async()=>{ if(document.visibilityState!=="visible") return; n++;
+    try{ const s2=await (n%5===0?Api.shop(SLUG):Api.shopLite(SLUG)); if(!s2) return;
+      const keys=Object.keys(s2); if(keys.some(k=>String(s2[k])!==String(shop[k]))){ Object.assign(shop,s2); applyShop(shop); document.title=shop.name+" · UR TURN"; c.render(); }
+    }catch(e){} },60000);
+  watchVersion();
 }
 async function staffPage(kind){
   const shop=await loadShop(SLUG);
@@ -884,6 +900,9 @@ async function staffPage(kind){
   if(kind==="cashier"&&st&&st.locked){ return; }
   if(kind==="cashier"){ $("#staff").className="wrap"; $("#staff").style.cssText="padding-block:20px;max-width:760px"; $("#staff").innerHTML=`<div id="cash"></div>`; store.lite=true; Cashier($("#cash"),store,KEY); store.start(3000); keepAwake(); }
   else { Owner($("#staff"),store,KEY); store.start(10000); }
+  let headKey=shop.name+"|"+(shop.logo||"").length;
+  store.listeners.add(()=>{ const sh=store.shop, k=sh.name+"|"+(sh.logo||"").length; if(k===headKey) return; headKey=k; const h=app.querySelector(".staff-head .wrap"); if(!h) return; const b=h.querySelector(":scope > b"); if(b) b.textContent=sh.name; const lg=h.querySelector(":scope > .shop-logo"); if(lg) lg.outerHTML=logoHTML(sh); document.title=sh.name+" · UR TURN"; });
+  watchVersion();
 }
 function setLang(l){ lang=l; ls.set("urturn.lang",l); location.reload(); }
 
