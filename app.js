@@ -661,7 +661,7 @@ function homePage(){
   <section class="wrap lp-sec" id="how"><h2>${L("howT")}</h2><p class="lp-lead">${L("howS")}</p>
     <ol class="lp-steps">${[1,2,3,4].map(i=>`<li><span class="n">${i}</span><b>${L("h"+i+"t")}</b><span>${L("h"+i+"d")}</span></li>`).join("")}</ol></section>
 
-  <section class="wrap lp-sec lp-video"><div class="vid-frame"><video src="reel.mp4" poster="reel-poster.jpg" muted autoplay loop playsinline preload="metadata"></video></div>
+  <section class="wrap lp-sec lp-video"><div class="vid-frame"><video src="${lang==="ar"?"reel-ar.mp4":"reel.mp4"}" poster="${lang==="ar"?"reel-ar-poster.jpg":"reel-poster.jpg"}" muted autoplay loop playsinline preload="metadata"></video></div>
     <div><h2>${L("vidT")}</h2><ul class="lp-checks">${[1,2,3].map(i=>`<li>${check}${L("vid"+i)}</li>`).join("")}</ul><div class="cta" style="margin-top:18px"><a class="btn primary lg" href="?v=demo">${L("ctaDemo")}</a></div></div></section>
 
   <section class="wrap lp-sec"><h2>${L("vsT")}</h2><div class="lp-vs">
