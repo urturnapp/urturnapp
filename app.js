@@ -812,7 +812,7 @@ $("#langBtn").textContent=lang==="ar"?"English":"العربية";
 $("#langBtn").addEventListener("click",()=>setLang(lang==="ar"?"en":"ar"));
 if(VIEW==="home") homePage();
 else if(VIEW==="demo") demoPage();
-else if(VIEW==="admin"){ topbar(""); document.title="Admin · UR TURN"; Admin(app,KEY); }
+else if(VIEW==="admin"){ topbar(""); $("#tabs").innerHTML=`<span class="admin-tag">${t("adminTitle")}</span>`; document.title="Admin · UR TURN"; Admin(app,KEY); }
 else if(VIEW==="cashier"||VIEW==="owner") staffPage(VIEW);
 else customerPage();
 })();

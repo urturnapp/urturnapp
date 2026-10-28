@@ -460,3 +460,4 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .vid-frame{position:relative}
 .vid-sound{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);border:0;border-radius:999px;padding:9px 16px;background:rgba(20,24,28,.78);color:#fff;font:inherit;font-weight:600;font-size:14px;cursor:pointer;backdrop-filter:blur(6px);white-space:nowrap}
 .vid-sound:hover{background:rgba(20,24,28,.92)}
+.admin-tag{font-weight:600;font-size:14px;color:var(--muted);padding:6px 4px}
