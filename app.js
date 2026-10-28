@@ -171,7 +171,7 @@ async function rpc(name,args){
 }
 const Api={
   shop:slug=>rest("urturn_shops?select=*&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
-  orders:shopId=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-12*3600e3).toISOString())+"&order=created_at.asc"),
+  orders:shopId=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,new Date().setHours(0,0,0,0))).toISOString())+"&order=created_at.asc"),
   order:id=>rest("urturn_orders?select=*&id=eq."+id).then(r=>r[0]||null),
   week:shopId=>rest("urturn_orders?select=status,created_at,done_at,ready_at,rating&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-7*864e5).toISOString())),
 };
