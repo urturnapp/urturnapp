@@ -205,7 +205,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 
 // ---------- subscriptions ----------
 // Prices in EGP. Change them here.
-const PLANS={ m1:{months:1,price:1500}, m3:{months:3,price:4000,hidden:true}, m12:{months:12,price:15000} };
+const PLANS={ m1:{months:1,price:1500}, m12:{months:12,price:15000} };
 const daysLeft=ts=>Math.ceil((new Date(ts).getTime()-Date.now())/864e5);
 const fmtDate=ts=>new Date(ts).toLocaleDateString(lang==="ar"?"ar-EG":"en-GB",{day:"numeric",month:"long",year:"numeric"});
 function waNum(n){ let d=String(n||"").replace(/\D/g,""); if(d.startsWith("00")) d=d.slice(2); if(/^01\d{9}$/.test(d)) d="2"+d; return d; }
@@ -412,7 +412,7 @@ function Admin(root,akey){
       <div class="panel" data-subpanel hidden><div class="panel-head"><h2 data-subtitle></h2></div>
         <form class="form" data-f="sub">
           <div class="field"><label for="s-wa">${t("shopWa")}</label><input type="tel" id="s-wa" dir="ltr" placeholder="${t("shopWaPh")}" style="${inputCss}"></div>
-          <div class="field"><label for="s-plan">${t("renew")}</label><select id="s-plan" style="${inputCss}">${Object.entries(PLANS).map(([k,p])=>`<option value="${k}">${t("plan_"+k)} · ${p.price.toLocaleString()} ${t("egp")}</option>`).join("")}<option value="trial">${t("plan_trial")}</option></select></div>
+          <div class="field"><label for="s-plan">${t("renew")}</label><select id="s-plan" style="${inputCss}">${Object.entries(PLANS).map(([k,p])=>`<option value="${k}">${t("plan_"+k)} · ${p.price.toLocaleString()} ${t("egp")}</option>`).join("")}</select></div>
           <div class="field"><label for="s-notes">${t("notes")}</label><input type="text" id="s-notes" maxlength="400" style="${inputCss}"></div>
           <div data-subinfo class="tip"></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" type="submit">${t("renewNow")}</button><button class="btn ghost" type="button" data-a="subsave">${t("saveOnly")}</button></div>
