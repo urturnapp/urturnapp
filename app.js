@@ -33,14 +33,14 @@ ar:{
  whyTitle:"ليش UR TURN",
  w1:"ما في أجهزة بيجر تنكسر أو تضيع أو تحتاج شحن.",w2:"تقييمات أكثر على جوجل لأننا نطلبها لحظة الاستلام.",
  w3:"يشتغل مع أي كاشير، والكاشير شغله زر واحد.",w4:"كل محل باسمه وشعاره ولونه ورابطه.",
- trialTitle:"أسبوع تجربة مجاني",etaLabel:"الوقت المتوقع لطلبك",etaSoon:"قرّب يجهز، خليك قريب ⏳",etaSet:"وقت التحضير:",autoReset:(a,b)=>`🔄 العداد بيتصفّر لحاله الساعة ${a} (بعد ${b})`,hShort:"س",mShort:"د",fHours:"ساعات العمل (الشفت)",fOpen:"بيفتح",fClose:"بيسكّر",hoursHint:"برّا هالوقت الزبون ما بيقدر يسجّل طلب. فاضي = 24 ساعة. العداد اليومي بيبدأ من وقت الفتح.",closedTitle:"المحل مسكّر هلق 🌙",closedP:(a,b)=>`بنستقبل الطلبات من ${a} لـ ${b}. نشوفك قريب!`,shopClosedNow:"خارج ساعات العمل",etaSent:"✓ انبعتت، الزبون لسا ما شافها",etaSeen:"✓✓ الزبون شافها",minShort:"د",etaLeft:x=>`باقي ${x}`,trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
+ trialTitle:"أسبوع تجربة مجاني",etaLabel:"الوقت المتوقع لطلبك",etaSoon:"قرّب يجهز، خليك قريب ⏳",etaSet:"وقت التحضير:",scanBtn:"امسح كود المحل",scanOther:"📷 امسح كود محل تاني",scanHint:"وجّه الكاميرا على كود الـ QR اللي عالكاونتر",camErr:"ما قدرنا نفتح الكاميرا. اسمح للكاميرا من إعدادات الجوال.",closeBtn:"إغلاق",badQR:"هاد مش كود UR TURN",appP:"بأي كافيه بيستعمل UR TURN: امسح الكود من هون، وبيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔",recentT:"محلات زرتها",autoReset:(a,b)=>`🔄 العداد بيتصفّر لحاله الساعة ${a} (بعد ${b})`,hShort:"س",mShort:"د",fHours:"ساعات العمل (الشفت)",fOpen:"بيفتح",fClose:"بيسكّر",hoursHint:"برّا هالوقت الزبون ما بيقدر يسجّل طلب. فاضي = 24 ساعة. العداد اليومي بيبدأ من وقت الفتح.",closedTitle:"المحل مسكّر هلق 🌙",closedP:(a,b)=>`بنستقبل الطلبات من ${a} لـ ${b}. نشوفك قريب!`,shopClosedNow:"خارج ساعات العمل",etaSent:"✓ انبعتت، الزبون لسا ما شافها",etaSeen:"✓✓ الزبون شافها",minShort:"د",etaLeft:x=>`باقي ${x}`,trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
  demoHint:"اكتب رقم فاتورة بجوال الزبون، بعدين اضغط «جاهز» من شاشة الكاشير. وجرّب كمان تفتح صفحة الزبون من جوال ثاني.",
  customerPhone:"جوال الزبون",
  welcome:"أهلاً فيك! اكتب رقم الفاتورة وخلّيك مرتاح، رح نبلغك لما يجهز طلبك.",
  receiptLabel:"رقم الفاتورة",receiptPh:"مثلاً 128",waitBtn:"انتظر دوري",
  waitingTitle:"طلبك قيد التحضير",waitingP:"خلّي هالصفحة مفتوحة. رح يرن جوالك ويهتز لما يجهز الطلب.",
  ahead:(n)=> n===0?"طلبك هو التالي":(n===1?"قبلك طلب واحد":"قبلك "+n+" طلبات"),
- tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
+ tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
  ready:"طلبك جاهز!",readyP:"تفضل استلمه من الكاونتر",gotIt:"استلمت طلبي",
  thanks:"بالعافية!",thanksP:"شكراً لزيارتك. كيف كانت تجربتك؟",rateGoogle:"قيّمنا على جوجل",
  rateThanks:"شكراً! رأيك بيوصل للإدارة مباشرة.",newOrder:"طلب جديد",powered:"يعمل بنظام",
@@ -100,14 +100,14 @@ en:{
  whyTitle:"Why UR TURN",
  w1:"No pager devices to break, lose or charge.",w2:"More Google reviews, asked for at pickup.",
  w3:"Works with any cashier; one button to use.",w4:"Each shop with its own name, logo, color and link.",
- trialTitle:"Free first week",etaLabel:"Estimated time",etaSoon:"Almost ready, stay close ⏳",etaSet:"Prep time:",autoReset:(a,b)=>`🔄 Counter resets automatically at ${a} (in ${b})`,hShort:"h",mShort:"m",fHours:"Working hours (shift)",fOpen:"Opens",fClose:"Closes",hoursHint:"Outside these hours customers can't place orders. Empty = 24h. The daily counter starts at opening time.",closedTitle:"We're closed right now 🌙",closedP:(a,b)=>`We take orders from ${a} to ${b}. See you soon!`,shopClosedNow:"Outside working hours",etaSent:"✓ Sent, not seen yet",etaSeen:"✓✓ Seen by customer",minShort:"min",etaLeft:x=>`${x} left`,trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
+ trialTitle:"Free first week",etaLabel:"Estimated time",etaSoon:"Almost ready, stay close ⏳",etaSet:"Prep time:",scanBtn:"Scan the shop code",scanOther:"📷 Scan another shop's code",scanHint:"Point the camera at the QR code on the counter",camErr:"Couldn't open the camera. Allow camera access in your phone settings.",closeBtn:"Close",badQR:"That's not a UR TURN code",appP:"At any café using UR TURN: scan the code from here and get alerted when your order is ready, even with your phone locked 🔔",recentT:"Recent shops",autoReset:(a,b)=>`🔄 Counter resets automatically at ${a} (in ${b})`,hShort:"h",mShort:"m",fHours:"Working hours (shift)",fOpen:"Opens",fClose:"Closes",hoursHint:"Outside these hours customers can't place orders. Empty = 24h. The daily counter starts at opening time.",closedTitle:"We're closed right now 🌙",closedP:(a,b)=>`We take orders from ${a} to ${b}. See you soon!`,shopClosedNow:"Outside working hours",etaSent:"✓ Sent, not seen yet",etaSeen:"✓✓ Seen by customer",minShort:"min",etaLeft:x=>`${x} left`,trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
  demoHint:"Enter a receipt number on the customer phone, then tap “Ready” on the cashier screen. Also try opening the customer page on another phone.",
  customerPhone:"Customer phone",
  welcome:"Welcome! Enter your receipt number and relax. We'll alert you when your order is ready.",
  receiptLabel:"Receipt number",receiptPh:"e.g. 128",waitBtn:"Wait for my turn",
  waitingTitle:"Your order is being prepared",waitingP:"Keep this page open. Your phone will ring and vibrate when it's ready.",
  ahead:(n)=> n===0?"You're next":(n===1?"1 order ahead of you":n+" orders ahead of you"),
- tipSound:"Keep your sound on and the screen open.",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
+ tipSound:"Keep your sound on and the screen open.",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
  ready:"Your order is ready!",readyP:"Please pick it up at the counter",gotIt:"I picked it up",
  thanks:"Enjoy!",thanksP:"Thanks for visiting. How was your experience?",rateGoogle:"Rate us on Google",
  rateThanks:"Thank you! Your feedback goes straight to the manager.",newOrder:"New order",powered:"Powered by",
@@ -361,7 +361,8 @@ function Customer(root,shop,opts){
         <div class="stars">${stars}</div>${rated>=4||rated===0?gbtn:`<div class="tip">${t("rateThanks")}</div>`}
         <button class="link-btn" data-a="new" type="button">${t("newOrder")}</button></div>`;
     }
-    root.innerHTML=`<div class="cust">${head}${body}${foot}</div>`;
+    const scanBar=!opts.inFrame&&isStandalone()&&(state==="enter"||state==="done")?`<div class="scan-bar"><button class="btn small" type="button" data-a="scan">${t("scanOther")}</button></div>`:"";
+    root.innerHTML=`<div class="cust">${head}${body}${scanBar}${foot}</div>`;
   }
   root.addEventListener("submit",async e=>{
     e.preventDefault(); const inp=root.querySelector(".big-input"); const v=(inp.value||"").replace(/\D/g,"");
@@ -377,6 +378,7 @@ function Customer(root,shop,opts){
     if(a.dataset.a==="lang"){ setLang(lang==="ar"?"en":"ar"); return; }
     if(a.dataset.a==="cancel"){ const id=orderId; setOrder(null); order=null; render(); rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }
     if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff","1"); const tp=a.closest(".ios-tip"); if(tp) tp.remove(); return; }
+    if(a.dataset.a==="scan"){ openScanner(); return; }
     if(a.dataset.a==="push"){ await Push.ask(); pushOk=await Push.subscribe(orderId); lastKey=""; render(); return; }
     if(a.dataset.a==="got"){ Ring.stop(); try{ await rpc("urturn_picked_up",{p_id:orderId}); }catch(err){} await poll(); }
     if(a.dataset.a==="new"){ setOrder(null); order=null; rated=0; render(); }
@@ -862,6 +864,38 @@ async function demoPage(){
   store.listeners.add(()=>c.poll()); store.start(2000);
 }
 
+// ---------- in-app QR scanner (home-screen app works for every shop) ----------
+function slugFromQR(txt){ try{ const u=new URL(txt); const sl=u.searchParams.get("s"); if(sl&&(u.host===location.host||u.host.endsWith(".github.io"))) return sl; }catch(e){} return null; }
+function recentShops(){ try{ return JSON.parse(ls.get("urturn.recent")||"[]"); }catch(e){ return []; } }
+function rememberShop(sh){ const L=recentShops().filter(x=>x.slug!==sh.slug); L.unshift({slug:sh.slug,name:sh.name,color:sh.color}); ls.set("urturn.recent",JSON.stringify(L.slice(0,6))); }
+async function openScanner(){
+  if(!window.jsQR){ try{ await new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src="jsqr.js?v=1"; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); }); }catch(e){ toast(t("netErr")); return; } }
+  const ov=document.createElement("div"); ov.className="scan-ov";
+  ov.innerHTML=`<div class="scan-box"><div class="scan-cam"><video playsinline muted autoplay></video><div class="scan-frame"></div></div><p>${t("scanHint")}</p><button class="btn" type="button" data-x>${t("closeBtn")}</button></div>`;
+  document.body.appendChild(ov);
+  let stream=null, done=false, warned=0;
+  const stop=()=>{ done=true; if(stream) stream.getTracks().forEach(tr=>tr.stop()); ov.remove(); };
+  ov.querySelector("[data-x]").onclick=stop;
+  try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false}); }catch(e){ toast(t("camErr")); stop(); return; }
+  const v=ov.querySelector("video"); v.srcObject=stream; try{ await v.play(); }catch(e){}
+  const c=document.createElement("canvas"), x=c.getContext("2d",{willReadFrequently:true});
+  const tick=()=>{ if(done) return;
+    if(v.readyState>=2&&v.videoWidth){ const w=Math.min(640,v.videoWidth), h=Math.round(v.videoHeight*w/v.videoWidth); c.width=w; c.height=h; x.drawImage(v,0,0,w,h);
+      const r=window.jsQR(x.getImageData(0,0,w,h).data,w,h,{inversionAttempts:"dontInvert"});
+      if(r&&r.data){ const sl=slugFromQR(r.data); if(sl){ stop(); location.href=custURL(sl); return; } if(Date.now()-warned>3000){ warned=Date.now(); toast(t("badQR")); } } }
+    requestAnimationFrame(tick); };
+  tick();
+}
+function appHome(){
+  const L=recentShops();
+  app.innerHTML=`<div class="app-home"><img src="icon-192.png" width="84" height="84" alt=""><h1>UR TURN</h1><p>${t("appP")}</p>
+    <button class="btn primary scan-big" type="button" data-scan>📷 ${t("scanBtn")}</button>
+    ${L.length?`<div class="recent"><h3>${t("recentT")}</h3>${L.map(r=>`<a class="recent-item" href="${esc(custURL(r.slug))}"><span class="dot" style="background:${esc(r.color||"#14181C")}"></span>${esc(r.name)}</a>`).join("")}</div>`:""}
+    <button class="link-btn" type="button" data-lang2 style="margin-top:18px">${lang==="ar"?"English":"العربية"}</button></div>`;
+  app.querySelector("[data-scan]").onclick=openScanner;
+  app.querySelector("[data-lang2]").onclick=()=>setLang(lang==="ar"?"en":"ar");
+}
+
 // ---------- auto-update: reload open pages when a new version is published ----------
 function watchVersion(){
   const cur=(document.querySelector('script[src*="app.js?v="]')||{}).src||""; const mine=(cur.match(/v=(\d+)/)||[])[1]; if(!mine) return;
@@ -878,6 +912,7 @@ async function customerPage(){
   applyShop(shop); document.title=shop.name+" · UR TURN";
   try{ const ps=await rpc("urturn_public_status",{p_slug:SLUG}); if(ps&&ps.locked){ msg(t("custPaused")); return; } }catch(e){}
   app.innerHTML=`<div class="cust-full" id="fullCust"></div>`;
+  rememberShop(shop);
   const c=Customer($("#fullCust"),shop,{});
   let n=0;
   setInterval(async()=>{ if(document.visibilityState!=="visible") return; n++;
@@ -909,7 +944,8 @@ function setLang(l){ lang=l; ls.set("urturn.lang",l); location.reload(); }
 document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
 $("#langBtn").textContent=lang==="ar"?"English":"العربية";
 $("#langBtn").addEventListener("click",()=>setLang(lang==="ar"?"en":"ar"));
-if(VIEW==="home") homePage();
+if(VIEW==="home"&&isStandalone()) appHome();
+else if(VIEW==="home") homePage();
 else if(VIEW==="demo") demoPage();
 else if(VIEW==="admin"){ topbar(""); $("#tabs").innerHTML=`<span class="admin-tag">${t("adminTitle")}</span>`; document.title="Admin · UR TURN"; Admin(app,KEY); }
 else if(VIEW==="cashier"||VIEW==="owner") staffPage(VIEW);
