@@ -365,3 +365,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media (max-width:860px){.dm-grid{grid-template-columns:1fr}.dm-steps{grid-template-columns:1fr}.dm-steps li{padding:10px 14px}}
 @media (max-width:520px){.dm-qr{grid-template-columns:110px 1fr}.dm-head{flex-direction:column-reverse}}
 .dm-grid>*,.dm-side>*{min-width:0}
+.eta{display:grid;gap:2px;margin:6px 0;background:var(--surface);border-radius:14px;padding:10px 18px}
+.eta small{color:var(--muted)}
+.eta b{font-size:40px;line-height:1.1;color:var(--shop)}
+.eta b.soon{font-size:18px;font-family:var(--body)}
+.eta-pick{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--muted)}
+.eta-pick button{min-width:34px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:600;cursor:pointer;color:var(--ink)}
+.eta-pick button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.eta-pick .left{margin-inline-start:6px;font-weight:600;color:var(--ink)}
+.lp-scr .cd{font-family:var(--display);font-size:26px;color:#0E5E5A}

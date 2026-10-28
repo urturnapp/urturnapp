@@ -33,7 +33,7 @@ ar:{
  whyTitle:"ليش UR TURN",
  w1:"ما في أجهزة بيجر تنكسر أو تضيع أو تحتاج شحن.",w2:"تقييمات أكثر على جوجل لأننا نطلبها لحظة الاستلام.",
  w3:"يشتغل مع أي كاشير، والكاشير شغله زر واحد.",w4:"كل محل باسمه وشعاره ولونه ورابطه.",
- trialTitle:"أسبوع تجربة مجاني",trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
+ trialTitle:"أسبوع تجربة مجاني",etaLabel:"الوقت المتوقع لطلبك",etaSoon:"قرّب يجهز، خليك قريب ⏳",etaSet:"وقت التحضير:",minShort:"د",etaLeft:x=>`باقي ${x}`,trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
  demoHint:"اكتب رقم فاتورة بجوال الزبون، بعدين اضغط «جاهز» من شاشة الكاشير. وجرّب كمان تفتح صفحة الزبون من جوال ثاني.",
  customerPhone:"جوال الزبون",
  welcome:"أهلاً فيك! اكتب رقم الفاتورة وخلّيك مرتاح، رح نبلغك لما يجهز طلبك.",
@@ -100,7 +100,7 @@ en:{
  whyTitle:"Why UR TURN",
  w1:"No pager devices to break, lose or charge.",w2:"More Google reviews, asked for at pickup.",
  w3:"Works with any cashier; one button to use.",w4:"Each shop with its own name, logo, color and link.",
- trialTitle:"Free first week",trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
+ trialTitle:"Free first week",etaLabel:"Estimated time",etaSoon:"Almost ready, stay close ⏳",etaSet:"Prep time:",minShort:"min",etaLeft:x=>`${x} left`,trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
  demoHint:"Enter a receipt number on the customer phone, then tap “Ready” on the cashier screen. Also try opening the customer page on another phone.",
  customerPhone:"Customer phone",
  welcome:"Welcome! Enter your receipt number and relax. We'll alert you when your order is ready.",
@@ -224,6 +224,8 @@ function subBanner(st,shop,always){
   return always?`<div class="subbar ok"><span>${t("subOk",d,fmtDate(st.ends_at))}</span></div>`:"";
 }
 
+const fmtLeft=ms=>{ const t2=Math.max(0,Math.round(ms/1000)); return Math.floor(t2/60)+":"+String(t2%60).padStart(2,"0"); };
+const ETA_CHOICES=[5,10,15,20];
 // ---------- shop store (polling) ----------
 function ShopStore(shop){
   const st={shop,orders:[],listeners:new Set(),timer:null,failing:false};
@@ -255,7 +257,7 @@ function Customer(root,shop,opts){
     const s=opts.store?opts.store.shop:shop;
     const state=!order?"enter":order.status;
     if(opts.onState) opts.onState(state);
-    const k=[state,order&&order.num,order&&order.ring_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
+    const k=[state,order&&order.num,order&&order.ring_at,order&&order.eta_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
     if(state==="waiting"&&k===lastKey){ const el=root.querySelector("[data-ahead]"); if(el) el.textContent=t("ahead",order._ahead||0); return; }
     if(k===lastKey) return; lastKey=k;
     const head=`<div class="cust-head">${logoHTML(s)}<h2>${esc(s.name)}</h2></div>`;
@@ -270,7 +272,7 @@ function Customer(root,shop,opts){
     } else if(state==="waiting"){
       Ring.stop();
       body=`<div class="cust-body"><div class="wait-card"><small>${t("receiptLabel")}</small><div class="num">${esc(order.num)}</div>
-        <b>${t("waitingTitle")}</b><span data-ahead>${t("ahead",order._ahead||0)}</span><div class="wait-anim" aria-hidden="true"><span></span><span></span><span></span></div></div>
+        <b>${t("waitingTitle")}</b>${order.eta_at?`<div class="eta"><small>${t("etaLabel")}</small><b class="num" data-eta="${esc(order.eta_at)}">${fmtLeft(new Date(order.eta_at)-Date.now())}</b></div>`:""}<span data-ahead>${t("ahead",order._ahead||0)}</span><div class="wait-anim" aria-hidden="true"><span></span><span></span><span></span></div></div>
         <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>
         <button class="link-btn" data-a="cancel" type="button">${t("cancel")}</button></div>`;
     } else if(state==="ready"){
@@ -305,6 +307,7 @@ function Customer(root,shop,opts){
     if(a.dataset.a==="got"){ Ring.stop(); try{ await rpc("urturn_picked_up",{p_id:orderId}); }catch(err){} await poll(); }
     if(a.dataset.a==="new"){ setOrder(null); order=null; rated=0; render(); }
   });
+  setInterval(()=>{ const el=root.querySelector("[data-eta]"); if(!el) return; const left=new Date(el.dataset.eta)-Date.now(); el.textContent=left>0?fmtLeft(left):t("etaSoon"); el.classList.toggle("soon",left<=0); },1000);
   poll(); timer=setInterval(()=>{ if(orderId&&(!order||order.status!=="done")) poll(); },2500);
   return {render(){ lastKey=""; render(); }, poll,
     reset(){ const id=orderId; Ring.stop(); setOrder(null); order=null; rated=0; lastKey=""; render(); if(id) rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }};
@@ -322,7 +325,8 @@ function Cashier(root,store,key){
   const slug=store.shop.slug;
   function row(o){
     if(o.status==="waiting") return `<div class="order"><div class="num">${esc(o.num)}</div>
-      <div class="meta"><span class="pill">${t("colWaiting")}</span><span>${t("since",mins(o.created_at))} · ${o.source==="customer"?t("fromCustomer"):t("fromCashier")}</span></div>
+      <div class="meta"><span class="pill">${t("colWaiting")}</span><span>${t("since",mins(o.created_at))} · ${o.source==="customer"?t("fromCustomer"):t("fromCashier")}</span>
+        <div class="eta-pick"><span>${t("etaSet")}</span>${ETA_CHOICES.map(m=>`<button type="button" class="${o._eta===m?"on":""}" data-a="eta" data-m="${m}" data-id="${o.id}">${m}</button>`).join("")}<span class="mu">${t("minShort")}</span>${o.eta_at&&new Date(o.eta_at)>Date.now()?`<span class="left" data-left="${esc(o.eta_at)}">${t("etaLeft",fmtLeft(new Date(o.eta_at)-Date.now()))}</span>`:""}</div></div>
       <div class="acts"><button class="btn small ghost" data-a="delete" data-id="${o.id}" type="button">${t("remove")}</button><button class="btn ready-btn" data-a="ready" data-id="${o.id}" type="button">${t("readyBtn")}</button></div></div>`;
     return `<div class="order ready"><div class="num">${esc(o.num)}</div><div class="meta"><span class="pill">${t("readyFor",mins(o.ready_at||o.created_at))}</span></div>
       <div class="acts"><button class="btn small" data-a="ring" data-id="${o.id}" type="button">${t("ringAgain")}</button><button class="btn small ok" data-a="done" data-id="${o.id}" type="button">${t("delivered")}</button></div></div>`;
@@ -343,6 +347,8 @@ function Cashier(root,store,key){
   root.addEventListener("click",async e=>{
     const a=e.target.closest("[data-a]"); if(!a||!a.dataset.id) return;
     const o=store.orders.find(x=>x.id===a.dataset.id);
+    if(a.dataset.a==="eta"){ const m=+a.dataset.m; if(o){ o.eta_at=new Date(Date.now()+m*60000).toISOString(); o._eta=m; render(); }
+      try{ await rpc("urturn_staff_eta",{p_slug:slug,p_key:key,p_id:a.dataset.id,p_minutes:m}); }catch(err){ toast(t("errGeneric")); } return; }
     if(o){ // optimistic
       if(a.dataset.a==="ready"){ o.status="ready"; o.ready_at=o.ring_at=new Date().toISOString(); }
       if(a.dataset.a==="done"){ o.status="done"; o.done_at=new Date().toISOString(); }
@@ -354,6 +360,7 @@ function Cashier(root,store,key){
   });
   store.listeners.add(render); render();
   setInterval(render,30000);
+  setInterval(()=>root.querySelectorAll("[data-left]").forEach(el=>{ const l=new Date(el.dataset.left)-Date.now(); el.textContent=l>0?t("etaLeft",fmtLeft(l)):""; }),1000);
   return {render};
 }
 
@@ -566,13 +573,13 @@ ar:{
  k1:"أجهزة تشتريها",k2:"تطبيق ينزّله الزبون",k3:"دقايق للتركيب",
  howT:"كيف يشتغل؟",howS:"4 خطوات، والزبون ما بيحتاج يسأل حدا.",
  h1t:"امسح الكود",h1d:"ستاند QR على الكاونتر، الزبون بيمسحه بكاميرا جواله. بدون تطبيق وبدون تسجيل.",
- h2t:"اكتب رقم الفاتورة",h2d:"بيكتب رقم فاتورته وبيشوف كم طلب قبله وهو قاعد.",
+ h2t:"اكتب رقم الفاتورة",h2d:"بيكتب رقم فاتورته وبيشوف عدّاد تنازلي للوقت المتوقع، وكم طلب قبله.",
  h3t:"الجوال بيرن",h3d:"الكاشير بيضغط «جاهز»، وجوال الزبون بيرن ويهتز وبتطلع شاشة «طلبك جاهز».",
  h4t:"تقييم على جوجل",h4d:"بعد ما يستلم، زر واحد بيوديه على صفحة تقييم محلك على جوجل.",
  vidT:"شوفه بأقل من نص دقيقة",vid1:"بدون تطبيق ولا أجهزة",vid2:"شغال على أي جوال، آيفون وأندرويد",vid3:"بيجيبلك تقييمات جوجل بعد كل طلب",
  vsT:"البيجر القديم ولا UR TURN؟",vsOld:"البيجر التقليدي",vsNew:"UR TURN",
  o1:"أجهزة غالية، وكل ما ضاع واحد بتشتري غيره",o2:"بيضيع، بينكسر، وبطاريته لازم تنشحن كل يوم",o3:"الزبون ما بيعرف كم ضايل لطلبه",o4:"وقت الزحمة الأجهزة بتخلص",o5:"ما بيجيبلك ولا تقييم",
- n1:"اشتراك بسيط، بدون ما تشتري ولا جهاز",n2:"ما في إشي يضيع أو ينكسر، الجوال جوال الزبون",n3:"الزبون بيشوف كم طلب قبله",n4:"عدد طلبات مفتوح مهما كانت الزحمة",n5:"زر تقييم جوجل بعد كل طلب",
+ n1:"اشتراك بسيط، بدون ما تشتري ولا جهاز",n2:"ما في إشي يضيع أو ينكسر، الجوال جوال الزبون",n3:"الزبون بيشوف عدّاد للوقت المتوقع وكم طلب قبله",n4:"عدد طلبات مفتوح مهما كانت الزحمة",n5:"زر تقييم جوجل بعد كل طلب",
  bT:"ليش أصحاب المحلات بيحبوه؟",
  b1t:"تركيب بنفس اليوم",b1d:"منجهّزلك كل إشي ومنعطيك ستاند الـ QR هدية.",
  b2t:"بدون تدريب",b2d:"الكاشير عنده زر واحد: «جاهز».",
@@ -605,13 +612,13 @@ en:{
  k1:"devices to buy",k2:"apps to download",k3:"minutes to set up",
  howT:"How it works",howS:"4 steps. Nobody has to ask “is mine ready?”.",
  h1t:"Scan the code",h1d:"A QR stand on the counter. Customers scan it with their camera. No app, no sign-up.",
- h2t:"Type the receipt number",h2d:"They enter their number and see how many orders are ahead of them.",
+ h2t:"Type the receipt number",h2d:"They enter their number and see a live countdown and how many orders are ahead.",
  h3t:"The phone rings",h3d:"The cashier taps “Ready” and the customer’s phone rings, buzzes and shows “Your order is ready”.",
  h4t:"Google review",h4d:"After pickup, one button takes them to your Google review page.",
  vidT:"See it in under 30 seconds",vid1:"No app, no hardware",vid2:"Works on any phone, iPhone and Android",vid3:"Brings you Google reviews after every order",
  vsT:"Old pagers vs UR TURN",vsOld:"Classic pagers",vsNew:"UR TURN",
  o1:"Expensive devices you keep replacing",o2:"Lost, broken, and need charging every day",o3:"Customers can’t see how long is left",o4:"Run out at rush hour",o5:"Bring you zero reviews",
- n1:"A simple subscription, nothing to buy",n2:"Nothing to lose or break, it’s the customer’s own phone",n3:"Customers see how many orders are ahead",n4:"Unlimited orders, however busy you get",n5:"A Google review button after every order",
+ n1:"A simple subscription, nothing to buy",n2:"Nothing to lose or break, it’s the customer’s own phone",n3:"Customers see a countdown and how many orders are ahead",n4:"Unlimited orders, however busy you get",n5:"A Google review button after every order",
  bT:"Why shop owners love it",
  b1t:"Same-day setup",b1d:"We set everything up and the QR stand is on us.",
  b2t:"Zero training",b2d:"The cashier has one button: “Ready”.",
@@ -652,7 +659,7 @@ function homePage(){
       <small class="lp-note">${L("heroNote")}</small>
     </div>
     <div class="lp-phone" aria-hidden="true"><div class="lp-scr">
-      <div class="st st1"><div class="lg-logo">UR</div><small>${L("mOrder")}</small><b class="num">128</b><span>${L("mWait")}</span><i class="dots"><i></i><i></i><i></i></i><span class="chip">${L("mAhead")}</span></div>
+      <div class="st st1"><div class="lg-logo">UR</div><small>${L("mOrder")}</small><b class="num">128</b><span>${L("mWait")}</span><b class="cd">04:12</b><i class="dots"><i></i><i></i><i></i></i><span class="chip">${L("mAhead")}</span></div>
       <div class="st st2"><div class="bell"><div class="wave"></div>📳</div><b>${L("mReady")}</b><span>${L("mPick")}</span><span class="chip dark">${L("mOrder")} 128</span></div>
       <div class="st st3"><b>${L("mRate")}</b><div class="stars5">★★★★★</div><span class="gbtn">${googleG()} ${L("mGoogle")}</span></div>
     </div></div>
@@ -701,12 +708,12 @@ function msg(text){ app.innerHTML=`<div class="center-msg"><img src="icon.svg" w
 
 const DEMO_T={
 ar:{title:"العرض الحي",sub:"جرّب النظام كامل من هون: إنت الزبون وإنت الكاشير بنفس الوقت.",
- s1:"اكتب أي رقم فاتورة بجوال الزبون",s2:"اضغط «جاهز» من شاشة الكاشير",s3:"اسمع الجوال كيف بيرن 🔔",
+ s1:"اكتب أي رقم فاتورة بجوال الزبون",s2:"حدّد وقت التحضير، وبعدين اضغط «جاهز»",s3:"اسمع الجوال كيف بيرن 🔔",
  sound:"🔊 علّي الصوت عشان تسمع الرنة",restart:"↺ ابدأ من جديد",cashTitle:"شاشة الكاشير",
  qrT:"جرّبها على جوالك الحقيقي 📱",qrP:"امسح الكود بجوالك واكتب أي رقم. الطلب بيظهر هون بشاشة الكاشير، اضغط «جاهز» وجوالك اللي بإيدك بيرن ويهتز.",
  live:"مباشر",endT:"عجبك؟ خلّيه عندك بالمحل",endP:"أول أسبوع مجاناً، بدون عقد، والتركيب بنفس اليوم.",endBtn:"ابدأ أسبوعك المجاني"},
 en:{title:"Live demo",sub:"Try the whole system right here: you’re the customer and the cashier at the same time.",
- s1:"Type any receipt number on the customer phone",s2:"Tap “Ready” on the cashier screen",s3:"Hear the phone ring 🔔",
+ s1:"Type any receipt number on the customer phone",s2:"Pick a prep time, then tap “Ready”",s3:"Hear the phone ring 🔔",
  sound:"🔊 Turn your sound up to hear the ring",restart:"↺ Start over",cashTitle:"Cashier screen",
  qrT:"Try it on your real phone 📱",qrP:"Scan with your phone and type any number. The order shows up here on the cashier screen; tap “Ready” and the phone in your hand rings and buzzes.",
  live:"Live",endT:"Like it? Get it in your shop",endP:"First week free, no contract, same-day setup.",endBtn:"Start your free week"}};
