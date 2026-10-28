@@ -173,6 +173,10 @@ const Api={
   shop:slug=>rest("urturn_shops?select=*&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
   orders:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since||new Date().setHours(0,0,0,0))).toISOString())+"&order=created_at.asc"),
   order:id=>rest("urturn_orders?select=*&id=eq."+id).then(r=>r[0]||null),
+  active:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&status=in.(waiting,ready)&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since)).toISOString())+"&order=created_at.asc"),
+  ahead:(shopId,before)=>rest("urturn_orders?select=id&shop_id=eq."+shopId+"&status=eq.waiting&created_at=lt."+encodeURIComponent(before)+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-12*3600e3).toISOString())),
+  doneCount:(shopId,since)=>fetch(SUPA_URL+"/rest/v1/urturn_orders?select=id&limit=1&shop_id=eq."+shopId+"&status=eq.done&done_at=gte."+encodeURIComponent(new Date(since).toISOString()),{headers:{...H,"Prefer":"count=exact"},cache:"no-store"}).then(r=>{ if(!r.ok) throw new Error("http_"+r.status); const m=(r.headers.get("content-range")||"").split("/")[1]; return m&&m!=="*"?+m:null; }),
+  shopLite:slug=>rest("urturn_shops?select=id,slug,name,color,review_url,welcome,active,open_at,close_at&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
   week:shopId=>rest("urturn_orders?select=status,created_at,done_at,ready_at,rating&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-7*864e5).toISOString())),
 };
 
@@ -273,9 +277,29 @@ const ETA_CHOICES=[5,10,15,20];
 // ---------- shop store (polling) ----------
 function ShopStore(shop){
   const st={shop,orders:[],listeners:new Set(),timer:null,failing:false};
-  st.refresh=async()=>{
-    try{ const [o,s]=await Promise.all([Api.orders(shop.id,+dayStart(st.shop)), Api.shop(shop.slug)]); st.orders=o; if(s){ st.shop=s; applyShop(s); } if(st.failing){ st.failing=false; } st.listeners.forEach(f=>f()); }
-    catch(e){ if(!st.failing){ st.failing=true; toast(t("netErr")); } }
+  // Light polling: active orders every tick; full day list and shop info only now and then.
+  let lastFull=0, lastShop=Date.now(), lastCount=0;
+  st.refresh=async(full)=>{
+    try{
+      const since=+dayStart(st.shop), now=Date.now();
+      const doFull= full===true || !lastFull || now-lastFull>(st.lite?600000:60000);
+      const needCount= st.lite && (doFull || now-lastCount>60000);
+      const [act,all,s,dc]=await Promise.all([
+        doFull?null:Api.active(shop.id,since),
+        doFull?Api.orders(shop.id,since):null,
+        now-lastShop>60000?Api.shopLite(shop.slug):null,
+        needCount?Api.doneCount(shop.id,since).catch(()=>null):null]);
+      if(needCount){ lastCount=now; if(dc!=null) st.doneCount=dc; }
+      if(doFull){ st.orders=all; lastFull=now; }
+      else {
+        const ids=new Set(act.map(o=>o.id));
+        const gone=st.orders.some(o=>(o.status==="waiting"||o.status==="ready")&&!ids.has(o.id)&&!o._local);
+        if(gone){ lastFull=0; return st.refresh(true); }
+        st.orders=[...st.orders.filter(o=>o.status==="done"&&!ids.has(o.id)), ...act].sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
+      }
+      if(s){ lastShop=now; st.shop={...st.shop,...s}; applyShop(st.shop); }
+      if(st.failing){ st.failing=false; } st.listeners.forEach(f=>f());
+    }catch(e){ if(!st.failing){ st.failing=true; toast(t("netErr")); } }
   };
   st.start=(ms)=>{ st.refresh(); st.timer=setInterval(()=>{ if(document.visibilityState==="visible") st.refresh(); },ms||2500); };
   st.byStatus=s=>st.orders.filter(o=>o.status===s);
@@ -294,7 +318,7 @@ function Customer(root,shop,opts){
       order=await Api.order(orderId);
       if(!order){ setOrder(null); }
       if(order&&order.status==="waiting"&&order.eta_at&&!order.eta_seen&&document.visibilityState==="visible"){ order.eta_seen=new Date().toISOString(); rpc("urturn_eta_seen",{p_id:orderId}).catch(()=>{}); }
-      if(order&&order.status==="waiting"){ const all=await Api.orders(shop.id); const ahead=all.filter(x=>x.status==="waiting"&&x.created_at<order.created_at).length; order._ahead=ahead; }
+      if(order&&order.status==="waiting"){ order._ahead=(await Api.ahead(shop.id,order.created_at)).length; }
       render();
     }catch(e){ /* keep last state */ }
   }
@@ -387,7 +411,7 @@ function Cashier(root,store,key){
   function render(){
     const w=store.byStatus("waiting"), r=store.byStatus("ready").sort((a,b)=>String(a.ready_at).localeCompare(String(b.ready_at)));
     const today=dayStart(store.shop);
-    const d=store.byStatus("done").filter(o=>new Date(o.done_at||0)>=today).length;
+    const dl=store.byStatus("done").filter(o=>new Date(o.done_at||0)>=today).length; const d=Math.max(dl,store.doneCount||0);
     root.querySelector('[data-s="w"]').textContent=w.length; root.querySelector('[data-s="r"]').textContent=r.length; root.querySelector('[data-s="d"]').textContent=d;
     root.querySelector('[data-c="w"]').textContent=w.length; root.querySelector('[data-c="r"]').textContent=r.length;
     root.querySelector('[data-l="w"]').innerHTML=w.length?w.map(row).join(""):`<div class="empty">${t("emptyWaiting")}</div>`;
@@ -858,7 +882,7 @@ async function staffPage(kind){
   setInterval(async()=>{ try{ const n=await rpc("urturn_staff_status",{p_slug:SLUG,p_key:KEY}); if(n&&st&&(n.locked!==st.locked||n.ends_at!==st.ends_at)) location.reload(); }catch(e){} },5*60000);
   app.querySelector("[data-lang]").addEventListener("click",()=>setLang(lang==="ar"?"en":"ar"));
   if(kind==="cashier"&&st&&st.locked){ return; }
-  if(kind==="cashier"){ $("#staff").className="wrap"; $("#staff").style.cssText="padding-block:20px;max-width:760px"; $("#staff").innerHTML=`<div id="cash"></div>`; Cashier($("#cash"),store,KEY); store.start(2000); keepAwake(); }
+  if(kind==="cashier"){ $("#staff").className="wrap"; $("#staff").style.cssText="padding-block:20px;max-width:760px"; $("#staff").innerHTML=`<div id="cash"></div>`; store.lite=true; Cashier($("#cash"),store,KEY); store.start(3000); keepAwake(); }
   else { Owner($("#staff"),store,KEY); store.start(10000); }
 }
 function setLang(l){ lang=l; ls.set("urturn.lang",l); location.reload(); }
