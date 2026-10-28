@@ -571,7 +571,13 @@ ar:{
  heroNote:"أسبوع مجاني • بدون عقد • بدون رسوم تركيب",
  mWait:"طلبك قيد التحضير",mAhead:"قبلك 2 طلبات",mReady:"طلبك جاهز!",mPick:"تفضل استلمه من الكاونتر",mRate:"كيف كانت تجربتك؟",mGoogle:"قيّمنا على جوجل",mOrder:"فاتورة",
  k1:"أجهزة تشتريها",k2:"تطبيق ينزّله الزبون",k3:"دقايق للتركيب",
- howT:"كيف يشتغل؟",howS:"4 خطوات، والزبون ما بيحتاج يسأل حدا.",
+ howT:"كيف يشتغل؟",howEy:"التجربة خطوة بخطوة",
+ st1t:"امسح الكود",st1d:"ستاند أنيق على الكاونتر بشعار محلك. الزبون بيمسحه بكاميرا جواله، بدون تطبيق وبدون تسجيل.",
+ st2t:"اكتب رقم الفاتورة",st2d:"بيكتب رقم الفاتورة اللي معه، وخلص. ما في حساب ولا بيانات شخصية.",
+ st3t:"استنى وإنت مرتاح",st3d:"عدّاد تنازلي للوقت المتوقع، وكم طلب قبله. ما في داعي يوقف عند الكاونتر ويسأل.",
+ st4t:"الجوال بيرن",st4d:"الكاشير بيضغط «جاهز»، وجوال الزبون بيرن ويهتز وبتطلع شاشة «طلبك جاهز».",
+ st5t:"تقييم على جوجل",st5d:"بعد ما يستلم، زر واحد بيوديه على صفحة تقييم محلك. زباين مبسوطين، يعني نجوم أكتر.",
+ stScan:"امسح لتتابع طلبك",stEnter:"رقم الفاتورة",stStart:"ابدأ الانتظار",secEy1:"المقارنة",secEy2:"لأصحاب المحلات",secEy3:"الأسعار",secEy4:"أسئلة",secEy5:"تواصل",secEy0:"فيديو",howS:"4 خطوات، والزبون ما بيحتاج يسأل حدا.",
  h1t:"امسح الكود",h1d:"ستاند QR على الكاونتر، الزبون بيمسحه بكاميرا جواله. بدون تطبيق وبدون تسجيل.",
  h2t:"اكتب رقم الفاتورة",h2d:"بيكتب رقم فاتورته وبيشوف عدّاد تنازلي للوقت المتوقع، وكم طلب قبله.",
  h3t:"الجوال بيرن",h3d:"الكاشير بيضغط «جاهز»، وجوال الزبون بيرن ويهتز وبتطلع شاشة «طلبك جاهز».",
@@ -610,7 +616,13 @@ en:{
  heroNote:"Free week • No contract • No setup fees",
  mWait:"Preparing your order",mAhead:"2 orders ahead of you",mReady:"Your order is ready!",mPick:"Pick it up at the counter",mRate:"How was it?",mGoogle:"Rate us on Google",mOrder:"Receipt",
  k1:"devices to buy",k2:"apps to download",k3:"minutes to set up",
- howT:"How it works",howS:"4 steps. Nobody has to ask “is mine ready?”.",
+ howT:"How it works",howEy:"The experience, step by step",
+ st1t:"Scan the code",st1d:"An elegant stand on the counter with your logo. Customers scan it with their camera, no app, no sign-up.",
+ st2t:"Type the receipt number",st2d:"They type the number on their receipt. That’s it. No account, no personal data.",
+ st3t:"Relax while waiting",st3d:"A live countdown and how many orders are ahead. No more hovering at the counter.",
+ st4t:"The phone rings",st4d:"The cashier taps “Ready” and the customer’s phone rings, buzzes and shows “Your order is ready”.",
+ st5t:"Google review",st5d:"After pickup, one button takes them to your review page. Happy customers, more stars.",
+ stScan:"Scan to track your order",stEnter:"Receipt number",stStart:"Start waiting",secEy1:"Compare",secEy2:"For owners",secEy3:"Pricing",secEy4:"FAQ",secEy5:"Contact",secEy0:"Video",howS:"4 steps. Nobody has to ask “is mine ready?”.",
  h1t:"Scan the code",h1d:"A QR stand on the counter. Customers scan it with their camera. No app, no sign-up.",
  h2t:"Type the receipt number",h2d:"They enter their number and see a live countdown and how many orders are ahead.",
  h3t:"The phone rings",h3d:"The cashier taps “Ready” and the customer’s phone rings, buzzes and shows “Your order is ready”.",
@@ -641,6 +653,22 @@ en:{
  foot:"© 2026 UR TURN. Made with love for cafés ☕",ctT:"Contact us",ctS:"We reply fast and can set you up the same day.",ctWa:"WhatsApp",ctIg:"Instagram",ctEm:"Email",owned:n=>`UR TURN is owned by <bdi>${esc(n)}</bdi>`,regNo:n=>`Commercial reg. no. ${n}`,rights:"All rights reserved",navContact:"Contact"
 }};
 const L=k=>{ const v=(LP[lang]||LP.ar)[k]; return v===undefined?k:v; };
+function lpMotion(){
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }),{threshold:.15});
+  app.querySelectorAll(".rv").forEach(el=>io.observe(el));
+  const sp=app.querySelector(".sp"), steps=[...app.querySelectorAll(".ss")];
+  const midY=()=>{ if(innerWidth>860) return innerHeight*0.5; const ph=app.querySelector(".story-phone"); const top=$("#topbar").offsetHeight+(ph?ph.offsetHeight:320); return top+(innerHeight-top)/2; };
+  window.__storyMid=midY;
+  const pick=()=>{ const mid=midY(); let best=steps[0],bd=1e9; steps.forEach(st=>{ const r=st.getBoundingClientRect(); const d=Math.abs((r.top+r.bottom)/2-mid); if(d<bd){bd=d;best=st;} });
+    sp.dataset.active=best.dataset.step; steps.forEach(st=>st.classList.toggle("on",st===best)); };
+  const hero=app.querySelector(".lp-phone");
+  let ticking=false;
+  const onScroll=()=>{ if(ticking) return; ticking=true; requestAnimationFrame(()=>{ ticking=false; pick();
+    if(hero&&!reduce){ const y=Math.min(scrollY,700); const dir=document.dir==="rtl"?1:-1; hero.style.transform=`translateY(${y*0.18}px) rotate(${dir*(3-y*0.012)}deg) scale(${1-y*0.00025})`; } }); };
+  const setTop=()=>{ const h=$("#topbar").offsetHeight; document.documentElement.style.setProperty("--toph",h+"px"); }; setTop(); addEventListener("resize",setTop);
+  addEventListener("scroll",onScroll,{passive:true}); addEventListener("resize",onScroll); onScroll();
+}
 function homePage(){
   topbar("home");
   $("#tabs").insertAdjacentHTML("beforeend",`<a href="#how">${L("navHow")}</a><a href="#price">${L("navPrice")}</a><a href="#faq">${L("navFaq")}</a><a href="#contact">${L("navContact")}</a>`);
@@ -667,32 +695,42 @@ function homePage(){
   <div class="wrap lp-kpis"><div><b>0</b><span>${L("k1")}</span></div><div><b>0</b><span>${L("k2")}</span></div><div><b>5</b><span>${L("k3")}</span></div></div>
   </section>
 
-  <section class="wrap lp-sec" id="how"><h2>${L("howT")}</h2><p class="lp-lead">${L("howS")}</p>
-    <ol class="lp-steps">${[1,2,3,4].map(i=>`<li><span class="n">${i}</span><b>${L("h"+i+"t")}</b><span>${L("h"+i+"d")}</span></li>`).join("")}</ol></section>
+  <section class="lp-story" id="how"><div class="wrap">
+    <div class="sec-head rv"><span class="sec-ey">${L("howEy")}</span><h2>${L("howT")}</h2></div>
+    <div class="story">
+      <div class="story-phone"><div class="sp" data-active="1">
+        <div class="sc" data-s="1"><div class="sc-logo">ق</div><small>${L("stScan")}</small><div class="sc-qr">${qrSVG(custURL(DEMO_SLUG))}<i class="scan"></i></div></div>
+        <div class="sc" data-s="2"><div class="sc-logo">ق</div><small>${L("stEnter")}</small><div class="sc-input num"><span class="ty">128</span><i class="caret"></i></div><div class="sc-btn">${L("stStart")}</div></div>
+        <div class="sc" data-s="3"><small>${L("mOrder")} 128</small><div class="sc-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"/><circle class="pr" cx="60" cy="60" r="52"/></svg><b class="num">04:12</b></div><span class="chip">${L("mAhead")}</span></div>
+        <div class="sc ringing-s" data-s="4"><div class="bell2"><i></i>📳</div><b>${L("mReady")}</b><span>${L("mPick")}</span></div>
+        <div class="sc" data-s="5"><b>${L("mRate")}</b><div class="stars5">★★★★★</div><span class="gbtn">${googleG()} ${L("mGoogle")}</span></div>
+      </div></div>
+      <ol class="story-steps">${[1,2,3,4,5].map(i=>`<li class="ss" data-step="${i}"><span class="n">0${i}</span><h3>${L("st"+i+"t")}</h3><p>${L("st"+i+"d")}</p></li>`).join("")}</ol>
+    </div></div></section>
 
-  <section class="wrap lp-sec lp-video"><div class="vid-frame"><video src="${lang==="ar"?"reel-ar.mp4":"reel.mp4"}" poster="${lang==="ar"?"reel-ar-poster.jpg":"reel-poster.jpg"}" muted autoplay loop playsinline preload="metadata"></video></div>
-    <div><h2>${L("vidT")}</h2><ul class="lp-checks">${[1,2,3].map(i=>`<li>${check}${L("vid"+i)}</li>`).join("")}</ul><div class="cta" style="margin-top:18px"><a class="btn primary lg" href="?v=demo">${L("ctaDemo")}</a></div></div></section>
+  <section class="wrap lp-sec lp-video"><div class="vid-frame"><video src="${lang==="ar"?"reel-ar.mp4?v=202610280021":"reel.mp4?v=202610280021"}" poster="${lang==="ar"?"reel-ar-poster.jpg":"reel-poster.jpg"}" muted autoplay loop playsinline preload="metadata"></video><button type="button" class="vid-sound" data-sound>${lang==="ar"?"🔊 شغّل الصوت":"🔊 Sound on"}</button></div>
+    <div class="rv"><span class="sec-ey">${L("secEy0")}</span><h2>${L("vidT")}</h2><ul class="lp-checks">${[1,2,3].map(i=>`<li>${check}${L("vid"+i)}</li>`).join("")}</ul><div class="cta" style="margin-top:18px"><a class="btn primary lg" href="?v=demo">${L("ctaDemo")}</a></div></div></section>
 
-  <section class="wrap lp-sec"><h2>${L("vsT")}</h2><div class="lp-vs">
+  <section class="wrap lp-sec"><div class="sec-head rv"><span class="sec-ey">${L("secEy1")}</span><h2>${L("vsT")}</h2></div><div class="lp-vs rv">
     <div class="vs old"><h3>${L("vsOld")}</h3><ul>${[1,2,3,4,5].map(i=>`<li>${cross}${L("o"+i)}</li>`).join("")}</ul></div>
     <div class="vs new"><h3>${L("vsNew")}</h3><ul>${[1,2,3,4,5].map(i=>`<li>${check}${L("n"+i)}</li>`).join("")}</ul></div></div></section>
 
-  <section class="wrap lp-sec"><h2>${L("bT")}</h2><div class="lp-ben">${[["⚡",1],["👆",2],["⭐",3],["🎨",4],["📊",5],["🌍",6]].map(([e,i])=>`<div><span class="e">${e}</span><b>${L("b"+i+"t")}</b><span>${L("b"+i+"d")}</span></div>`).join("")}</div></section>
+  <section class="wrap lp-sec"><div class="sec-head rv"><span class="sec-ey">${L("secEy2")}</span><h2>${L("bT")}</h2></div><div class="lp-ben rv">${[["⚡",1],["👆",2],["⭐",3],["🎨",4],["📊",5],["🌍",6]].map(([e,i])=>`<div><span class="e">${e}</span><b>${L("b"+i+"t")}</b><span>${L("b"+i+"d")}</span></div>`).join("")}</div></section>
 
-  <section class="lp-price-wrap" id="price"><div class="wrap lp-sec"><h2>${L("pT")}</h2><p class="lp-lead">${L("pS")}</p>
-    <div class="lp-plans">
+  <section class="lp-price-wrap" id="price"><div class="wrap lp-sec"><div class="sec-head rv"><span class="sec-ey">${L("secEy3")}</span><h2>${L("pT")}</h2><p class="lp-lead">${L("pS")}</p></div>
+    <div class="lp-plans rv">
       <div class="lp-plan"><h3>${L("pM")}</h3><div class="amt"><b class="num">${m.toLocaleString()}</b> <span>${t("egp")} ${L("pPerM")}</span></div><small>${L("pMNote")}</small>
         <ul class="lp-checks">${feats}</ul><a class="btn primary lg" href="${wa(L("pWa")(L("pM")))}" target="_blank" rel="noopener">${L("pCta")}</a></div>
       <div class="lp-plan best"><span class="ribbon">${L("pBest")}</span><h3>${L("pY")}</h3><div class="amt"><b class="num">${y.toLocaleString()}</b> <span>${t("egp")} ${L("pPerY")}</span></div><small class="save">${L("pYNote")(save)}</small>
         <ul class="lp-checks">${feats}</ul><a class="btn signal lg" href="${wa(L("pWa")(L("pY")))}" target="_blank" rel="noopener">${L("pCta")}</a></div>
     </div></div></section>
 
-  <section class="wrap lp-sec" id="faq"><h2>${L("qT")}</h2><div class="lp-faq">${[1,2,3,4,5,6].map(i=>`<details><summary>${L("q"+i)}</summary><p>${L("a"+i)}</p></details>`).join("")}</div></section>
+  <section class="wrap lp-sec" id="faq"><div class="sec-head rv"><span class="sec-ey">${L("secEy4")}</span><h2>${L("qT")}</h2></div><div class="lp-faq rv">${[1,2,3,4,5,6].map(i=>`<details><summary>${L("q"+i)}</summary><p>${L("a"+i)}</p></details>`).join("")}</div></section>
 
-  <section class="wrap lp-sec"><div class="lp-end"><div><h2>${L("endT")}</h2><p>${L("endS")}</p>
+  <section class="wrap lp-sec"><div class="lp-end rv"><div><h2>${L("endT")}</h2><p>${L("endS")}</p>
       <div class="cta"><a class="btn signal lg" href="?v=demo">${L("ctaDemo")}</a><a class="btn ghost lg on-dark" href="${wa()}" target="_blank" rel="noopener">${L("ctaWa")}</a></div></div>
     <div class="qr">${qrSVG(waLink(OUR_WA,t("trialWaMsg")))}</div></div></section>
-  <section class="wrap lp-sec" id="contact"><h2>${L("ctT")}</h2><p class="lp-lead">${L("ctS")}</p><div class="lp-contact">
+  <section class="wrap lp-sec" id="contact"><div class="sec-head rv"><span class="sec-ey">${L("secEy5")}</span><h2>${L("ctT")}</h2><p class="lp-lead">${L("ctS")}</p></div><div class="lp-contact rv">
     <a href="${wa()}" target="_blank" rel="noopener"><span class="e">💬</span><b>${L("ctWa")}</b><span dir="ltr">${esc(OUR_WA)}</span></a>
     ${BRAND.instagram?`<a href="https://instagram.com/${esc(BRAND.instagram)}" target="_blank" rel="noopener"><span class="e">📸</span><b>${L("ctIg")}</b><span dir="ltr">@${esc(BRAND.instagram)}</span></a>`:""}
     ${BRAND.email?`<a href="mailto:${esc(BRAND.email)}"><span class="e">✉️</span><b>${L("ctEm")}</b><span dir="ltr">${esc(BRAND.email)}</span></a>`:""}
@@ -702,6 +740,8 @@ function homePage(){
     <div class="legal">${BRAND.owner?`<span>${L("owned")(BRAND.owner)}</span>`:""}${BRAND.reg?`<span>${esc(L("regNo")(BRAND.reg))}</span>`:""}<span>© 2026 <bdi>UR TURN</bdi> · ${L("rights")}</span></div>
   </div></footer>
   </div>`;
+  lpMotion();
+  const vb=app.querySelector("[data-sound]"); if(vb){ vb.addEventListener("click",()=>{ const v=app.querySelector(".vid-frame video"); v.muted=!v.muted; if(!v.muted){ v.currentTime=0; v.play(); } vb.textContent=v.muted?(lang==="ar"?"🔊 شغّل الصوت":"🔊 Sound on"):(lang==="ar"?"🔇 اكتم":"🔇 Mute"); }); }
 }
 async function loadShop(slug){ try{ return await Api.shop(slug); }catch(e){ return undefined; } }
 function msg(text){ app.innerHTML=`<div class="center-msg"><img src="icon.svg" width="56" height="56" alt="" style="margin:0 auto"><h2>${esc(text)}</h2></div>`; }
