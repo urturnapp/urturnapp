@@ -462,3 +462,4 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .vid-sound:hover{background:rgba(20,24,28,.92)}
 .admin-tag{font-weight:600;font-size:14px;color:var(--muted);padding:6px 4px}
 .ios-tip{background:#EEF4FF;color:#1E3A8A;margin-top:14px;line-height:1.7}
+.eta-pick .seen{flex-basis:100%;font-size:12px;color:var(--muted);font-weight:600}.eta-pick .seen.ok{color:#15803D}
