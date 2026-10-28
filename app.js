@@ -33,7 +33,7 @@ ar:{
  whyTitle:"ليش UR TURN",
  w1:"ما في أجهزة بيجر تنكسر أو تضيع أو تحتاج شحن.",w2:"تقييمات أكثر على جوجل لأننا نطلبها لحظة الاستلام.",
  w3:"يشتغل مع أي كاشير، والكاشير شغله زر واحد.",w4:"كل محل باسمه وشعاره ولونه ورابطه.",
- trialTitle:"أسبوع تجربة مجاني",etaLabel:"الوقت المتوقع لطلبك",etaSoon:"قرّب يجهز، خليك قريب ⏳",etaSet:"وقت التحضير:",etaSent:"✓ انبعتت، الزبون لسا ما شافها",etaSeen:"✓✓ الزبون شافها",minShort:"د",etaLeft:x=>`باقي ${x}`,trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
+ trialTitle:"أسبوع تجربة مجاني",etaLabel:"الوقت المتوقع لطلبك",etaSoon:"قرّب يجهز، خليك قريب ⏳",etaSet:"وقت التحضير:",fHours:"ساعات العمل (الشفت)",fOpen:"بيفتح",fClose:"بيسكّر",hoursHint:"برّا هالوقت الزبون ما بيقدر يسجّل طلب. فاضي = 24 ساعة. العداد اليومي بيبدأ من وقت الفتح.",closedTitle:"المحل مسكّر هلق 🌙",closedP:(a,b)=>`بنستقبل الطلبات من ${a} لـ ${b}. نشوفك قريب!`,shopClosedNow:"خارج ساعات العمل",etaSent:"✓ انبعتت، الزبون لسا ما شافها",etaSeen:"✓✓ الزبون شافها",minShort:"د",etaLeft:x=>`باقي ${x}`,trialQr:"امسح الكود وكلّمنا واتساب 👇",trialWaMsg:"مرحبا، شفت UR TURN وبدي أجرّبه أسبوع ببلاش بمحلي.",trialWaBtn:"تواصل معنا واتساب",trialP:"التركيب بياخذ 5 دقايق. المحل بيجرّب النظام أسبوع كامل ببلاش، وبعدين بنحدد السعر سوا حسب النتيجة.",
  demoHint:"اكتب رقم فاتورة بجوال الزبون، بعدين اضغط «جاهز» من شاشة الكاشير. وجرّب كمان تفتح صفحة الزبون من جوال ثاني.",
  customerPhone:"جوال الزبون",
  welcome:"أهلاً فيك! اكتب رقم الفاتورة وخلّيك مرتاح، رح نبلغك لما يجهز طلبك.",
@@ -100,7 +100,7 @@ en:{
  whyTitle:"Why UR TURN",
  w1:"No pager devices to break, lose or charge.",w2:"More Google reviews, asked for at pickup.",
  w3:"Works with any cashier; one button to use.",w4:"Each shop with its own name, logo, color and link.",
- trialTitle:"Free first week",etaLabel:"Estimated time",etaSoon:"Almost ready, stay close ⏳",etaSet:"Prep time:",etaSent:"✓ Sent, not seen yet",etaSeen:"✓✓ Seen by customer",minShort:"min",etaLeft:x=>`${x} left`,trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
+ trialTitle:"Free first week",etaLabel:"Estimated time",etaSoon:"Almost ready, stay close ⏳",etaSet:"Prep time:",fHours:"Working hours (shift)",fOpen:"Opens",fClose:"Closes",hoursHint:"Outside these hours customers can't place orders. Empty = 24h. The daily counter starts at opening time.",closedTitle:"We're closed right now 🌙",closedP:(a,b)=>`We take orders from ${a} to ${b}. See you soon!`,shopClosedNow:"Outside working hours",etaSent:"✓ Sent, not seen yet",etaSeen:"✓✓ Seen by customer",minShort:"min",etaLeft:x=>`${x} left`,trialQr:"Scan to message us on WhatsApp 👇",trialWaMsg:"Hi, I saw UR TURN and would like the free 1-week trial for my shop.",trialWaBtn:"Message us on WhatsApp",trialP:"Setup takes 5 minutes. The shop tries it free for a full week, then we agree on a price together.",
  demoHint:"Enter a receipt number on the customer phone, then tap “Ready” on the cashier screen. Also try opening the customer page on another phone.",
  customerPhone:"Customer phone",
  welcome:"Welcome! Enter your receipt number and relax. We'll alert you when your order is ready.",
@@ -171,7 +171,7 @@ async function rpc(name,args){
 }
 const Api={
   shop:slug=>rest("urturn_shops?select=*&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
-  orders:shopId=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,new Date().setHours(0,0,0,0))).toISOString())+"&order=created_at.asc"),
+  orders:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since||new Date().setHours(0,0,0,0))).toISOString())+"&order=created_at.asc"),
   order:id=>rest("urturn_orders?select=*&id=eq."+id).then(r=>r[0]||null),
   week:shopId=>rest("urturn_orders?select=status,created_at,done_at,ready_at,rating&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-7*864e5).toISOString())),
 };
@@ -239,6 +239,14 @@ const Push={
 };
 
 
+
+// ---------- working hours (shop.open_at / close_at, "HH:MM:SS") ----------
+const hm=v=>{ if(!v) return null; const [h,m]=String(v).split(":").map(Number); return h*60+(m||0); };
+function hasHours(s){ const o=hm(s&&s.open_at),c=hm(s&&s.close_at); return o!=null&&c!=null&&o!==c; }
+function isOpenNow(s){ if(!hasHours(s)) return true; const o=hm(s.open_at),c=hm(s.close_at),d=new Date(),n=d.getHours()*60+d.getMinutes(); return o<c? (n>=o&&n<c) : (n>=o||n<c); }
+function dayStart(s){ const d=new Date(); d.setSeconds(0,0); const o=hasHours(s)?hm(s.open_at):0; d.setHours(Math.floor(o/60),o%60); if(d>new Date()) d.setDate(d.getDate()-1); return d; }
+function fmtTime(v){ const m=hm(v); const d=new Date(); d.setHours(Math.floor(m/60),m%60,0,0); return d.toLocaleTimeString(lang==="ar"?"ar-EG":"en-GB",{hour:"numeric",minute:"2-digit",hour12:true}); }
+
 // ---------- subscriptions ----------
 // Prices in EGP. Change them here.
 const PLANS={ m1:{months:1,price:1500}, m12:{months:12,price:15000} };
@@ -266,7 +274,7 @@ const ETA_CHOICES=[5,10,15,20];
 function ShopStore(shop){
   const st={shop,orders:[],listeners:new Set(),timer:null,failing:false};
   st.refresh=async()=>{
-    try{ const [o,s]=await Promise.all([Api.orders(shop.id), Api.shop(shop.slug)]); st.orders=o; if(s){ st.shop=s; applyShop(s); } if(st.failing){ st.failing=false; } st.listeners.forEach(f=>f()); }
+    try{ const [o,s]=await Promise.all([Api.orders(shop.id,+dayStart(st.shop)), Api.shop(shop.slug)]); st.orders=o; if(s){ st.shop=s; applyShop(s); } if(st.failing){ st.failing=false; } st.listeners.forEach(f=>f()); }
     catch(e){ if(!st.failing){ st.failing=true; toast(t("netErr")); } }
   };
   st.start=(ms)=>{ st.refresh(); st.timer=setInterval(()=>{ if(document.visibilityState==="visible") st.refresh(); },ms||2500); };
@@ -294,13 +302,16 @@ function Customer(root,shop,opts){
     const s=opts.store?opts.store.shop:shop;
     const state=!order?"enter":order.status;
     if(opts.onState) opts.onState(state);
-    const k=[state,pushOk,order&&order.num,order&&order.ring_at,order&&order.eta_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
+    const k=[state,isOpenNow(s),pushOk,order&&order.num,order&&order.ring_at,order&&order.eta_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
     if(state==="waiting"&&k===lastKey){ const el=root.querySelector("[data-ahead]"); if(el) el.textContent=t("ahead",order._ahead||0); return; }
     if(k===lastKey) return; lastKey=k;
     const head=`<div class="cust-head">${logoHTML(s)}<h2>${esc(s.name)}</h2></div>`;
     const foot=`<div class="powered">${t("powered")} <a href="${esc(BASE)}" target="_blank" rel="noopener">UR TURN</a> · <button class="link-btn" data-a="lang" type="button" style="font-size:12px;padding:0">${lang==="ar"?"English":"العربية"}</button></div>`;
     let body="";
-    if(state==="enter"){
+    if(state==="enter"&&!isOpenNow(s)){
+      Ring.stop();
+      body=`<div class="cust-body" style="text-align:center;padding-top:28px"><h2>${t("closedTitle")}</h2><p>${t("closedP",fmtTime(s.open_at),fmtTime(s.close_at))}</p></div>`;
+    } else if(state==="enter"){
       Ring.stop();
       body=`<div class="cust-body"><p>${esc(s.welcome||t("welcome"))}</p>
         <form data-f="enter" style="display:grid;gap:12px"><label for="r-${esc(lsKey)}" style="font-weight:600">${t("receiptLabel")}</label>
@@ -334,7 +345,7 @@ function Customer(root,shop,opts){
     Ring.unlock(); keepAwake(); rated=0; const perm=opts.inFrame?null:Push.ask();
     const btn=root.querySelector("button[type=submit]"); btn.disabled=true;
     try{ const id=await rpc("urturn_create_order",{p_slug:shop.slug,p_num:v}); setOrder(id); await poll(); if(perm) perm.then(()=>Push.subscribe(id)).then(ok=>{ pushOk=ok; lastKey=""; render(); }); }
-    catch(err){ toast(String(err.code||"").includes("subscription")?t("custPaused"):t("errGeneric")); btn.disabled=false; }
+    catch(err){ const c=String(err.code||""); toast(c.includes("subscription")?t("custPaused"):c.includes("shop_closed")?t("closedTitle"):t("errGeneric")); btn.disabled=false; lastKey=""; render(); }
   });
   root.addEventListener("click",async e=>{
     const st=e.target.closest("[data-star]"); if(st){ rated=+st.dataset.star; render(); if(orderId) rpc("urturn_rate",{p_id:orderId,p_rating:rated}).catch(()=>{}); return; }
@@ -348,6 +359,7 @@ function Customer(root,shop,opts){
   });
   setInterval(()=>{ const el=root.querySelector("[data-eta]"); if(!el) return; const left=new Date(el.dataset.eta)-Date.now(); el.textContent=left>0?fmtLeft(left):t("etaSoon"); el.classList.toggle("soon",left<=0); },1000);
   poll(); timer=setInterval(()=>{ if(orderId&&(!order||order.status!=="done")) poll(); },2500);
+  setInterval(()=>{ if(!orderId) render(); },30000);
   document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState!=="visible"||!orderId) return; Ring.unlock(); await poll(); if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); } });
   if(orderId&&!opts.inFrame&&Push.state()==="granted") Push.subscribe(orderId).then(ok=>{ if(ok&&!pushOk){ pushOk=true; lastKey=""; render(); } });
   return {render(){ lastKey=""; render(); }, poll,
@@ -374,7 +386,7 @@ function Cashier(root,store,key){
   }
   function render(){
     const w=store.byStatus("waiting"), r=store.byStatus("ready").sort((a,b)=>String(a.ready_at).localeCompare(String(b.ready_at)));
-    const today=new Date(); today.setHours(0,0,0,0);
+    const today=dayStart(store.shop);
     const d=store.byStatus("done").filter(o=>new Date(o.done_at||0)>=today).length;
     root.querySelector('[data-s="w"]').textContent=w.length; root.querySelector('[data-s="r"]').textContent=r.length; root.querySelector('[data-s="d"]').textContent=d;
     root.querySelector('[data-c="w"]').textContent=w.length; root.querySelector('[data-c="r"]').textContent=r.length;
@@ -444,7 +456,7 @@ function Owner(root,store,key){
 // ---------- admin ----------
 function Admin(root,akey){
   const COLORS=["#0E5E5A","#7A2E1F","#1E3A8A","#3F3A33","#8A1C4A","#2F6B2A","#B45309","#14181C"];
-  const blank=()=>({slug:"",name:"",color:"#0E5E5A",logo:null,review_url:"",welcome:""});
+  const blank=()=>({slug:"",name:"",color:"#0E5E5A",logo:null,review_url:"",welcome:"",open_at:null,close_at:null});
   let mode="new", draft=blank();
   const inputCss="border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);width:100%";
   root.innerHTML=`<div class="wrap owner">
@@ -469,6 +481,7 @@ function Admin(root,akey){
             <label style="display:flex;gap:8px;align-items:center;font-weight:500;font-size:14px">${t("customColor")} <input type="color" id="a-color" style="width:44px;height:34px;border:0;background:none;padding:0"></label></div>
           <div class="field"><label for="a-review">${t("fReview")}</label><input type="url" id="a-review" dir="ltr" placeholder="https://g.page/r/..." style="${inputCss}"><small>${t("fReviewHint")}</small></div>
           <div class="field"><label for="a-welcome">${t("fWelcome")}</label><input type="text" id="a-welcome" maxlength="280" placeholder="${esc(t("welcome"))}" style="${inputCss}"></div>
+          <div class="field"><label>${t("fHours")}</label><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span>${t("fOpen")}</span><input type="time" id="a-open" style="${inputCss};width:auto"><span>${t("fClose")}</span><input type="time" id="a-close" style="${inputCss};width:auto"></div><small style="color:var(--muted)">${t("hoursHint")}</small></div>
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit" data-submit></button><span class="saved" data-saved hidden>${t("saved")}</span></div>
         </form>
         <div data-result></div></div>
@@ -494,10 +507,10 @@ function Admin(root,akey){
     $r("[data-a=new]").hidden= mode!=="edit";
     $r("[data-slugf]").hidden= mode==="edit"; $r("#a-slug").required= mode!=="edit";
     $r("[data-submit]").textContent= mode==="edit"? t("save") : t("create");
-    $r("#a-name").value=draft.name||""; $r("#a-slug").value=mode==="edit"?draft.slug:""; $r("#a-review").value=draft.review_url||""; $r("#a-welcome").value=draft.welcome||"";
+    $r("#a-name").value=draft.name||""; $r("#a-slug").value=mode==="edit"?draft.slug:""; $r("#a-review").value=draft.review_url||""; $r("#a-welcome").value=draft.welcome||""; $r("#a-open").value=draft.open_at?String(draft.open_at).slice(0,5):""; $r("#a-close").value=draft.close_at?String(draft.close_at).slice(0,5):"";
     swatches(); poster();
   }
-  function read(){ draft.name=$r("#a-name").value.trim(); draft.review_url=$r("#a-review").value.trim(); draft.welcome=$r("#a-welcome").value.trim(); }
+  function read(){ draft.name=$r("#a-name").value.trim(); draft.review_url=$r("#a-review").value.trim(); draft.welcome=$r("#a-welcome").value.trim(); draft.open_at=$r("#a-open").value||null; draft.close_at=$r("#a-close").value||null; }
   function showLinks(slug,k){
     const box=$r("[data-result]");
     box.innerHTML=`<div class="tip" style="margin-top:14px">${t("created")}</div><div class="links" style="margin-top:12px">
@@ -561,10 +574,12 @@ function Admin(root,akey){
         const slug=$r("#a-slug").value.trim().toLowerCase();
         const k=await rpc("urturn_admin_create_shop",{p_admin:akey,p_slug:slug,p_name:draft.name});
         await rpc("urturn_admin_save_shop",{...args,p_slug:slug});
+        await rpc("urturn_admin_set_hours",{p_admin:akey,p_slug:slug,p_open:draft.open_at||"",p_close:draft.close_at||""});
         draft.slug=slug; mode="edit"; fill(); showLinks(slug,k);
         await load(); openSub(slug); return;
       } else {
         await rpc("urturn_admin_save_shop",{...args,p_slug:draft.slug});
+        await rpc("urturn_admin_set_hours",{p_admin:akey,p_slug:draft.slug,p_open:draft.open_at||"",p_close:draft.close_at||""});
         const s=$r("[data-saved]"); s.hidden=false; setTimeout(()=>s.hidden=true,2500); fill();
       }
       load();
