@@ -40,7 +40,7 @@ ar:{
  receiptLabel:"رقم الفاتورة",receiptPh:"مثلاً 128",waitBtn:"انتظر دوري",
  waitingTitle:"طلبك قيد التحضير",waitingP:"خلّي هالصفحة مفتوحة. رح يرن جوالك ويهتز لما يجهز الطلب.",
  ahead:(n)=> n===0?"طلبك هو التالي":(n===1?"قبلك طلب واحد":"قبلك "+n+" طلبات"),
- tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",cancel:"إلغاء ورقم مختلف",
+ tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
  ready:"طلبك جاهز!",readyP:"تفضل استلمه من الكاونتر",gotIt:"استلمت طلبي",
  thanks:"بالعافية!",thanksP:"شكراً لزيارتك. كيف كانت تجربتك؟",rateGoogle:"قيّمنا على جوجل",
  rateThanks:"شكراً! رأيك بيوصل للإدارة مباشرة.",newOrder:"طلب جديد",powered:"يعمل بنظام",
@@ -107,7 +107,7 @@ en:{
  receiptLabel:"Receipt number",receiptPh:"e.g. 128",waitBtn:"Wait for my turn",
  waitingTitle:"Your order is being prepared",waitingP:"Keep this page open. Your phone will ring and vibrate when it's ready.",
  ahead:(n)=> n===0?"You're next":(n===1?"1 order ahead of you":n+" orders ahead of you"),
- tipSound:"Keep your sound on and the screen open.",cancel:"Cancel / different number",
+ tipSound:"Keep your sound on and the screen open.",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
  ready:"Your order is ready!",readyP:"Please pick it up at the counter",gotIt:"I picked it up",
  thanks:"Enjoy!",thanksP:"Thanks for visiting. How was your experience?",rateGoogle:"Rate us on Google",
  rateThanks:"Thank you! Your feedback goes straight to the manager.",newOrder:"New order",powered:"Powered by",
@@ -214,6 +214,29 @@ const Ring={ ctx:null,timer:null,on:false,
 let wakeLock=null;
 async function keepAwake(){ try{ if(navigator.wakeLock&&(!wakeLock||wakeLock.released)) wakeLock=await navigator.wakeLock.request("screen"); }catch(e){} }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") keepAwake(); });
+document.addEventListener("pointerdown",()=>Ring.unlock(),{passive:true});
+// ---------- push notifications (ring even when the screen is off) ----------
+const VAPID_PUB="BCWk-h1YhyHgZOu5bp_pxZGM9PKLquMaw7Vd9rD9ivAY_wLHYYr1_94H-uTqylpvnDpcIucHXyuGWe7b7vYUp5w";
+const PUSH_FN=SUPA_URL+"/functions/v1/urturn-push";
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const Push={
+  ok(){ return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window; },
+  state(){ return this.ok()?Notification.permission:"unsupported"; },
+  ask(){ try{ return this.ok()&&Notification.permission==="default"?Notification.requestPermission():Promise.resolve(this.state()); }catch(e){ return Promise.resolve("denied"); } },
+  async subscribe(orderId){
+    if(!this.ok()||Notification.permission!=="granted") return false;
+    try{
+      const reg=await navigator.serviceWorker.register("sw.js"); await navigator.serviceWorker.ready;
+      const key=Uint8Array.from(atob(VAPID_PUB.replace(/-/g,"+").replace(/_/g,"/")+"=".repeat((4-VAPID_PUB.length%4)%4)),c=>c.charCodeAt(0));
+      let sub=await reg.pushManager.getSubscription();
+      if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
+      const j=sub.toJSON(); await rpc("urturn_set_push",{p_id:orderId,p_sub:{endpoint:j.endpoint,keys:j.keys,lang,url:location.href.split("#")[0]}});
+      return true;
+    }catch(e){ return false; }
+  },
+  send(orderId){ try{ fetch(PUSH_FN,{method:"POST",headers:H,body:JSON.stringify({order_id:orderId}),keepalive:true}).catch(()=>{}); }catch(e){} }
+};
 
 
 // ---------- subscriptions ----------
@@ -255,7 +278,7 @@ function ShopStore(shop){
 function Customer(root,shop,opts){
   opts=opts||{};
   const lsKey="urturn.order."+shop.slug+(opts.suffix||"");
-  let orderId=ls.get(lsKey), order=null, rated=0, lastKey="", seenRing=null, timer=null;
+  let orderId=ls.get(lsKey), order=null, rated=0, lastKey="", seenRing=null, timer=null, pushOk=false;
   const setOrder=id=>{ orderId=id; ls.set(lsKey,id); };
   async function poll(){
     if(!orderId){ order=null; render(); return; }
@@ -270,7 +293,7 @@ function Customer(root,shop,opts){
     const s=opts.store?opts.store.shop:shop;
     const state=!order?"enter":order.status;
     if(opts.onState) opts.onState(state);
-    const k=[state,order&&order.num,order&&order.ring_at,order&&order.eta_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
+    const k=[state,pushOk,order&&order.num,order&&order.ring_at,order&&order.eta_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
     if(state==="waiting"&&k===lastKey){ const el=root.querySelector("[data-ahead]"); if(el) el.textContent=t("ahead",order._ahead||0); return; }
     if(k===lastKey) return; lastKey=k;
     const head=`<div class="cust-head">${logoHTML(s)}<h2>${esc(s.name)}</h2></div>`;
@@ -281,12 +304,12 @@ function Customer(root,shop,opts){
       body=`<div class="cust-body"><p>${esc(s.welcome||t("welcome"))}</p>
         <form data-f="enter" style="display:grid;gap:12px"><label for="r-${esc(lsKey)}" style="font-weight:600">${t("receiptLabel")}</label>
         <input class="big-input" id="r-${esc(lsKey)}" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="8" placeholder="${t("receiptPh")}" required>
-        <button class="btn shop" type="submit">${t("waitBtn")}</button></form></div>`;
+        <button class="btn shop" type="submit">${t("waitBtn")}</button></form>${!opts.inFrame&&isIOS&&!isStandalone()?`<div class="tip ios-tip">${t("iosTip")}</div>`:""}</div>`;
     } else if(state==="waiting"){
       Ring.stop();
       body=`<div class="cust-body"><div class="wait-card"><small>${t("receiptLabel")}</small><div class="num">${esc(order.num)}</div>
         <b>${t("waitingTitle")}</b>${order.eta_at?`<div class="eta"><small>${t("etaLabel")}</small><b class="num" data-eta="${esc(order.eta_at)}">${fmtLeft(new Date(order.eta_at)-Date.now())}</b></div>`:""}<span data-ahead>${t("ahead",order._ahead||0)}</span><div class="wait-anim" aria-hidden="true"><span></span><span></span><span></span></div></div>
-        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>
+        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"?`<button class="btn small" data-a="push" type="button">${t("pushAsk")}</button>`:isIOS&&!isStandalone()?`<div class="tip ios-tip">${t("iosTip")}</div>`:""}
         <button class="link-btn" data-a="cancel" type="button">${t("cancel")}</button></div>`;
     } else if(state==="ready"){
       body=`<div class="cust-body"><div class="wait-card"><div class="num">${esc(order.num)}</div><b>${t("ready")}</b></div></div>
@@ -307,9 +330,9 @@ function Customer(root,shop,opts){
   root.addEventListener("submit",async e=>{
     e.preventDefault(); const inp=root.querySelector(".big-input"); const v=(inp.value||"").replace(/\D/g,"");
     if(!v){ toast(t("badNumber")); inp.focus(); return; }
-    Ring.unlock(); keepAwake(); rated=0;
+    Ring.unlock(); keepAwake(); rated=0; const perm=opts.inFrame?null:Push.ask();
     const btn=root.querySelector("button[type=submit]"); btn.disabled=true;
-    try{ const id=await rpc("urturn_create_order",{p_slug:shop.slug,p_num:v}); setOrder(id); await poll(); }
+    try{ const id=await rpc("urturn_create_order",{p_slug:shop.slug,p_num:v}); setOrder(id); await poll(); if(perm) perm.then(()=>Push.subscribe(id)).then(ok=>{ pushOk=ok; lastKey=""; render(); }); }
     catch(err){ toast(String(err.code||"").includes("subscription")?t("custPaused"):t("errGeneric")); btn.disabled=false; }
   });
   root.addEventListener("click",async e=>{
@@ -317,11 +340,14 @@ function Customer(root,shop,opts){
     const a=e.target.closest("[data-a]"); if(!a) return;
     if(a.dataset.a==="lang"){ setLang(lang==="ar"?"en":"ar"); return; }
     if(a.dataset.a==="cancel"){ const id=orderId; setOrder(null); order=null; render(); rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }
+    if(a.dataset.a==="push"){ await Push.ask(); pushOk=await Push.subscribe(orderId); lastKey=""; render(); return; }
     if(a.dataset.a==="got"){ Ring.stop(); try{ await rpc("urturn_picked_up",{p_id:orderId}); }catch(err){} await poll(); }
     if(a.dataset.a==="new"){ setOrder(null); order=null; rated=0; render(); }
   });
   setInterval(()=>{ const el=root.querySelector("[data-eta]"); if(!el) return; const left=new Date(el.dataset.eta)-Date.now(); el.textContent=left>0?fmtLeft(left):t("etaSoon"); el.classList.toggle("soon",left<=0); },1000);
   poll(); timer=setInterval(()=>{ if(orderId&&(!order||order.status!=="done")) poll(); },2500);
+  document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState!=="visible"||!orderId) return; Ring.unlock(); await poll(); if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); } });
+  if(orderId&&!opts.inFrame&&Push.state()==="granted") Push.subscribe(orderId).then(ok=>{ if(ok&&!pushOk){ pushOk=true; lastKey=""; render(); } });
   return {render(){ lastKey=""; render(); }, poll,
     reset(){ const id=orderId; Ring.stop(); setOrder(null); order=null; rated=0; lastKey=""; render(); if(id) rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }};
 }
@@ -368,7 +394,7 @@ function Cashier(root,store,key){
       if(a.dataset.a==="delete"){ store.orders=store.orders.filter(x=>x!==o); }
       render();
     }
-    try{ await rpc("urturn_staff_set",{p_slug:slug,p_key:key,p_id:a.dataset.id,p_action:a.dataset.a}); }catch(err){ toast(t("errGeneric")); }
+    try{ await rpc("urturn_staff_set",{p_slug:slug,p_key:key,p_id:a.dataset.id,p_action:a.dataset.a}); if(a.dataset.a==="ready"||a.dataset.a==="ring") Push.send(a.dataset.id); }catch(err){ toast(t("errGeneric")); }
     store.refresh();
   });
   store.listeners.add(render); render();
