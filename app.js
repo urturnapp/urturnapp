@@ -56,7 +56,7 @@ ar:{
  upload:"رفع شعار",removeLogo:"إزالة",fColor:"لون المحل",
  fReview:"رابط تقييم جوجل",fReviewHint:"من Google Maps: صفحة المحل ← «اكتب مراجعة» ← انسخ الرابط.",
  fWelcome:"رسالة الترحيب (اختياري)",save:"حفظ",saved:"تم الحفظ ✓",demoLocked:"هذا محل تجريبي، الإعدادات مقفلة.",
- posterTitle:"ستاند الكاونتر",posterH:"امسح وانتظر دورك",posterP:"اكتب رقم فاتورتك وبنرن على جوالك لما يجهز طلبك",
+ posterTitle:"ستاند الكاونتر",printPoster:"🖨️ اطبع الستاند / حمّله PDF",posterH:"امسح وانتظر دورك",posterP:"اكتب رقم فاتورتك وبنرن على جوالك لما يجهز طلبك",
  linksTitle:"الروابط",custLink:"رابط الزبون (هو نفسه الـ QR)",cashLink:"رابط شاشة الكاشير (سرّي)",ownLink:"رابط التقارير لصاحب المحل (سرّي)",
  copy:"نسخ",copied:"تم النسخ",
  statsTitle:"آخر 7 أيام",sOrders:"طلب",sWait:"متوسط الانتظار (د)",sRating:"متوسط التقييم",sRatings:"تقييم",
@@ -123,7 +123,7 @@ en:{
  upload:"Upload logo",removeLogo:"Remove",fColor:"Brand color",
  fReview:"Google review link",fReviewHint:"From Google Maps: shop page → “Write a review” → copy the link.",
  fWelcome:"Welcome message (optional)",save:"Save",saved:"Saved ✓",demoLocked:"This is a demo shop; settings are locked.",
- posterTitle:"Counter stand",posterH:"Scan & wait for your turn",posterP:"Enter your receipt number and we'll ring your phone when it's ready",
+ posterTitle:"Counter stand",printPoster:"🖨️ Print stand / save PDF",posterH:"Scan & wait for your turn",posterP:"Enter your receipt number and we'll ring your phone when it's ready",
  linksTitle:"Links",custLink:"Customer link (same as the QR)",cashLink:"Cashier screen link (private)",ownLink:"Owner reports link (private)",
  copy:"Copy",copied:"Copied",
  statsTitle:"Last 7 days",sOrders:"orders",sWait:"avg wait (min)",sRating:"avg rating",sRatings:"ratings",
@@ -183,6 +183,19 @@ function inkFor(hex){ const n=parseInt((hex||"#000000").slice(1),16); const r=(n
 function applyShop(shop){ const c=(shop&&shop.color)||"#0E5E5A"; document.documentElement.style.setProperty("--shop",c); document.documentElement.style.setProperty("--shop-ink",inkFor(c)); }
 function logoHTML(shop,extra){ if(shop&&shop.logo) return `<img class="shop-logo" src="${esc(shop.logo)}" alt="" ${extra||""}>`; return `<div class="shop-logo" aria-hidden="true" ${extra||""}>${esc(((shop&&shop.name)||"U").trim().charAt(0))}</div>`; }
 function qrSVG(text){ const q=qrcode(0,"M"); q.addData(text); q.make(); return q.createSvgTag({cellSize:6,margin:2,scalable:true}); }
+function printPoster(el){
+  const cs=getComputedStyle(el), bg=cs.backgroundColor, ink=cs.color;
+  const w=window.open("","_blank"); if(!w) return;
+  const css=`@page{size:A5;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#fff}body{min-height:100vh;display:grid;place-items:center;font-family:"IBM Plex Sans Arabic","Readex Pro",system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.poster{width:128mm;height:190mm;background:${bg};color:${ink};border-radius:8mm;padding:12mm 10mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6mm;text-align:center}
+.shop-logo{width:24mm;height:24mm;border-radius:6mm;object-fit:cover;background:#fff;display:grid;place-items:center;font-family:"Readex Pro",sans-serif;font-weight:700;font-size:12mm;box-shadow:0 2mm 6mm rgba(0,0,0,.18)}
+h3{font-family:"Readex Pro",sans-serif;font-size:30pt;line-height:1.15;margin:0}
+.qr{background:#fff;padding:5mm;border-radius:5mm;line-height:0}.qr svg{width:78mm;height:78mm;display:block}
+p{margin:0;font-size:13pt;opacity:.92;max-width:100mm}b{font-family:"Readex Pro",sans-serif;font-size:19pt;display:block}.ur{display:block;font-size:10pt;letter-spacing:.12em;opacity:.8}`;
+  w.document.write(`<!doctype html><html lang="${document.documentElement.lang||"ar"}" dir="${document.documentElement.dir||"rtl"}"><head><meta charset="utf-8"><title>UR TURN QR</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap"><style>${css}</style></head><body><div class="poster">${el.innerHTML}</div><script>addEventListener("load",()=>{(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>setTimeout(()=>print(),300))})<\/script></body></html>`);
+  w.document.close();
+}
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-printposter]"); if(!b) return; const p=b.parentElement.querySelector("[data-poster]"); if(p) printPoster(p); });
 function copyBtn(btn,input){ btn.addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(input.value); btn.textContent=t("copied"); setTimeout(()=>btn.textContent=t("copy"),1500);}catch(e){ input.select(); } }); }
 const custURL=slug=>BASE+"?s="+encodeURIComponent(slug);
 const cashURL=(slug,k)=>BASE+"?s="+encodeURIComponent(slug)+"&v=cashier&k="+encodeURIComponent(k);
@@ -381,7 +394,7 @@ function Owner(root,store,key){
     </div>
     <div style="display:grid;gap:16px;align-content:start">
       <div class="panel"><div class="panel-head"><h2>${t("offersTitle")}</h2></div>${plansHTML()}</div>
-      <div><div class="label">${t("posterTitle")}</div><div class="poster" data-poster></div></div>
+      <div><div class="label">${t("posterTitle")}</div><div class="poster" data-poster></div><button class="btn small" type="button" data-printposter style="margin-top:10px;width:100%">${t("printPoster")}</button></div>
       <div class="panel links"><label>${t("custLink")}</label><div class="copy-row"><input id="lk0" readonly value="${esc(custURL(slug))}"><button class="btn small" type="button" data-copy="lk0">${t("copy")}</button></div></div>
     </div></div>`;
   copyBtn(root.querySelector("[data-copy]"),root.querySelector("#lk0"));
@@ -433,7 +446,7 @@ function Admin(root,akey){
         <div data-result></div></div>
       <div class="panel"><div class="panel-head"><h2>${t("shops")}</h2></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t("colShop")}</th><th>${t("colSlug")}</th><th>${t("colSub")}</th><th>${t("colOrders")}</th><th>${t("colRating")}</th><th></th></tr></thead><tbody data-rows></tbody></table></div></div>
     </div>
-    <div style="display:grid;gap:16px;align-content:start"><div class="panel"><div class="panel-head"><h2>${t("offersTitle")}</h2></div>${plansHTML()}</div><div><div class="label">${t("posterTitle")}</div><div class="poster" data-poster></div></div>
+    <div style="display:grid;gap:16px;align-content:start"><div class="panel"><div class="panel-head"><h2>${t("offersTitle")}</h2></div>${plansHTML()}</div><div><div class="label">${t("posterTitle")}</div><div class="poster" data-poster></div><button class="btn small" type="button" data-printposter style="margin-top:10px;width:100%">${t("printPoster")}</button></div>
       <div class="panel links" data-custbox hidden><label>${t("custLink")}</label><div class="copy-row"><input id="a-cust" readonly><button class="btn small" type="button" data-copy="a-cust">${t("copy")}</button></div></div></div>
   </div>`;
   const $r=s=>root.querySelector(s);
