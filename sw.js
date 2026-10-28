@@ -1,6 +1,8 @@
 // UR TURN service worker: shows "order ready" notifications even when the page is closed.
 self.addEventListener("install",()=>self.skipWaiting());
 self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));
+// Pass-through fetch handler (lets Android offer "Install app").
+self.addEventListener("fetch",e=>{ if(e.request.mode==="navigate") e.respondWith(fetch(e.request)); });
 self.addEventListener("push",e=>{
   let d={}; try{ d=e.data?e.data.json():{}; }catch(_){ d={title:"UR TURN",body:e.data&&e.data.text()}; }
   e.waitUntil(self.registration.showNotification(d.title||"UR TURN",{
