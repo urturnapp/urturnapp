@@ -590,7 +590,7 @@ ar:{
  q5:"إذا زبون ما بده يستخدم جواله؟",a5:"عادي، الكاشير بيضيف رقمه وبينادي عليه متل ما كان.",
  q6:"كيف بدفع؟",a6:"شهري أو سنوي، كاش أو إنستاباي أو فودافون كاش. ومنبعتلك تذكير على واتساب قبل التجديد.",
  endT:"شوفه بعينك بدقيقة",endS:"افتح العرض الحي على جوالك، أو امسح الكود وكلّمنا واتساب.",ctaWa:"كلّمنا واتساب",
- foot:"© 2026 UR TURN. صُنع بحب للكافيهات ☕",ctT:"تواصل معنا",ctS:"منرد عليك بسرعة، وبنجي نركّبلك بنفس اليوم.",ctWa:"واتساب",ctIg:"انستغرام",ctEm:"الإيميل",owned:n=>`UR TURN مملوكة لـ ${n}`,regNo:n=>`سجل تجاري رقم ${n}`,rights:"جميع الحقوق محفوظة",navContact:"تواصل"
+ foot:"© 2026 UR TURN. صُنع بحب للكافيهات ☕",ctT:"تواصل معنا",ctS:"منرد عليك بسرعة، وبنجي نركّبلك بنفس اليوم.",ctWa:"واتساب",ctIg:"انستغرام",ctEm:"الإيميل",owned:n=>`<bdi>UR TURN</bdi> مملوكة لـ <bdi>${esc(n)}</bdi>`,regNo:n=>`سجل تجاري رقم ${n}`,rights:"جميع الحقوق محفوظة",navContact:"تواصل"
 },
 en:{
  navHow:"How it works",navPrice:"Pricing",navFaq:"FAQ",
@@ -629,7 +629,7 @@ en:{
  q5:"What if a customer doesn’t want to use their phone?",a5:"No problem. The cashier adds the number and calls it out like before.",
  q6:"How do I pay?",a6:"Monthly or yearly, by cash, InstaPay or Vodafone Cash. We remind you on WhatsApp before renewal.",
  endT:"See it for yourself in a minute",endS:"Open the live demo on your phone, or scan to message us on WhatsApp.",ctaWa:"Message us on WhatsApp",
- foot:"© 2026 UR TURN. Made with love for cafés ☕",ctT:"Contact us",ctS:"We reply fast and can set you up the same day.",ctWa:"WhatsApp",ctIg:"Instagram",ctEm:"Email",owned:n=>`UR TURN is owned by ${n}`,regNo:n=>`Commercial reg. no. ${n}`,rights:"All rights reserved",navContact:"Contact"
+ foot:"© 2026 UR TURN. Made with love for cafés ☕",ctT:"Contact us",ctS:"We reply fast and can set you up the same day.",ctWa:"WhatsApp",ctIg:"Instagram",ctEm:"Email",owned:n=>`UR TURN is owned by <bdi>${esc(n)}</bdi>`,regNo:n=>`Commercial reg. no. ${n}`,rights:"All rights reserved",navContact:"Contact"
 }};
 const L=k=>{ const v=(LP[lang]||LP.ar)[k]; return v===undefined?k:v; };
 function homePage(){
@@ -690,7 +690,7 @@ function homePage(){
   </div></section>
   <footer class="lp-footer"><div class="wrap">
     <div class="brandline"><img src="icon.svg" width="28" height="28" alt="">UR TURN</div>
-    <div class="legal">${BRAND.owner?`<span>${esc(L("owned")(BRAND.owner))}</span>`:""}${BRAND.reg?`<span>${esc(L("regNo")(BRAND.reg))}</span>`:""}<span>© 2026 UR TURN · ${L("rights")}</span></div>
+    <div class="legal">${BRAND.owner?`<span>${L("owned")(BRAND.owner)}</span>`:""}${BRAND.reg?`<span>${esc(L("regNo")(BRAND.reg))}</span>`:""}<span>© 2026 <bdi>UR TURN</bdi> · ${L("rights")}</span></div>
   </div></footer>
   </div>`;
 }
