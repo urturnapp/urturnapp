@@ -254,6 +254,7 @@ function Customer(root,shop,opts){
   function render(){
     const s=opts.store?opts.store.shop:shop;
     const state=!order?"enter":order.status;
+    if(opts.onState) opts.onState(state);
     const k=[state,order&&order.num,order&&order.ring_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
     if(state==="waiting"&&k===lastKey){ const el=root.querySelector("[data-ahead]"); if(el) el.textContent=t("ahead",order._ahead||0); return; }
     if(k===lastKey) return; lastKey=k;
@@ -305,7 +306,8 @@ function Customer(root,shop,opts){
     if(a.dataset.a==="new"){ setOrder(null); order=null; rated=0; render(); }
   });
   poll(); timer=setInterval(()=>{ if(orderId&&(!order||order.status!=="done")) poll(); },2500);
-  return {render(){ lastKey=""; render(); }, poll};
+  return {render(){ lastKey=""; render(); }, poll,
+    reset(){ const id=orderId; Ring.stop(); setOrder(null); order=null; rated=0; lastKey=""; render(); if(id) rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }};
 }
 
 // ---------- cashier ----------
@@ -696,13 +698,40 @@ function homePage(){
 }
 async function loadShop(slug){ try{ return await Api.shop(slug); }catch(e){ return undefined; } }
 function msg(text){ app.innerHTML=`<div class="center-msg"><img src="icon.svg" width="56" height="56" alt="" style="margin:0 auto"><h2>${esc(text)}</h2></div>`; }
+
+const DEMO_T={
+ar:{title:"العرض الحي",sub:"جرّب النظام كامل من هون: إنت الزبون وإنت الكاشير بنفس الوقت.",
+ s1:"اكتب أي رقم فاتورة بجوال الزبون",s2:"اضغط «جاهز» من شاشة الكاشير",s3:"اسمع الجوال كيف بيرن 🔔",
+ sound:"🔊 علّي الصوت عشان تسمع الرنة",restart:"↺ ابدأ من جديد",cashTitle:"شاشة الكاشير",
+ qrT:"جرّبها على جوالك الحقيقي 📱",qrP:"امسح الكود بجوالك واكتب أي رقم. الطلب بيظهر هون بشاشة الكاشير، اضغط «جاهز» وجوالك اللي بإيدك بيرن ويهتز.",
+ live:"مباشر",endT:"عجبك؟ خلّيه عندك بالمحل",endP:"أول أسبوع مجاناً، بدون عقد، والتركيب بنفس اليوم.",endBtn:"ابدأ أسبوعك المجاني"},
+en:{title:"Live demo",sub:"Try the whole system right here: you’re the customer and the cashier at the same time.",
+ s1:"Type any receipt number on the customer phone",s2:"Tap “Ready” on the cashier screen",s3:"Hear the phone ring 🔔",
+ sound:"🔊 Turn your sound up to hear the ring",restart:"↺ Start over",cashTitle:"Cashier screen",
+ qrT:"Try it on your real phone 📱",qrP:"Scan with your phone and type any number. The order shows up here on the cashier screen; tap “Ready” and the phone in your hand rings and buzzes.",
+ live:"Live",endT:"Like it? Get it in your shop",endP:"First week free, no contract, same-day setup.",endBtn:"Start your free week"}};
 async function demoPage(){
   topbar("demo");
+  const D=k=>(DEMO_T[lang]||DEMO_T.ar)[k];
   const shop=await loadShop(DEMO_SLUG); if(!shop){ msg(t("netErr")); return; }
   applyShop(shop);
-  app.innerHTML=`<div class="wrap demo"><div class="demo-hint">${t("demoHint")}</div>
-    <div><div class="label">${t("customerPhone")}</div><div class="phone"><div class="cust" id="demoCust"></div></div></div><div id="demoCash"></div></div>`;
-  const store=ShopStore(shop); Cashier($("#demoCash"),store,DEMO_KEY); const c=Customer($("#demoCust"),shop,{suffix:".frame",inFrame:true,store});
+  const custLink=custURL(DEMO_SLUG);
+  app.innerHTML=`<div class="wrap dm">
+    <div class="dm-head"><div><h1>${D("title")}</h1><p>${D("sub")}</p></div><span class="dm-live"><i></i>${D("live")}</span></div>
+    <ol class="dm-steps">${[1,2,3].map(i=>`<li data-step="${i}"><span class="n">${i}</span>${D("s"+i)}</li>`).join("")}</ol>
+    <div class="dm-bar"><span>${D("sound")}</span><button class="btn small ghost" type="button" data-restart>${D("restart")}</button></div>
+    <div class="dm-grid">
+      <div><div class="label">${t("customerPhone")}</div><div class="phone"><div class="cust" id="demoCust"></div></div></div>
+      <div class="dm-side"><div><div class="label">${D("cashTitle")}</div><div id="demoCash"></div></div>
+        <div class="dm-qr"><div class="qr">${qrSVG(custLink)}</div><div><b>${D("qrT")}</b><p>${D("qrP")}</p></div></div></div>
+    </div>
+    <div class="dm-end"><div><h2>${D("endT")}</h2><p>${D("endP")}</p></div><a class="btn signal lg" href="${esc(waLink(OUR_WA,t("trialWaMsg")))}" target="_blank" rel="noopener">${D("endBtn")}</a></div>
+  </div>`;
+  const stepOf={enter:1,waiting:2,ready:3,done:3};
+  const setStep=st=>{ const n=stepOf[st]||1; app.querySelectorAll("[data-step]").forEach(li=>{ const i=+li.dataset.step; li.classList.toggle("on",i===n); li.classList.toggle("done",i<n||st==="done"); }); };
+  const store=ShopStore(shop); Cashier($("#demoCash"),store,DEMO_KEY);
+  const c=Customer($("#demoCust"),shop,{suffix:".frame",inFrame:true,store,onState:setStep});
+  app.querySelector("[data-restart]").addEventListener("click",()=>{ c.reset(); store.refresh(); });
   store.listeners.add(()=>c.poll()); store.start(2000);
 }
 async function customerPage(){
