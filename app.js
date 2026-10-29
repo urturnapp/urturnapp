@@ -160,15 +160,21 @@ const ls={ get(k){ try{return localStorage.getItem(k);}catch(e){return null;} },
 const H={"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY,"Content-Type":"application/json"};
 async function rest(path){
   const r=await fetch(SUPA_URL+"/rest/v1/"+path,{headers:H,cache:"no-store"});
-  if(!r.ok) throw new Error("http_"+r.status);
+  if(!r.ok){ if(r.status>=500) reportErr("server "+r.status+" "+path.split("?")[0]); throw new Error("http_"+r.status); }
   return r.json();
 }
 async function rpc(name,args){
   const r=await fetch(SUPA_URL+"/rest/v1/rpc/"+name,{method:"POST",headers:H,body:JSON.stringify(args||{})});
   const txt=await r.text(); let data=null; try{ data=txt?JSON.parse(txt):null; }catch(e){ data=txt; }
+  if(r.status>=500) reportErr("server "+r.status+" "+name);
   if(!r.ok){ const err=new Error((data&&data.message)||("http_"+r.status)); err.code=(data&&data.message)||""; throw err; }
   return data;
 }
+let errSent=0; const errSeen=new Set();
+function reportErr(msg){ try{ msg=String(msg||"").slice(0,300); if(!msg||errSeen.has(msg)||errSent>=5) return; errSeen.add(msg); errSent++;
+  fetch(SUPA_URL+"/rest/v1/rpc/urturn_log_error",{method:"POST",headers:H,keepalive:true,body:JSON.stringify({p_slug:SLUG,p_view:VIEW,p_msg:msg,p_ua:navigator.userAgent})}).catch(()=>{}); }catch(e){} }
+window.addEventListener("error",e=>{ const f=e.filename||""; if(f&&!f.includes(location.host)) return; reportErr((e.message||"error")+" @"+f.split("/").pop()+":"+(e.lineno||0)); });
+window.addEventListener("unhandledrejection",e=>{ const r=e.reason; reportErr("promise: "+((r&&r.message)||String(r))); });
 const Api={
   shop:slug=>rest("urturn_shops?select=*&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
   orders:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since||new Date().setHours(0,0,0,0))).toISOString())+"&order=created_at.asc"),
@@ -512,9 +518,32 @@ function Admin(root,akey){
   const COLORS=["#0E5E5A","#7A2E1F","#1E3A8A","#3F3A33","#8A1C4A","#2F6B2A","#B45309","#14181C"];
   const blank=()=>({slug:"",name:"",color:"#0E5E5A",logo:null,review_url:"",welcome:"",open_at:null,close_at:null});
   let mode="new", draft=blank();
+  const HT=lang==="ar"?{title:"صحة السيستم",refresh:"تحديث",db:"حجم البيانات",of:"من",orders:"كل الطلبات",errs:"أخطاء آخر 7 أيام",ok:"تمام",archived:"مؤرشف",closed:"مسكّر هلق",stuck:n=>n+" طلب عالق أكتر من 3 ساعات",quiet:h=>"مفتوح وما في طلبات من "+h+" ساعة",never:"لسا ما وصل ولا طلب",last:"آخر طلب",today:"آخر 24 ساعة",noErr:"ما في ولا خطأ ✓",times:"مرة",allGood:"كل إشي شغال تمام ✓",issues:n=>n+" شغلات بدها انتباه"}
+    :{title:"System health",refresh:"Refresh",db:"Data size",of:"of",orders:"All orders",errs:"Errors, last 7 days",ok:"OK",archived:"Archived",closed:"Closed now",stuck:n=>n+" order(s) stuck over 3h",quiet:h=>"Open, no orders for "+h+"h",never:"No orders yet",last:"Last order",today:"Last 24h",noErr:"No errors ✓",times:"×",allGood:"All systems OK ✓",issues:n=>n+" item(s) need attention"};
+  const ago=v=>{ if(!v) return "–"; const m=Math.round((Date.now()-new Date(v))/60000); return m<60?(lang==="ar"?"قبل "+m+" د":m+"m ago"):m<1440?(lang==="ar"?"قبل "+Math.round(m/60)+" س":Math.round(m/60)+"h ago"):(lang==="ar"?"قبل "+Math.round(m/1440)+" يوم":Math.round(m/1440)+"d ago"); };
+  const dev=ua=>!ua?"":/iPhone|iPad/.test(ua)?"iPhone":/Android/.test(ua)?"Android":/Mac/.test(ua)?"Mac":/Windows/.test(ua)?"Windows":"other";
+  async function loadHealth(){
+    const box=root.querySelector("[data-health]"); if(!box) return;
+    let h; try{ h=await rpc("urturn_admin_health",{p_admin:akey}); }catch(e){ box.innerHTML=`<div class="empty">${t("netErr")}</div>`; return; }
+    let issues=0;
+    const rows=h.shops.map(s=>{ let cls="good", st=HT.ok;
+      if(!s.active){ cls="muted"; st=HT.archived; }
+      else if(s.stuck>0&&s.slug!==DEMO_SLUG){ cls="bad"; st=HT.stuck(s.stuck); issues++; }
+      else if(!isOpenNow(s)){ cls="muted"; st=HT.closed; }
+      else if(s.slug!==DEMO_SLUG&&s.orders_7d>=7&&s.last_order&&Date.now()-new Date(s.last_order)>3*3600e3){ cls="warn"; st=HT.quiet(Math.round((Date.now()-new Date(s.last_order))/3600e3)); issues++; }
+      return `<tr><td>${esc(s.name)}</td><td><span class="dl ${cls}">${st}</span></td><td>${s.last_order?ago(s.last_order):HT.never}</td><td>${s.orders_24h}</td></tr>`; }).join("");
+    issues+=h.errors.length?1:0;
+    const pct=Math.min(100,Math.round(h.db_mb/500*100));
+    box.innerHTML=`<div class="health-sum ${issues?"warn":"good"}">${issues?HT.issues(issues):HT.allGood}</div>
+      <div class="health-kpis"><div><b dir="ltr">${h.db_mb} MB</b><small>${HT.db} (${pct}% ${HT.of} 500 MB)</small></div><div><b>${h.orders_total}</b><small>${HT.orders}</small></div><div><b>${h.errors.reduce((a,e)=>a+e.n,0)}</b><small>${HT.errs}</small></div></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>${t("colShop")}</th><th></th><th>${HT.last}</th><th>${HT.today}</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="label" style="margin-top:14px">${HT.errs}</div>
+      ${h.errors.length?`<div class="health-errs">${h.errors.map(e=>`<div><code dir="ltr">${esc(e.msg)}</code><small>${esc(e.slug||"–")} · ${esc(e.view)} · ${dev(e.ua)} · ${e.n} ${HT.times} · ${ago(e.last_at)}</small></div>`).join("")}</div>`:`<div class="empty">${HT.noErr}</div>`}`;
+  }
   const inputCss="border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);width:100%";
   root.innerHTML=`<div class="wrap owner">
     <div style="display:grid;gap:16px;min-width:0">
+      <div class="panel"><div class="panel-head"><h2>🩺 ${HT.title}</h2><button class="btn small ghost" type="button" data-hrefresh>${HT.refresh}</button></div><div data-health><div class="empty">…</div></div></div>
       <div class="panel"><div class="panel-head"><h2>🔔 ${t("alertsTitle")}</h2></div><div data-alerts></div></div>
       <div class="panel" data-subpanel hidden><div class="panel-head"><h2 data-subtitle></h2></div>
         <form class="form" data-f="sub">
@@ -655,7 +684,9 @@ function Admin(root,akey){
     const b=e.target.closest("[data-reset]"); if(!b) return;
     try{ const k=await rpc("urturn_admin_reset_key",{p_admin:akey,p_slug:b.dataset.reset}); const s=await loadShop(b.dataset.reset); if(s){ draft={...s}; mode="edit"; fill(); } showLinks(b.dataset.reset,k); }catch(err){ toast(t("errGeneric")); }
   });
-  fill(); load();
+  fill(); load(); loadHealth();
+  root.querySelector("[data-hrefresh]").addEventListener("click",loadHealth);
+  setInterval(()=>{ if(document.visibilityState==="visible") loadHealth(); },120000);
 }
 
 // ---------- pages ----------
