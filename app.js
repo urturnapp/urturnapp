@@ -1,8 +1,8 @@
 (function(){
 "use strict";
 // ---------- config ----------
-const SUPA_URL = "https://exfxqtgcvbfpvgiykupk.supabase.co";
-const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4ZnhxdGdjdmJmcHZnaXlrdXBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NzgzNjQsImV4cCI6MjA5MDQ1NDM2NH0.cCqvsJ1fgZ4xs0x-q57iHIjbpwrBBO8GvZ1X2h-6LBo";
+const SUPA_URL = "https://hlbccdgdsbgfuxppqiuc.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsYmNjZGdkc2JnZnV4cHBxaXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMDQ5NjYsImV4cCI6MjEwODg4MDk2Nn0.5I4DTGNYoLC-43-6qJYgYdES-5S0FqwzkeV7q34Fzxw";
 const DEMO_SLUG = "demo";
 const OUR_WA = "+201055602979"; // UR TURN sales WhatsApp
 const BRAND = { instagram:"urturn.app", email:"urturnapp1@gmail.com", owner:"Azmi Elwahedi", reg:"" }; // fill in: instagram handle (no @), email, legal owner name, commercial reg. no.
@@ -463,7 +463,6 @@ function Owner(root,store,key){
         </div></div>
     </div>
     <div style="display:grid;gap:16px;align-content:start">
-      <div class="panel"><div class="panel-head"><h2>${t("offersTitle")}</h2></div>${plansHTML()}</div>
       <div><div class="label">${t("posterTitle")}</div><div class="poster" data-poster></div><button class="btn small" type="button" data-printposter style="margin-top:10px;width:100%">${t("printPoster")}</button></div>
       <div class="panel links"><label>${t("custLink")}</label><div class="copy-row"><input id="lk0" readonly value="${esc(custURL(slug))}"><button class="btn small" type="button" data-copy="lk0">${t("copy")}</button></div></div>
     </div></div>`;
