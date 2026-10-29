@@ -40,7 +40,7 @@ ar:{
  receiptLabel:"رقم الفاتورة",receiptPh:"مثلاً 128",waitBtn:"انتظر دوري",
  waitingTitle:"طلبك قيد التحضير",waitingP:"خلّي هالصفحة مفتوحة. رح يرن جوالك ويهتز لما يجهز الطلب.",
  ahead:(n)=> n===0?"طلبك هو التالي":(n===1?"قبلك طلب واحد":"قبلك "+n+" طلبات"),
- tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
+ tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
  ready:"طلبك جاهز!",readyP:"تفضل استلمه من الكاونتر",gotIt:"استلمت طلبي",
  thanks:"بالعافية!",thanksP:"شكراً لزيارتك. كيف كانت تجربتك؟",rateGoogle:"قيّمنا على جوجل",
  rateThanks:"شكراً! رأيك بيوصل للإدارة مباشرة.",newOrder:"طلب جديد",powered:"يعمل بنظام",
@@ -59,7 +59,7 @@ ar:{
  posterTitle:"ستاند الكاونتر",printPoster:"🖨️ اطبع الستاند / حمّله PDF",posterH:"امسح وانتظر دورك",posterP:"اكتب رقم فاتورتك وبنرن على جوالك لما يجهز طلبك",
  linksTitle:"الروابط",custLink:"رابط الزبون (هو نفسه الـ QR)",cashLink:"رابط شاشة الكاشير (سرّي)",ownLink:"رابط التقارير لصاحب المحل (سرّي)",
  copy:"نسخ",copied:"تم النسخ",
- statsTitle:"آخر 7 أيام",sOrders:"طلب",sWait:"متوسط الانتظار (د)",sRating:"متوسط التقييم",sRatings:"تقييم",
+ statsTitle:"آخر 7 أيام",ledgerTitle:"📒 الجرد اليومي",ledgerHint:"كل يوم شغل لحاله، من وقت الفتح لوقت الفتح اللي بعده. آخر 30 يوم.",lDay:"اليوم",lOrders:"الطلبات",lDone:"اتسلّم",lWait:"متوسط الانتظار",lRating:"التقييم",lPeak:"أزحم ساعة",lToday:"اليوم",lCsv:"⬇️ تنزيل Excel",lEmpty:"لسا ما في طلبات",lTotal:"المجموع",sOrders:"طلب",sWait:"متوسط الانتظار (د)",sRating:"متوسط التقييم",sRatings:"تقييم",
  setupTitle:"التركيب بـ5 دقايق",
  su1:"الاسم والشعار",su2:"لون المحل",su3:"رابط تقييم جوجل",su4:"اطبع الستاند وحطه على الكاونتر",su5:"افتح شاشة الكاشير وجرّب طلب",
  adminTitle:"لوحة UR TURN",newShop:"محل جديد",slug:"اسم المحل بالرابط (أحرف إنجليزية وأرقام فقط)",slugPh:"مثلاً alhara",slugHint:"بيظهر بآخر رابط الزبون والـ QR: ",
@@ -107,7 +107,7 @@ en:{
  receiptLabel:"Receipt number",receiptPh:"e.g. 128",waitBtn:"Wait for my turn",
  waitingTitle:"Your order is being prepared",waitingP:"Keep this page open. Your phone will ring and vibrate when it's ready.",
  ahead:(n)=> n===0?"You're next":(n===1?"1 order ahead of you":n+" orders ahead of you"),
- tipSound:"Keep your sound on and the screen open.",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
+ tipSound:"Keep your sound on and the screen open.",nowLbl:"now",iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
  ready:"Your order is ready!",readyP:"Please pick it up at the counter",gotIt:"I picked it up",
  thanks:"Enjoy!",thanksP:"Thanks for visiting. How was your experience?",rateGoogle:"Rate us on Google",
  rateThanks:"Thank you! Your feedback goes straight to the manager.",newOrder:"New order",powered:"Powered by",
@@ -126,7 +126,7 @@ en:{
  posterTitle:"Counter stand",printPoster:"🖨️ Print stand / save PDF",posterH:"Scan & wait for your turn",posterP:"Enter your receipt number and we'll ring your phone when it's ready",
  linksTitle:"Links",custLink:"Customer link (same as the QR)",cashLink:"Cashier screen link (private)",ownLink:"Owner reports link (private)",
  copy:"Copy",copied:"Copied",
- statsTitle:"Last 7 days",sOrders:"orders",sWait:"avg wait (min)",sRating:"avg rating",sRatings:"ratings",
+ statsTitle:"Last 7 days",ledgerTitle:"📒 Daily ledger",ledgerHint:"Each working day on its own, from opening time to the next opening. Last 30 days.",lDay:"Day",lOrders:"Orders",lDone:"Served",lWait:"Avg wait",lRating:"Rating",lPeak:"Busiest hour",lToday:"Today",lCsv:"⬇️ Download Excel",lEmpty:"No orders yet",lTotal:"Total",sOrders:"orders",sWait:"avg wait (min)",sRating:"avg rating",sRatings:"ratings",
  setupTitle:"Set up in 5 minutes",
  su1:"Name and logo",su2:"Brand color",su3:"Google review link",su4:"Print the stand, put it on the counter",su5:"Open the cashier screen and test an order",
  adminTitle:"UR TURN admin",newShop:"New shop",slug:"Shop name in the link (English letters and numbers)",slugPh:"e.g. alhara",slugHint:"Appears at the end of the customer link and QR: ",
@@ -177,6 +177,7 @@ const Api={
   ahead:(shopId,before)=>rest("urturn_orders?select=id&shop_id=eq."+shopId+"&status=eq.waiting&created_at=lt."+encodeURIComponent(before)+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-12*3600e3).toISOString())),
   doneCount:(shopId,since)=>fetch(SUPA_URL+"/rest/v1/urturn_orders?select=id&limit=1&shop_id=eq."+shopId+"&status=eq.done&done_at=gte."+encodeURIComponent(new Date(since).toISOString()),{headers:{...H,"Prefer":"count=exact"},cache:"no-store"}).then(r=>{ if(!r.ok) throw new Error("http_"+r.status); const m=(r.headers.get("content-range")||"").split("/")[1]; return m&&m!=="*"?+m:null; }),
   shopLite:slug=>rest("urturn_shops?select=id,slug,name,color,review_url,welcome,active,open_at,close_at&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
+  month:shopId=>rest("urturn_orders?select=status,created_at,done_at,ready_at,rating&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-31*864e5).toISOString())+"&order=created_at.desc"),
   week:shopId=>rest("urturn_orders?select=status,created_at,done_at,ready_at,rating&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-7*864e5).toISOString())),
 };
 
@@ -340,12 +341,12 @@ function Customer(root,shop,opts){
       body=`<div class="cust-body"><p>${esc(s.welcome||t("welcome"))}</p>
         <form data-f="enter" style="display:grid;gap:12px"><label for="r-${esc(lsKey)}" style="font-weight:600">${t("receiptLabel")}</label>
         <input class="big-input" id="r-${esc(lsKey)}" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="8" placeholder="${t("receiptPh")}" required>
-        <button class="btn shop" type="submit">${t("waitBtn")}</button></form>${!opts.inFrame&&isIOS&&!isStandalone()&&!ls.get("urturn.iosTipOff")?`<div class="tip ios-tip"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button>${t("iosTip")}</div>`:""}</div>`;
+        <button class="btn shop" type="submit">${t("waitBtn")}</button></form>${!opts.inFrame&&isIOS&&!isStandalone()&&!ls.get("urturn.iosTipOff")?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}</div>`;
     } else if(state==="waiting"){
       Ring.stop();
       body=`<div class="cust-body"><div class="wait-card"><small>${t("receiptLabel")}</small><div class="num">${esc(order.num)}</div>
         <b>${t("waitingTitle")}</b>${order.eta_at?`<div class="eta"><small>${t("etaLabel")}</small><b class="num" data-eta="${esc(order.eta_at)}">${fmtLeft(new Date(order.eta_at)-Date.now())}</b></div>`:""}<span data-ahead>${t("ahead",order._ahead||0)}</span><div class="wait-anim" aria-hidden="true"><span></span><span></span><span></span></div></div>
-        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"?`<button class="btn small" data-a="push" type="button">${t("pushAsk")}</button>`:isIOS&&!isStandalone()&&!ls.get("urturn.iosTipOff")?`<div class="tip ios-tip"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button>${t("iosTip")}</div>`:""}
+        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"?`<button class="btn small" data-a="push" type="button">${t("pushAsk")}</button>`:isIOS&&!isStandalone()&&!ls.get("urturn.iosTipOff")?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}
         <button class="link-btn" data-a="cancel" type="button">${t("cancel")}</button></div>`;
     } else if(state==="ready"){
       body=`<div class="cust-body"><div class="wait-card"><div class="num">${esc(order.num)}</div><b>${t("ready")}</b></div></div>
@@ -377,7 +378,7 @@ function Customer(root,shop,opts){
     const a=e.target.closest("[data-a]"); if(!a) return;
     if(a.dataset.a==="lang"){ setLang(lang==="ar"?"en":"ar"); return; }
     if(a.dataset.a==="cancel"){ const id=orderId; setOrder(null); order=null; render(); rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }
-    if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff","1"); const tp=a.closest(".ios-tip"); if(tp) tp.remove(); return; }
+    if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff","1"); root.querySelectorAll(".ios-note,.ios-arrow").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="scan"){ openScanner(); return; }
     if(a.dataset.a==="install"){ doInstall(); return; }
     if(a.dataset.a==="push"){ await Push.ask(); pushOk=await Push.subscribe(orderId); lastKey=""; render(); return; }
@@ -402,7 +403,7 @@ function Cashier(root,store,key){
     <div class="col-title">${t("colReady")} <span class="count" data-c="r">0</span></div><div class="orders" data-l="r"></div>
     <form class="add-row" data-f="add" style="margin-top:18px"><input id="cash-add" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="${t("addPh")}" aria-label="${t("addPh")}"><button class="btn" type="submit">${t("addBtn")}</button></form>
   </div>`;
-  const slug=store.shop.slug;
+  const slug=store.shop.slug; let lastW="", lastR="";
   function row(o){
     if(o.status==="waiting") return `<div class="order"><div class="num">${esc(o.num)}</div>
       <div class="meta"><span class="pill">${t("colWaiting")}</span><span>${t("since",mins(o.created_at))} · ${o.source==="customer"?t("fromCustomer"):t("fromCashier")}</span>
@@ -417,8 +418,9 @@ function Cashier(root,store,key){
     const dl=store.byStatus("done").filter(o=>new Date(o.done_at||0)>=today).length; const d=Math.max(dl,store.doneCount||0);
     root.querySelector('[data-s="w"]').textContent=w.length; root.querySelector('[data-s="r"]').textContent=r.length; root.querySelector('[data-s="d"]').textContent=d;
     root.querySelector('[data-c="w"]').textContent=w.length; root.querySelector('[data-c="r"]').textContent=r.length;
-    root.querySelector('[data-l="w"]').innerHTML=w.length?w.map(row).join(""):`<div class="empty">${t("emptyWaiting")}</div>`;
-    root.querySelector('[data-l="r"]').innerHTML=r.length?r.map(row).join(""):`<div class="empty">${t("emptyReady")}</div>`;
+    const hw=w.length?w.map(row).join(""):`<div class="empty">${t("emptyWaiting")}</div>`, hr=r.length?r.map(row).join(""):`<div class="empty">${t("emptyReady")}</div>`;
+    if(hw!==lastW){ lastW=hw; root.querySelector('[data-l="w"]').innerHTML=hw; }
+    if(hr!==lastR){ lastR=hr; root.querySelector('[data-l="r"]').innerHTML=hr; }
   }
   root.addEventListener("submit",async e=>{
     e.preventDefault(); const inp=root.querySelector("#cash-add"); const v=(inp.value||"").replace(/\D/g,""); if(!v) return; inp.value="";
@@ -452,6 +454,7 @@ function Owner(root,store,key){
       <div class="panel"><div class="panel-head"><h2>${t("statsTitle")}</h2></div><div class="stats four">
         <div class="stat"><b data-k="n">–</b><span>${t("sOrders")}</span></div><div class="stat"><b data-k="w">–</b><span>${t("sWait")}</span></div>
         <div class="stat"><b data-k="r">–</b><span>${t("sRating")}</span></div><div class="stat"><b data-k="c">–</b><span>${t("sRatings")}</span></div></div></div>
+      <div class="panel"><div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>${t("ledgerTitle")}</h2><button class="btn small" type="button" data-csv>${t("lCsv")}</button></div><small style="color:var(--muted)">${t("ledgerHint")}</small><div class="tbl-wrap" style="margin-top:10px"><table class="tbl ledger"><thead><tr><th>${t("lDay")}</th><th>${t("lOrders")}</th><th>${t("lDone")}</th><th>${t("lWait")}</th><th>${t("lRating")}</th><th>${t("lPeak")}</th></tr></thead><tbody data-ledger><tr><td colspan="6">…</td></tr></tbody></table></div></div>
       <div class="panel"><div class="panel-head"><h2>${t("ownerTitle")}</h2></div>
         <div class="list" style="display:grid;gap:10px">
           <div><small style="color:var(--muted)">${t("fName")}</small><div style="font-weight:600">${esc(shop.name)}</div></div>
@@ -478,6 +481,31 @@ function Owner(root,store,key){
     }catch(e){}
   }
   stats(); setInterval(stats,60000);
+  let ledgerRows=[];
+  async function ledger(){
+    try{
+      const rows=await Api.month(shop.id);
+      const o=hasHours(store.shop)?hm(store.shop.open_at):0;
+      const key=ts=>{ const d=new Date(new Date(ts).getTime()-o*60000); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+      const days={};
+      rows.forEach(r=>{ const k=key(r.created_at); const D=days[k]||(days[k]={n:0,done:0,waits:[],rates:[],hours:{}}); D.n++; if(r.status==="done") D.done++; if(r.ready_at) D.waits.push((new Date(r.ready_at)-new Date(r.created_at))/60000); if(r.rating) D.rates.push(r.rating); const h=new Date(r.created_at).getHours(); D.hours[h]=(D.hours[h]||0)+1; });
+      const todayKey=key(Date.now()); const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length):null;
+      const hourLbl=h=>{ const d=new Date(); d.setHours(+h,0,0,0); return d.toLocaleTimeString(lang==="ar"?"ar-EG":"en-GB",{hour:"numeric",hour12:true}); };
+      ledgerRows=Object.keys(days).sort().reverse().map(k=>{ const D=days[k]; const pk=Object.entries(D.hours).sort((a,b)=>b[1]-a[1])[0]; const w=avg(D.waits), r=avg(D.rates);
+        const dl=new Date(k+"T12:00:00").toLocaleDateString(lang==="ar"?"ar-EG":"en-GB",{weekday:"short",day:"numeric",month:"short"});
+        return {k,label:k===todayKey?t("lToday")+" · "+dl:dl,n:D.n,done:D.done,wait:w==null?"–":w.toFixed(1),rate:r==null?"–":r.toFixed(1)+" ("+D.rates.length+")",peak:pk?hourLbl(pk[0])+" ("+pk[1]+")":"–",today:k===todayKey}; });
+      const tb=root.querySelector("[data-ledger]");
+      if(!ledgerRows.length){ tb.innerHTML=`<tr><td colspan="6">${t("lEmpty")}</td></tr>`; return; }
+      const tot=ledgerRows.reduce((a,r)=>({n:a.n+r.n,done:a.done+r.done}),{n:0,done:0});
+      tb.innerHTML=ledgerRows.map(r=>`<tr class="${r.today?"today":""}"><td>${esc(r.label)}</td><td><b>${r.n}</b></td><td>${r.done}</td><td>${r.wait}</td><td>${r.rate}</td><td>${esc(r.peak)}</td></tr>`).join("")+`<tr class="total"><td>${t("lTotal")}</td><td><b>${tot.n}</b></td><td>${tot.done}</td><td colspan="3"></td></tr>`;
+    }catch(e){}
+  }
+  ledger(); setInterval(()=>{ if(document.visibilityState==="visible") ledger(); },300000);
+  root.querySelector("[data-csv]").addEventListener("click",()=>{
+    const head=[t("lDay"),t("lOrders"),t("lDone"),t("lWait"),t("lRating"),t("lPeak")];
+    const csv="\ufeff"+[head,...ledgerRows.map(r=>[r.k,r.n,r.done,r.wait,r.rate,r.peak])].map(a=>a.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})); a.download="UR-TURN-"+slug+"-"+new Date().toISOString().slice(0,10)+".csv"; document.body.appendChild(a); a.click(); a.remove();
+  });
 }
 
 // ---------- admin ----------
