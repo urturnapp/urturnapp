@@ -172,7 +172,7 @@ async function rpc(name,args){
 const Api={
   shop:slug=>rest("urturn_shops?select=*&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
   orders:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since||new Date().setHours(0,0,0,0))).toISOString())+"&order=created_at.asc"),
-  order:id=>rest("urturn_orders?select=*&id=eq."+id).then(r=>r[0]||null),
+  order:id=>rest("urturn_orders?select=id,num,status,created_at,ring_at,eta_at,eta_seen&id=eq."+id).then(r=>r[0]||null),
   active:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&status=in.(waiting,ready)&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since)).toISOString())+"&order=created_at.asc"),
   ahead:(shopId,before)=>rest("urturn_orders?select=id&shop_id=eq."+shopId+"&status=eq.waiting&created_at=lt."+encodeURIComponent(before)+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-12*3600e3).toISOString())),
   doneCount:(shopId,since)=>fetch(SUPA_URL+"/rest/v1/urturn_orders?select=id&limit=1&shop_id=eq."+shopId+"&status=eq.done&done_at=gte."+encodeURIComponent(new Date(since).toISOString()),{headers:{...H,"Prefer":"count=exact"},cache:"no-store"}).then(r=>{ if(!r.ok) throw new Error("http_"+r.status); const m=(r.headers.get("content-range")||"").split("/")[1]; return m&&m!=="*"?+m:null; }),
@@ -311,15 +311,15 @@ function ShopStore(shop){
 function Customer(root,shop,opts){
   opts=opts||{};
   const lsKey="urturn.order."+shop.slug+(opts.suffix||"");
-  let orderId=ls.get(lsKey), order=null, rated=0, lastKey="", seenRing=null, timer=null, pushOk=false;
-  const setOrder=id=>{ orderId=id; ls.set(lsKey,id); };
+  let orderId=ls.get(lsKey), order=null, rated=0, lastKey="", seenRing=null, timer=null, pushOk=false, pollN=0, aheadCache=null;
+  const setOrder=id=>{ orderId=id; ls.set(lsKey,id); aheadCache=null; };
   async function poll(){
     if(!orderId){ order=null; render(); return; }
     try{
-      order=await Api.order(orderId);
+      pollN++; order=await Api.order(orderId);
       if(!order){ setOrder(null); }
       if(order&&order.status==="waiting"&&order.eta_at&&!order.eta_seen&&document.visibilityState==="visible"){ order.eta_seen=new Date().toISOString(); rpc("urturn_eta_seen",{p_id:orderId}).catch(()=>{}); }
-      if(order&&order.status==="waiting"){ order._ahead=(await Api.ahead(shop.id,order.created_at)).length; }
+      if(order&&order.status==="waiting"){ if(pollN%4===0||aheadCache==null){ aheadCache=(await Api.ahead(shop.id,order.created_at)).length; } order._ahead=aheadCache; }
       render();
     }catch(e){ /* keep last state */ }
   }
@@ -386,7 +386,7 @@ function Customer(root,shop,opts){
     if(a.dataset.a==="new"){ setOrder(null); order=null; rated=0; render(); }
   });
   setInterval(()=>{ const el=root.querySelector("[data-eta]"); if(!el) return; const left=new Date(el.dataset.eta)-Date.now(); el.textContent=left>0?fmtLeft(left):t("etaSoon"); el.classList.toggle("soon",left<=0); },1000);
-  poll(); timer=setInterval(()=>{ if(orderId&&(!order||order.status!=="done")) poll(); },2500);
+  poll(); timer=setInterval(()=>{ if(orderId&&(!order||order.status!=="done")) poll(); },3000);
   setInterval(()=>{ if(!orderId) render(); },30000);
   document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState!=="visible"||!orderId) return; Ring.unlock(); await poll(); if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); } });
   if(orderId&&!opts.inFrame&&Push.state()==="granted") Push.subscribe(orderId).then(ok=>{ if(ok&&!pushOk){ pushOk=true; lastKey=""; render(); } });
