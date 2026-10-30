@@ -313,7 +313,7 @@ function ShopStore(shop){
         now-lastShop>30000?(now-lastLogo>300000?(lastLogo=now,Api.shop(shop.slug)):Api.shopLite(shop.slug)):null,
         needCount?Api.doneCount(shop.id,since).catch(()=>null):null]);
       if(needCount){ lastCount=now; if(dc!=null) st.doneCount=dc; }
-      if(doFull){ st.orders=all; lastFull=now; }
+      if(doFull){ st.orders=all; lastFull=now; st.loaded=true; }
       else {
         const ids=new Set(act.map(o=>o.id));
         const gone=st.orders.some(o=>(o.status==="waiting"||o.status==="ready")&&!ids.has(o.id)&&!o._local);
@@ -465,7 +465,8 @@ function Cashier(root,store,key){
     const dl=store.byStatus("done").filter(o=>new Date(o.done_at||0)>=today).length; const d=Math.max(dl,store.doneCount||0);
     root.querySelector('[data-s="w"]').textContent=w.length; root.querySelector('[data-s="r"]').textContent=r.length; root.querySelector('[data-s="d"]').textContent=d;
     root.querySelector('[data-c="w"]').textContent=w.length; root.querySelector('[data-c="r"]').textContent=r.length;
-    if(seen===null){ seen=new Set(w.map(o=>o.id)); }
+    if(!store.loaded){ /* wait for first data */ }
+    else if(seen===null){ seen=new Set(w.map(o=>o.id)); }
     else { const fresh=w.filter(o=>!seen.has(o.id)); fresh.forEach(o=>seen.add(o.id)); const fc=fresh.filter(o=>o.source==="customer");
       if(fc.length){ fc.forEach(o=>{ newIds.add(o.id); setTimeout(()=>{ newIds.delete(o.id); lastW=""; render(); },8000); }); alertNew(fc.map(o=>o.num).join("، ")); } }
     const hw=w.length?w.map(row).join(""):`<div class="empty">${t("emptyWaiting")}</div>`, hr=r.length?r.map(row).join(""):`<div class="empty">${t("emptyReady")}</div>`;
