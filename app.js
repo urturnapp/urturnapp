@@ -221,6 +221,9 @@ function googleG(){ return `<svg width="18" height="18" viewBox="0 0 48 48" aria
 
 // ---------- sound + vibration ----------
 window.__ringRef=()=>Ring;
+function silentWav(){ const n=2205, b=new ArrayBuffer(44+n*2), v=new DataView(b), w=(o,str)=>{ for(let i=0;i<str.length;i++) v.setUint8(o+i,str.charCodeAt(i)); };
+  w(0,"RIFF"); v.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,22050,true); v.setUint32(28,44100,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40,n*2,true);
+  return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
 function chimeWav(){ // build the ring sound as a small WAV file (5 notes, ~0.8s, then short silence)
   const sr=22050, notes=[880,1175,1568,1175,1568], nl=Math.round(sr*0.16), gap=Math.round(sr*0.22), n=nl*notes.length+gap, d=new Int16Array(n);
   notes.forEach((f,i)=>{ for(let k=0;k<nl;k++){ const t=k/sr, env=Math.min(1,k/(sr*0.02))*Math.exp(-t*14); d[i*nl+k]=Math.round(Math.sin(2*Math.PI*f*t)*env*0.55*32767); } });
@@ -229,8 +232,11 @@ function chimeWav(){ // build the ring sound as a small WAV file (5 notes, ~0.8s
   new Int16Array(b,44).set(d); return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
 const Ring={ ctx:null,timer:null,on:false,el:null,elOk:false,
   unlock(){ try{ if(!this.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(C) this.ctx=new C(); } this.ctx&&this.ctx.resume&&this.ctx.resume(); }catch(e){}
-    try{ if(!this.el){ this.el=new Audio(chimeWav()); this.el.loop=true; this.el.preload="auto"; this.el.setAttribute("playsinline",""); }
-      if(!this.elOk&&!this.on){ const a=this.el; a.muted=true; const p=a.play(); if(p&&p.then) p.then(()=>{ a.pause(); a.currentTime=0; a.muted=false; this.elOk=true; }).catch(()=>{ a.muted=false; }); } }catch(e){} },
+    // Unlock with a silent clip first (so nothing is heard), then switch to the ring sound. iPhone keeps the element allowed after that.
+    try{ if(!this.el){ this.el=new Audio(); this.el.setAttribute("playsinline",""); this.el.preload="auto"; this.chimeUrl=chimeWav(); this.silentUrl=silentWav(); }
+      if(!this.elOk&&!this.on&&!this.unlocking){ const a=this.el; this.unlocking=true; a.loop=false; a.src=this.silentUrl; const p=a.play();
+        const fin=ok=>{ this.unlocking=false; try{ a.pause(); }catch(e){} a.loop=true; a.src=this.chimeUrl; a.load(); if(ok) this.elOk=true; };
+        if(p&&p.then) p.then(()=>fin(true)).catch(()=>fin(false)); else fin(true); } }catch(e){} },
   chime(){ if(!this.ctx) return; const now=this.ctx.currentTime;
     [880,1175,1568,1175,1568].forEach((f,i)=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(this.ctx.destination);
       const s=now+i*0.16; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.4,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.15); o.start(s); o.stop(s+0.16); }); },
@@ -430,7 +436,10 @@ function Customer(root,shop,opts){
     if(document.visibilityState!=="visible"||!orderId||backBusy||Date.now()-backAt<800) return; backBusy=true; backAt=Date.now();
     Ring.unlock();
     if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); }
-    setTimeout(()=>{ if(Ring.on&&Ring.el&&Ring.elOk&&Ring.el.paused){ Ring.el.play().catch(()=>{}); } },300);
+    // iPhone needs a moment after coming back before audio is allowed again: keep trying for ~4s.
+    let tries=0; const kick=()=>{ if(!Ring.on||tries++>13) return; try{ Ring.ctx&&Ring.ctx.resume&&Ring.ctx.resume(); }catch(e){}
+      if(Ring.el&&Ring.elOk&&Ring.el.paused){ Ring.el.play().then(()=>{ Ring.useEl=true; }).catch(()=>{}); }
+      if(Ring.el&&!Ring.el.paused) return; setTimeout(kick,300); }; setTimeout(kick,150);
     for(const d of [0,400,900,1800]){ if(d) await new Promise(r=>setTimeout(r,d)); if(await poll()) break; }
     if(order&&order.status==="ready"){ if(!Ring.on) Ring.start(); } else Ring.stop();
     backBusy=false;
