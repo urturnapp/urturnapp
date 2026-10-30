@@ -40,7 +40,7 @@ ar:{
  receiptLabel:"رقم الفاتورة",receiptPh:"مثلاً 128",waitBtn:"انتظر دوري",
  waitingTitle:"طلبك قيد التحضير",waitingP:"خلّي هالصفحة مفتوحة. رح يرن جوالك ويهتز لما يجهز الطلب.",
  ahead:(n)=> n===0?"طلبك هو التالي":(n===1?"قبلك طلب واحد":"قبلك "+n+" طلبات"),
- tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",instNote:"📲 <b>ثبّت UR TURN بضغطة وحدة</b> عشان يرن جوالك لما يجهز طلبك حتى لو مقفول، ونفس التطبيق بيشتغل بكل الكافيهات.",instGo:"تثبيت التطبيق",pushNote:"🔔 <b>فعّل الإشعارات</b> عشان يرن جوالك لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushGo:"فعّل الإشعارات",sndOn:"🔔 اضغط هون لتفعيل صوت الطلبات الجديدة",newOrderT:n=>"طلب جديد "+n,iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
+ tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",cashInst:"💡 ثبّت شاشة الكاشير كتطبيق، وهيك صوت الطلبات بيشتغل لحاله كل ما تفتحها بدون ضغط.",instNote:"📲 <b>ثبّت UR TURN بضغطة وحدة</b> عشان يرن جوالك لما يجهز طلبك حتى لو مقفول، ونفس التطبيق بيشتغل بكل الكافيهات.",instGo:"تثبيت التطبيق",pushNote:"🔔 <b>فعّل الإشعارات</b> عشان يرن جوالك لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushGo:"فعّل الإشعارات",sndOn:"🔔 اضغط هون لتفعيل صوت الطلبات الجديدة",newOrderT:n=>"طلب جديد "+n,iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
  ready:"طلبك جاهز!",readyP:"تفضل استلمه من الكاونتر",gotIt:"استلمت طلبي",
  thanks:"بالعافية!",thanksP:"شكراً لزيارتك. كيف كانت تجربتك؟",rateGoogle:"قيّمنا على جوجل",
  rateThanks:"شكراً! رأيك بيوصل للإدارة مباشرة.",newOrder:"طلب جديد",powered:"يعمل بنظام",
@@ -107,7 +107,7 @@ en:{
  receiptLabel:"Receipt number",receiptPh:"e.g. 128",waitBtn:"Wait for my turn",
  waitingTitle:"Your order is being prepared",waitingP:"Keep this page open. Your phone will ring and vibrate when it's ready.",
  ahead:(n)=> n===0?"You're next":(n===1?"1 order ahead of you":n+" orders ahead of you"),
- tipSound:"Keep your sound on and the screen open.",nowLbl:"now",instNote:"📲 <b>Install UR TURN in one tap</b> so your phone rings when your order is ready, even when locked. The same app works at every café.",instGo:"Install app",pushNote:"🔔 <b>Turn on notifications</b> so your phone rings when your order is ready, even with the screen off.",pushGo:"Turn on",sndOn:"🔔 Tap here to turn on new-order sound",newOrderT:n=>"New order "+n,iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
+ tipSound:"Keep your sound on and the screen open.",nowLbl:"now",cashInst:"💡 Install the cashier screen as an app so order sounds work automatically every time you open it.",instNote:"📲 <b>Install UR TURN in one tap</b> so your phone rings when your order is ready, even when locked. The same app works at every café.",instGo:"Install app",pushNote:"🔔 <b>Turn on notifications</b> so your phone rings when your order is ready, even with the screen off.",pushGo:"Turn on",sndOn:"🔔 Tap here to turn on new-order sound",newOrderT:n=>"New order "+n,iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
  ready:"Your order is ready!",readyP:"Please pick it up at the counter",gotIt:"I picked it up",
  thanks:"Enjoy!",thanksP:"Thanks for visiting. How was your experience?",rateGoogle:"Rate us on Google",
  rateThanks:"Thank you! Your feedback goes straight to the manager.",newOrder:"New order",powered:"Powered by",
@@ -485,6 +485,9 @@ function Cashier(root,store,key){
   const slug=store.shop.slug; let lastW="", lastR="", seen=null, newIds=new Set(), titleT=null; const baseTitle=document.title;
   // New-order alert: sound + vibration + highlight + tab title
   const snd=document.createElement("button"); snd.type="button"; snd.className="snd-bar"; snd.textContent=t("sndOn"); snd.hidden=true; root.prepend(snd);
+  const inst=document.createElement("div"); inst.className="cash-inst"; inst.hidden=true; inst.innerHTML=`<span>${t("cashInst")}</span><button class="btn small push-go" type="button">${t("instGo")}</button>`; snd.after(inst);
+  inst.querySelector("button").onclick=async()=>{ ls.set("urturn.cashierApp",location.href); await doInstall(); inst.hidden=true; };
+  const instCheck=()=>{ inst.hidden=!(installEvt&&!isIOS&&!isStandalone()); }; instCheck(); document.addEventListener("urturn-install",instCheck);
   snd.onclick=()=>{ Ring.unlock(); setTimeout(()=>{ Ring.ding(); sndCheck(); },120); };
   let sndOn=false; const sndCheck=()=>{ if(Ring.dOk||(Ring.ctx&&Ring.ctx.state==="running")) sndOn=true; snd.hidden=sndOn; }; // once on, stays on (the unlocked sound element keeps working)
   setTimeout(sndCheck,1500); setInterval(sndCheck,5000); document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") try{ Ring.ctx&&Ring.ctx.resume&&Ring.ctx.resume(); }catch(e){} }); document.addEventListener("pointerdown",()=>setTimeout(sndCheck,200),{passive:true});
@@ -1043,6 +1046,7 @@ async function activeOrderJump(){
   return false;
 }
 function appHome(){
+  if(isStandalone()){ const c=ls.get("urturn.cashierApp"); if(c&&c.startsWith(BASE)){ location.replace(c); return; } } // cashier device: the app opens the cashier screen
   activeOrderJump();
   const L=recentShops();
   app.innerHTML=`<div class="app-home"><img src="icon-192.png" width="84" height="84" alt=""><h1>UR TURN</h1><p>${t("appP")}</p>
@@ -1098,7 +1102,7 @@ async function staffPage(kind){
   setInterval(async()=>{ try{ const n=await rpc("urturn_staff_status",{p_slug:SLUG,p_key:KEY}); if(n&&st&&(n.locked!==st.locked||n.ends_at!==st.ends_at)) location.reload(); }catch(e){} },5*60000);
   app.querySelector("[data-lang]").addEventListener("click",()=>setLang(lang==="ar"?"en":"ar"));
   if(kind==="cashier"&&st&&st.locked){ return; }
-  if(kind==="cashier"){ $("#staff").className="wrap"; $("#staff").style.cssText="padding-block:20px;max-width:760px"; $("#staff").innerHTML=`<div id="cash"></div>`; store.lite=true; Cashier($("#cash"),store,KEY); store.start(3000); keepAwake(); }
+  if(kind==="cashier"){ if(ls.get("urturn.cashierApp")) ls.set("urturn.cashierApp",location.href); setTimeout(()=>Ring.unlock(),300); $("#staff").className="wrap"; $("#staff").style.cssText="padding-block:20px;max-width:760px"; $("#staff").innerHTML=`<div id="cash"></div>`; store.lite=true; Cashier($("#cash"),store,KEY); store.start(3000); keepAwake(); }
   else { Owner($("#staff"),store,KEY); store.start(10000); }
   let headKey=shop.name+"|"+(shop.logo||"").length;
   store.listeners.add(()=>{ const sh=store.shop, k=sh.name+"|"+(sh.logo||"").length; if(k===headKey) return; headKey=k; const h=app.querySelector(".staff-head .wrap"); if(!h) return; const b=h.querySelector(":scope > b"); if(b) b.innerHTML="<bdi>"+esc(sh.name)+"</bdi>"; const lg=h.querySelector(":scope > .shop-logo"); if(lg) lg.outerHTML=logoHTML(sh); document.title=sh.name+" · UR TURN"; });
