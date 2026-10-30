@@ -220,8 +220,17 @@ const ownURL=(slug,k)=>BASE+"?s="+encodeURIComponent(slug)+"&v=owner&k="+encodeU
 function googleG(){ return `<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`; }
 
 // ---------- sound + vibration ----------
-const Ring={ ctx:null,timer:null,on:false,
-  unlock(){ try{ if(!this.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(C) this.ctx=new C(); } this.ctx&&this.ctx.resume&&this.ctx.resume(); }catch(e){} },
+window.__ringRef=()=>Ring;
+function chimeWav(){ // build the ring sound as a small WAV file (5 notes, ~0.8s, then short silence)
+  const sr=22050, notes=[880,1175,1568,1175,1568], nl=Math.round(sr*0.16), gap=Math.round(sr*0.22), n=nl*notes.length+gap, d=new Int16Array(n);
+  notes.forEach((f,i)=>{ for(let k=0;k<nl;k++){ const t=k/sr, env=Math.min(1,k/(sr*0.02))*Math.exp(-t*14); d[i*nl+k]=Math.round(Math.sin(2*Math.PI*f*t)*env*0.55*32767); } });
+  const b=new ArrayBuffer(44+n*2), v=new DataView(b), w=(o,str)=>{ for(let i=0;i<str.length;i++) v.setUint8(o+i,str.charCodeAt(i)); };
+  w(0,"RIFF"); v.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40,n*2,true);
+  new Int16Array(b,44).set(d); return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
+const Ring={ ctx:null,timer:null,on:false,el:null,elOk:false,
+  unlock(){ try{ if(!this.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(C) this.ctx=new C(); } this.ctx&&this.ctx.resume&&this.ctx.resume(); }catch(e){}
+    try{ if(!this.el){ this.el=new Audio(chimeWav()); this.el.loop=true; this.el.preload="auto"; this.el.setAttribute("playsinline",""); }
+      if(!this.elOk&&!this.on){ const a=this.el; a.muted=true; const p=a.play(); if(p&&p.then) p.then(()=>{ a.pause(); a.currentTime=0; a.muted=false; this.elOk=true; }).catch(()=>{ a.muted=false; }); } }catch(e){} },
   chime(){ if(!this.ctx) return; const now=this.ctx.currentTime;
     [880,1175,1568,1175,1568].forEach((f,i)=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(this.ctx.destination);
       const s=now+i*0.16; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.4,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.15); o.start(s); o.stop(s+0.16); }); },
@@ -233,8 +242,10 @@ const Ring={ ctx:null,timer:null,on:false,
   notify(){ if(this.dinged>=2||this.on) return; this.unlock();
     const go=()=>{ if(this.dinged>=2||this.on) return; if(this.ding()) this.dinged++; };
     setTimeout(()=>{ if(this.ctx&&this.ctx.state==="running") go(); else document.addEventListener("pointerdown",()=>setTimeout(go,60),{once:true,passive:true}); },1300); },
-  start(){ if(this.on) return; this.on=true; this.unlock(); const tick=()=>{ this.chime(); try{ navigator.vibrate&&navigator.vibrate([350,150,350,150,600]); }catch(e){} }; tick(); this.timer=setInterval(tick,1800); },
-  stop(){ if(!this.on) return; this.on=false; clearInterval(this.timer); this.timer=null; try{ navigator.vibrate&&navigator.vibrate(0); }catch(e){} }
+  start(){ if(this.on) return; this.on=true; this.unlock(); this.useEl=false;
+    if(this.el&&this.elOk){ try{ this.el.muted=false; this.el.currentTime=0; const p=this.el.play(); this.useEl=true; if(p&&p.catch) p.catch(()=>{ this.useEl=false; }); }catch(e){} }
+    const tick=()=>{ if(!this.useEl||(this.el&&this.el.paused)){ this.useEl=false; this.chime(); } try{ navigator.vibrate&&navigator.vibrate([350,150,350,150,600]); }catch(e){} }; tick(); this.timer=setInterval(tick,1800); },
+  stop(){ if(!this.on) return; this.on=false; clearInterval(this.timer); this.timer=null; try{ if(this.el){ this.el.pause(); this.el.currentTime=0; } }catch(e){} try{ navigator.vibrate&&navigator.vibrate(0); }catch(e){} }
 };
 let wakeLock=null;
 async function keepAwake(){ try{ if(navigator.wakeLock&&(!wakeLock||wakeLock.released)) wakeLock=await navigator.wakeLock.request("screen"); }catch(e){} }
@@ -419,6 +430,7 @@ function Customer(root,shop,opts){
     if(document.visibilityState!=="visible"||!orderId||backBusy||Date.now()-backAt<800) return; backBusy=true; backAt=Date.now();
     Ring.unlock();
     if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); }
+    setTimeout(()=>{ if(Ring.on&&Ring.el&&Ring.elOk&&Ring.el.paused){ Ring.el.play().catch(()=>{}); } },300);
     for(const d of [0,400,900,1800]){ if(d) await new Promise(r=>setTimeout(r,d)); if(await poll()) break; }
     if(order&&order.status==="ready"){ if(!Ring.on) Ring.start(); } else Ring.stop();
     backBusy=false;
@@ -1017,7 +1029,9 @@ function watchVersion(){
   setInterval(async()=>{
     if(document.visibilityState!=="visible") return;
     try{ const r=await fetch(BASE+"index.html?_="+Date.now(),{cache:"no-store"}); if(!r.ok) return; const v=((await r.text()).match(/app\.js\?v=(\d+)/)||[])[1];
-      if(v&&v!==mine){ const busy=Ring.on||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)); if(!busy) location.reload(); }
+      if(v&&v!==mine){ let busy=Ring.on||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+        if(VIEW==="cashier"&&window.__shop){ const sh=window.__shop, h=new Date().getHours(); busy=busy||(hasHours(sh)?isOpenNow(sh):!(h>=3&&h<6)); }
+        if(!busy) location.reload(); }
     }catch(e){} },120000);
 }
 async function customerPage(){
@@ -1028,9 +1042,9 @@ async function customerPage(){
   try{ const ps=await rpc("urturn_public_status",{p_slug:SLUG}); if(ps&&ps.locked){ msg(t("custPaused")); return; } }catch(e){}
   // Opened from the home-screen icon with an old order: go to the app home (scan a new café) instead.
   const oid=P.get("o")||ls.get("urturn.order."+SLUG);
-  if(isStandalone()&&oid){ let od=null; try{ od=await Api.order(oid); }catch(e){ od=undefined; }
+  if(isStandalone()&&oid){ Api.order(oid).then(od=>{
     const stale=od===null||(od&&(Date.now()-new Date(od.created_at)>12*3600e3||(od.status==="done"&&od.done_at&&Date.now()-new Date(od.done_at)>20*60000)));
-    if(stale){ ls.set("urturn.order."+SLUG,null); location.replace(BASE+"?v=app"); return; } }
+    if(stale){ ls.set("urturn.order."+SLUG,null); location.replace(BASE+"?v=app"); } }).catch(()=>{}); }
   app.innerHTML=`<div class="cust-full" id="fullCust"></div>`;
   rememberShop(shop);
   try{ if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){}
@@ -1047,7 +1061,7 @@ async function staffPage(kind){
   if(shop===undefined){ msg(t("netErr")); return; }
   let ok=false; try{ ok=shop && await rpc("urturn_staff_check",{p_slug:SLUG,p_key:KEY}); }catch(e){}
   if(!ok||!shop.active){ msg(t("badLink")); return; }
-  applyShop(shop); document.title=shop.name+" · UR TURN";
+  applyShop(shop); document.title=shop.name+" · UR TURN"; window.__shop=shop;
   const store=ShopStore(shop);
   let st=null; try{ st=await rpc("urturn_staff_status",{p_slug:SLUG,p_key:KEY}); }catch(e){}
   app.innerHTML=staffHead(shop,kind,KEY)+`<div class="wrap" style="padding-top:14px">${subBanner(st,shop,kind==="owner")}</div><div id="staff"></div>`;
