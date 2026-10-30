@@ -40,7 +40,7 @@ ar:{
  receiptLabel:"رقم الفاتورة",receiptPh:"مثلاً 128",waitBtn:"انتظر دوري",
  waitingTitle:"طلبك قيد التحضير",waitingP:"خلّي هالصفحة مفتوحة. رح يرن جوالك ويهتز لما يجهز الطلب.",
  ahead:(n)=> n===0?"طلبك هو التالي":(n===1?"قبلك طلب واحد":"قبلك "+n+" طلبات"),
- tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",sndOn:"🔔 اضغط هون لتفعيل صوت الطلبات الجديدة",newOrderT:n=>"طلب جديد "+n,iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
+ tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",pushNote:"🔔 <b>فعّل الإشعارات</b> عشان يرن جوالك لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushGo:"فعّل الإشعارات",sndOn:"🔔 اضغط هون لتفعيل صوت الطلبات الجديدة",newOrderT:n=>"طلب جديد "+n,iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
  ready:"طلبك جاهز!",readyP:"تفضل استلمه من الكاونتر",gotIt:"استلمت طلبي",
  thanks:"بالعافية!",thanksP:"شكراً لزيارتك. كيف كانت تجربتك؟",rateGoogle:"قيّمنا على جوجل",
  rateThanks:"شكراً! رأيك بيوصل للإدارة مباشرة.",newOrder:"طلب جديد",powered:"يعمل بنظام",
@@ -107,7 +107,7 @@ en:{
  receiptLabel:"Receipt number",receiptPh:"e.g. 128",waitBtn:"Wait for my turn",
  waitingTitle:"Your order is being prepared",waitingP:"Keep this page open. Your phone will ring and vibrate when it's ready.",
  ahead:(n)=> n===0?"You're next":(n===1?"1 order ahead of you":n+" orders ahead of you"),
- tipSound:"Keep your sound on and the screen open.",nowLbl:"now",sndOn:"🔔 Tap here to turn on new-order sound",newOrderT:n=>"New order "+n,iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
+ tipSound:"Keep your sound on and the screen open.",nowLbl:"now",pushNote:"🔔 <b>Turn on notifications</b> so your phone rings when your order is ready, even with the screen off.",pushGo:"Turn on",sndOn:"🔔 Tap here to turn on new-order sound",newOrderT:n=>"New order "+n,iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
  ready:"Your order is ready!",readyP:"Please pick it up at the counter",gotIt:"I picked it up",
  thanks:"Enjoy!",thanksP:"Thanks for visiting. How was your experience?",rateGoogle:"Rate us on Google",
  rateThanks:"Thank you! Your feedback goes straight to the manager.",newOrder:"New order",powered:"Powered by",
@@ -273,6 +273,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 const VAPID_PUB="BCWk-h1YhyHgZOu5bp_pxZGM9PKLquMaw7Vd9rD9ivAY_wLHYYr1_94H-uTqylpvnDpcIucHXyuGWe7b7vYUp5w";
 const PUSH_FN=SUPA_URL+"/functions/v1/urturn-push";
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const sessionGet=k=>{ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }, sessionSet=(k,v)=>{ try{ sessionStorage.setItem(k,v); }catch(e){} };
 const iosTipOff=()=>{ const v=+(ls.get("urturn.iosTipOff")||0); return v>1&&Date.now()-v<6*3600e3; };
 const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 // iPhone: on a café page, no fixed manifest, so "Add to Home Screen" keeps the exact page (with the order). Everywhere else use manifest.json.
@@ -400,7 +401,7 @@ function Customer(root,shop,opts){
       Ring.stop();
       body=`<div class="cust-body"><div class="wait-card"><small>${t("receiptLabel")}</small><div class="num">${esc(order.num)}</div>
         <b>${t("waitingTitle")}</b>${order.eta_at?`<div class="eta"><small>${t("etaLabel")}</small><b class="num" data-eta="${esc(order.eta_at)}">${fmtLeft(new Date(order.eta_at)-Date.now())}</b></div>`:""}<span data-ahead>${t("ahead",order._ahead||0)}</span><div class="wait-anim" aria-hidden="true"><span></span><span></span><span></span></div></div>
-        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"?`<button class="btn small" data-a="push" type="button">${t("pushAsk")}</button>`:isIOS&&!isStandalone()&&!iosTipOff()?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}
+        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"&&!sessionGet("urturn.pushOff")?`<div class="ios-note push-note" role="alert"><button type="button" class="ios-x" data-a="pushx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("pushNote")}</div><button class="btn small push-go" data-a="push" type="button">${t("pushGo")}</button></div></div>`:isIOS&&!isStandalone()&&!iosTipOff()?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}
         <button class="link-btn" data-a="cancel" type="button">${t("cancel")}</button></div>`;
     } else if(state==="ready"){
       body=`<div class="cust-body"><div class="wait-card"><div class="num">${esc(order.num)}</div><b>${t("ready")}</b></div></div>
@@ -433,6 +434,7 @@ function Customer(root,shop,opts){
     const a=e.target.closest("[data-a]"); if(!a) return;
     if(a.dataset.a==="lang"){ setLang(lang==="ar"?"en":"ar"); return; }
     if(a.dataset.a==="cancel"){ const id=orderId; setOrder(null); order=null; render(); rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }
+    if(a.dataset.a==="pushx"){ sessionSet("urturn.pushOff","1"); root.querySelectorAll(".push-note").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff",String(Date.now())); root.querySelectorAll(".ios-note,.ios-arrow").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="scan"){ openScanner(); return; }
     if(a.dataset.a==="install"){ doInstall(); return; }
