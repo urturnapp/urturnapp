@@ -1079,7 +1079,6 @@ function setLang(l){ lang=l; ls.set("urturn.lang",l); location.reload(); }
 document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
 $("#langBtn").textContent=lang==="ar"?"English":"العربية";
 $("#langBtn").addEventListener("click",()=>setLang(lang==="ar"?"en":"ar"));
-if(isStandalone()){ try{ const k=Object.keys(localStorage).filter(x=>x.startsWith("urturn.order.")).length; reportErr("info: app opened "+location.search.replace(/o=[^&]+/,"o=ID")+" saved_orders="+k); }catch(e){} }
 if((VIEW==="home"&&isStandalone())||VIEW==="app") appHome();
 else if(VIEW==="home") homePage();
 else if(VIEW==="demo") demoPage();
