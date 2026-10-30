@@ -480,8 +480,8 @@ function Cashier(root,store,key){
   // New-order alert: sound + vibration + highlight + tab title
   const snd=document.createElement("button"); snd.type="button"; snd.className="snd-bar"; snd.textContent=t("sndOn"); snd.hidden=true; root.prepend(snd);
   snd.onclick=()=>{ Ring.unlock(); setTimeout(()=>{ Ring.ding(); sndCheck(); },120); };
-  const sndCheck=()=>{ snd.hidden=!!(Ring.ctx&&Ring.ctx.state==="running"); };
-  setTimeout(sndCheck,1500); setInterval(sndCheck,5000); document.addEventListener("pointerdown",()=>setTimeout(sndCheck,200),{passive:true});
+  let sndOn=false; const sndCheck=()=>{ if(Ring.dOk||(Ring.ctx&&Ring.ctx.state==="running")) sndOn=true; snd.hidden=sndOn; }; // once on, stays on (the unlocked sound element keeps working)
+  setTimeout(sndCheck,1500); setInterval(sndCheck,5000); document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") try{ Ring.ctx&&Ring.ctx.resume&&Ring.ctx.resume(); }catch(e){} }); document.addEventListener("pointerdown",()=>setTimeout(sndCheck,200),{passive:true});
   function alertNew(n){
     let k=0; const beep=()=>{ Ring.ding(); if(++k<2) setTimeout(beep,700); }; beep();
     try{ navigator.vibrate&&navigator.vibrate([200,100,200]); }catch(e){}
