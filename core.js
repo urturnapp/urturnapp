@@ -330,7 +330,7 @@ function subBanner(st,shop,always){
 }
 
 const fmtLeft=ms=>{ const t2=Math.max(0,Math.round(ms/1000)); return Math.floor(t2/60)+":"+String(t2%60).padStart(2,"0"); };
-const ETA_CHOICES=[5,10,15,20];
+const ETA_CHOICES=[5,10,15,20,30,40,60];
 // ---------- shop store (polling) ----------
 function ShopStore(shop){
   const st={shop,orders:[],listeners:new Set(),timer:null,failing:false};
