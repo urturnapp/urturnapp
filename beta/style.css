@@ -510,9 +510,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 #intro.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #intro .in-wrap{display:grid;justify-items:center;gap:10px;text-align:center}
 #intro img{border-radius:26px;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:inPop .7s cubic-bezier(.2,1.4,.4,1) both}
-#intro b{font-size:30px;letter-spacing:.08em;font-weight:800;animation:inUp .45s ease .25s both}
-#intro span{font-size:15px;opacity:.75;animation:inUp .45s ease .4s both}
-#intro i{width:46px;height:4px;border-radius:4px;background:#F5B43C;margin-top:8px;animation:inBar .6s ease .45s both}
+#intro b{font-size:30px;letter-spacing:.08em;font-weight:800;animation:inUp .5s ease .35s both}
+#intro span{font-size:15px;opacity:.75;animation:inUp .5s ease .55s both}
+#intro i{width:46px;height:4px;border-radius:4px;background:#F5B43C;margin-top:8px;animation:inBar 1s ease .6s both}
 @keyframes inPop{from{transform:scale(.4) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
 @keyframes inUp{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:.95}}
 @keyframes inBar{from{width:0;opacity:0}to{width:46px;opacity:1}}
