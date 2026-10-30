@@ -225,6 +225,11 @@ try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e
 function silentWav(){ const n=2205, b=new ArrayBuffer(44+n*2), v=new DataView(b), w=(o,str)=>{ for(let i=0;i<str.length;i++) v.setUint8(o+i,str.charCodeAt(i)); };
   w(0,"RIFF"); v.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,22050,true); v.setUint32(28,44100,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40,n*2,true);
   return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
+function dingWav(){ const sr=22050, parts=[[1318.5,0],[1046.5,0.13],[1568,0.26]], n=Math.round(sr*0.75), d=new Float32Array(n);
+  parts.forEach(([f,st])=>{ const o=Math.round(st*sr); for(let k=0;o+k<n&&k<sr*0.45;k++){ const t=k/sr; d[o+k]+=Math.sin(2*Math.PI*f*t)*Math.min(1,k/(sr*0.01))*Math.exp(-t*9)*0.4; } });
+  const b=new ArrayBuffer(44+n*2), v=new DataView(b), w=(o,str)=>{ for(let i=0;i<str.length;i++) v.setUint8(o+i,str.charCodeAt(i)); };
+  w(0,"RIFF"); v.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40,n*2,true);
+  const out=new Int16Array(b,44); for(let i=0;i<n;i++) out[i]=Math.max(-1,Math.min(1,d[i]))*32767; return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
 function chimeWav(){ // build the ring sound as a small WAV file (5 notes, ~0.8s, then short silence)
   const sr=22050, notes=[880,1175,1568,1175,1568], nl=Math.round(sr*0.16), gap=Math.round(sr*0.22), n=nl*notes.length+gap, d=new Int16Array(n);
   notes.forEach((f,i)=>{ for(let k=0;k<nl;k++){ const t=k/sr, env=Math.min(1,k/(sr*0.02))*Math.exp(-t*14); d[i*nl+k]=Math.round(Math.sin(2*Math.PI*f*t)*env*0.55*32767); } });
@@ -238,17 +243,22 @@ const Ring={ ctx:null,timer:null,on:false,el:null,elOk:false,
     try{ if(!this.el){ this.el=new Audio(); this.el.setAttribute("playsinline",""); this.el.preload="auto"; this.chimeUrl=chimeWav(); this.silentUrl=silentWav(); }
       if(!this.elOk&&!this.on&&!this.unlocking){ const a=this.el; this.unlocking=true; a.loop=false; a.src=this.silentUrl; const p=a.play();
         const fin=ok=>{ this.unlocking=false; try{ a.pause(); }catch(e){} a.loop=true; a.src=this.chimeUrl; a.load(); if(ok) this.elOk=true; };
-        if(p&&p.then) p.then(()=>fin(true)).catch(()=>fin(false)); else fin(true); } }catch(e){} },
+        if(p&&p.then) p.then(()=>fin(true)).catch(()=>fin(false)); else fin(true); }
+      if(!this.dEl){ this.dEl=new Audio(); this.dEl.setAttribute("playsinline",""); this.dingUrl=dingWav(); }
+      if(!this.dOk&&!this.dUnlocking){ const a=this.dEl; this.dUnlocking=true; a.src=this.silentUrl; const p2=a.play();
+        const fin2=ok=>{ this.dUnlocking=false; try{ a.pause(); }catch(e){} a.src=this.dingUrl; a.load(); if(ok) this.dOk=true; };
+        if(p2&&p2.then) p2.then(()=>fin2(true)).catch(()=>fin2(false)); else fin2(true); } }catch(e){} },
   chime(){ if(!this.ctx) return; const now=this.ctx.currentTime;
     [880,1175,1568,1175,1568].forEach((f,i)=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(this.ctx.destination);
       const s=now+i*0.16; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.4,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.15); o.start(s); o.stop(s+0.16); }); },
   dinged:0,
-  ding(){ if(!this.ctx||this.ctx.state!=="running") return false; const now=this.ctx.currentTime;
+  ding(){ if(this.dEl&&this.dOk){ try{ this.dEl.currentTime=0; const p=this.dEl.play(); if(p&&p.catch) p.catch(()=>{}); try{ navigator.vibrate&&navigator.vibrate([120,80,120]); }catch(e){} return true; }catch(e){} }
+    if(!this.ctx||this.ctx.state!=="running") return false; const now=this.ctx.currentTime;
     [[1318.5,0],[1046.5,0.13],[1568,0.26]].forEach(([f,d])=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(this.ctx.destination);
       const s=now+d; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.35,s+0.015); g.gain.exponentialRampToValueAtTime(0.0001,s+0.4); o.start(s); o.stop(s+0.42); });
     try{ navigator.vibrate&&navigator.vibrate([120,80,120]); }catch(e){} return true; },
   notify(){ if(this.dinged>=2||this.on) return; this.unlock();
-    const go=(k=0)=>{ if(this.dinged>=2||this.on) return; if(this.ding()) this.dinged++; else if(k<15) setTimeout(()=>go(k+1),100); };
+    const go=(k=0)=>{ if(this.dinged>=2||this.on) return; if(this.ding()){ this.dinged++; if(isIOS) reportErr("info: ding el="+!!this.dOk+" ctx="+(this.ctx&&this.ctx.state)+" sess="+(navigator.audioSession?navigator.audioSession.type:"none")); } else if(k<15) setTimeout(()=>go(k+1),100); else if(isIOS) reportErr("info: ding failed ctx="+(this.ctx&&this.ctx.state)); };
     setTimeout(()=>{ if(this.ctx&&this.ctx.state==="running") go(); else document.addEventListener("pointerdown",()=>{ this.unlock(); setTimeout(go,60); },{once:true,passive:true}); },1300); },
   start(){ if(this.on) return; this.on=true; this.unlock(); this.useEl=false;
     if(this.el&&this.elOk){ try{ this.el.muted=false; this.el.currentTime=0; const p=this.el.play(); this.useEl=true; if(p&&p.catch) p.catch(()=>{ this.useEl=false; }); }catch(e){} }
@@ -258,7 +268,7 @@ const Ring={ ctx:null,timer:null,on:false,el:null,elOk:false,
 let wakeLock=null;
 async function keepAwake(){ try{ if(navigator.wakeLock&&(!wakeLock||wakeLock.released)) wakeLock=await navigator.wakeLock.request("screen"); }catch(e){} }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") keepAwake(); });
-["pointerdown","touchend","keydown"].forEach(ev=>document.addEventListener(ev,()=>{ const was=Ring.ctx&&Ring.ctx.state; Ring.unlock(); if(Ring.on&&was!=="running") setTimeout(()=>Ring.chime(),80); },{passive:true}));
+["pointerdown","touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,()=>{ const was=Ring.ctx&&Ring.ctx.state; Ring.unlock(); if(Ring.on&&was!=="running") setTimeout(()=>Ring.chime(),80); },{passive:true}));
 // ---------- push notifications (ring even when the screen is off) ----------
 const VAPID_PUB="BCWk-h1YhyHgZOu5bp_pxZGM9PKLquMaw7Vd9rD9ivAY_wLHYYr1_94H-uTqylpvnDpcIucHXyuGWe7b7vYUp5w";
 const PUSH_FN=SUPA_URL+"/functions/v1/urturn-push";
