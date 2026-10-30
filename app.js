@@ -178,7 +178,7 @@ window.addEventListener("unhandledrejection",e=>{ const r=e.reason; reportErr("p
 const Api={
   shop:slug=>rest("urturn_shops?select=*&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
   orders:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since||new Date().setHours(0,0,0,0))).toISOString())+"&order=created_at.asc"),
-  order:id=>rest("urturn_orders?select=id,num,status,created_at,ring_at,eta_at,eta_seen&id=eq."+id).then(r=>r[0]||null),
+  order:id=>rest("urturn_orders?select=id,num,status,created_at,ring_at,eta_at,eta_seen,done_at&id=eq."+id).then(r=>r[0]||null),
   active:(shopId,since)=>rest("urturn_orders?select=*&shop_id=eq."+shopId+"&status=in.(waiting,ready)&created_at=gte."+encodeURIComponent(new Date(Math.min(Date.now()-12*3600e3,since)).toISOString())+"&order=created_at.asc"),
   ahead:(shopId,before)=>rest("urturn_orders?select=id&shop_id=eq."+shopId+"&status=eq.waiting&created_at=lt."+encodeURIComponent(before)+"&created_at=gte."+encodeURIComponent(new Date(Date.now()-12*3600e3).toISOString())),
   doneCount:(shopId,since)=>fetch(SUPA_URL+"/rest/v1/urturn_orders?select=id&limit=1&shop_id=eq."+shopId+"&status=eq.done&done_at=gte."+encodeURIComponent(new Date(since).toISOString()),{headers:{...H,"Prefer":"count=exact"},cache:"no-store"}).then(r=>{ if(!r.ok) throw new Error("http_"+r.status); const m=(r.headers.get("content-range")||"").split("/")[1]; return m&&m!=="*"?+m:null; }),
@@ -209,6 +209,10 @@ p{margin:0;font-size:13pt;opacity:.92;max-width:100mm}b{font-family:"Readex Pro"
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-printposter]"); if(!b) return; const p=b.parentElement.querySelector("[data-poster]"); if(p) printPoster(p); });
 function copyBtn(btn,input){ btn.addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(input.value); btn.textContent=t("copied"); setTimeout(()=>btn.textContent=t("copy"),1500);}catch(e){ input.select(); } }); }
 const custURL=slug=>BASE+"?s="+encodeURIComponent(slug);
+function syncManifest(){ try{ if(!isIOS||isStandalone()) return; const abs=u=>new URL(u,location.href).href;
+  const m={name:"UR TURN",short_name:"UR TURN",display:"standalone",background_color:"#14181C",theme_color:"#14181C",scope:abs("./"),id:abs("./?v=app"),start_url:location.href,
+    icons:[{src:abs("icon-192.png"),sizes:"192x192",type:"image/png"},{src:abs("icon-512.png"),sizes:"512x512",type:"image/png"}]};
+  const l=document.querySelector('link[rel="manifest"]'); if(l) l.href="data:application/manifest+json,"+encodeURIComponent(JSON.stringify(m)); }catch(e){} }
 const cashURL=(slug,k)=>BASE+"?s="+encodeURIComponent(slug)+"&v=cashier&k="+encodeURIComponent(k);
 const ownURL=(slug,k)=>BASE+"?s="+encodeURIComponent(slug)+"&v=owner&k="+encodeURIComponent(k);
 function googleG(){ return `<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`; }
@@ -326,7 +330,9 @@ function Customer(root,shop,opts){
   opts=opts||{};
   const lsKey="urturn.order."+shop.slug+(opts.suffix||"");
   let orderId=ls.get(lsKey), order=null, rated=0, lastKey="", seenRing=null, timer=null, pushOk=false, pollN=0, aheadCache=null;
-  const setOrder=id=>{ orderId=id; ls.set(lsKey,id); aheadCache=null; };
+  const syncURL=()=>{ if(opts.inFrame) return; try{ const u=custURL(shop.slug)+(orderId?"&o="+encodeURIComponent(orderId):""); if(location.href!==u) history.replaceState(null,"",u); syncManifest(); }catch(e){} };
+  const setOrder=id=>{ orderId=id; ls.set(lsKey,id); aheadCache=null; syncURL(); };
+  if(!opts.inFrame){ const o=P.get("o"); if(o&&/^[0-9a-f-]{36}$/i.test(o)&&!orderId){ orderId=o; ls.set(lsKey,o); } syncURL(); }
   async function poll(){
     if(!orderId){ order=null; render(); return; }
     try{
@@ -971,7 +977,13 @@ async function openScanner(){
     requestAnimationFrame(tick); };
   tick();
 }
+async function activeOrderJump(){
+  for(const r of recentShops()){ const id=ls.get("urturn.order."+r.slug); if(!id) continue;
+    try{ const o=await Api.order(id); if(o&&(o.status==="waiting"||o.status==="ready")&&Date.now()-new Date(o.created_at)<12*3600e3){ location.replace(custURL(r.slug)+"&o="+encodeURIComponent(id)); return true; } }catch(e){} }
+  return false;
+}
 function appHome(){
+  activeOrderJump();
   const L=recentShops();
   app.innerHTML=`<div class="app-home"><img src="icon-192.png" width="84" height="84" alt=""><h1>UR TURN</h1><p>${t("appP")}</p>
     <button class="btn primary scan-big" type="button" data-scan>📷 ${t("scanBtn")}</button>
@@ -996,6 +1008,11 @@ async function customerPage(){
   if(!shop||!shop.active){ msg(t("noShop")); return; }
   applyShop(shop); document.title=shop.name+" · UR TURN";
   try{ const ps=await rpc("urturn_public_status",{p_slug:SLUG}); if(ps&&ps.locked){ msg(t("custPaused")); return; } }catch(e){}
+  // Opened from the home-screen icon with an old order: go to the app home (scan a new café) instead.
+  const oid=P.get("o")||ls.get("urturn.order."+SLUG);
+  if(isStandalone()&&oid){ let od=null; try{ od=await Api.order(oid); }catch(e){ od=undefined; }
+    const stale=od===null||(od&&(Date.now()-new Date(od.created_at)>12*3600e3||(od.status==="done"&&od.done_at&&Date.now()-new Date(od.done_at)>20*60000)));
+    if(stale){ ls.set("urturn.order."+SLUG,null); location.replace(BASE+"?v=app"); return; } }
   app.innerHTML=`<div class="cust-full" id="fullCust"></div>`;
   rememberShop(shop);
   try{ if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){}
