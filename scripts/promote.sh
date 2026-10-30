@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 echo "1) checking beta..."; tests/run-all.sh beta
 echo "2) copying beta -> live"
 for f in index.html core.js customer.js cashier.js admin.js home.js style.css sw.js manifest.json qrcode.js jsqr.js; do cp "beta/$f" "./$f"; done
-rm -f app.js
+# app.js stays for a while so pages cached with the old index.html keep working
 scripts/bump.sh .
 echo "3) checking live files..."; tests/run-all.sh .
 echo "OK: ready to commit and push"
