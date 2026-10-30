@@ -40,7 +40,7 @@ ar:{
  receiptLabel:"رقم الفاتورة",receiptPh:"مثلاً 128",waitBtn:"انتظر دوري",
  waitingTitle:"طلبك قيد التحضير",waitingP:"خلّي هالصفحة مفتوحة. رح يرن جوالك ويهتز لما يجهز الطلب.",
  ahead:(n)=> n===0?"طلبك هو التالي":(n===1?"قبلك طلب واحد":"قبلك "+n+" طلبات"),
- tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",pushNote:"🔔 <b>فعّل الإشعارات</b> عشان يرن جوالك لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushGo:"فعّل الإشعارات",sndOn:"🔔 اضغط هون لتفعيل صوت الطلبات الجديدة",newOrderT:n=>"طلب جديد "+n,iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
+ tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",instNote:"📲 <b>ثبّت UR TURN بضغطة وحدة</b> عشان يرن جوالك لما يجهز طلبك حتى لو مقفول، ونفس التطبيق بيشتغل بكل الكافيهات.",instGo:"تثبيت التطبيق",pushNote:"🔔 <b>فعّل الإشعارات</b> عشان يرن جوالك لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushGo:"فعّل الإشعارات",sndOn:"🔔 اضغط هون لتفعيل صوت الطلبات الجديدة",newOrderT:n=>"طلب جديد "+n,iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
  ready:"طلبك جاهز!",readyP:"تفضل استلمه من الكاونتر",gotIt:"استلمت طلبي",
  thanks:"بالعافية!",thanksP:"شكراً لزيارتك. كيف كانت تجربتك؟",rateGoogle:"قيّمنا على جوجل",
  rateThanks:"شكراً! رأيك بيوصل للإدارة مباشرة.",newOrder:"طلب جديد",powered:"يعمل بنظام",
@@ -107,7 +107,7 @@ en:{
  receiptLabel:"Receipt number",receiptPh:"e.g. 128",waitBtn:"Wait for my turn",
  waitingTitle:"Your order is being prepared",waitingP:"Keep this page open. Your phone will ring and vibrate when it's ready.",
  ahead:(n)=> n===0?"You're next":(n===1?"1 order ahead of you":n+" orders ahead of you"),
- tipSound:"Keep your sound on and the screen open.",nowLbl:"now",pushNote:"🔔 <b>Turn on notifications</b> so your phone rings when your order is ready, even with the screen off.",pushGo:"Turn on",sndOn:"🔔 Tap here to turn on new-order sound",newOrderT:n=>"New order "+n,iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
+ tipSound:"Keep your sound on and the screen open.",nowLbl:"now",instNote:"📲 <b>Install UR TURN in one tap</b> so your phone rings when your order is ready, even when locked. The same app works at every café.",instGo:"Install app",pushNote:"🔔 <b>Turn on notifications</b> so your phone rings when your order is ready, even with the screen off.",pushGo:"Turn on",sndOn:"🔔 Tap here to turn on new-order sound",newOrderT:n=>"New order "+n,iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
  ready:"Your order is ready!",readyP:"Please pick it up at the counter",gotIt:"I picked it up",
  thanks:"Enjoy!",thanksP:"Thanks for visiting. How was your experience?",rateGoogle:"Rate us on Google",
  rateThanks:"Thank you! Your feedback goes straight to the manager.",newOrder:"New order",powered:"Powered by",
@@ -274,6 +274,7 @@ const VAPID_PUB="BCWk-h1YhyHgZOu5bp_pxZGM9PKLquMaw7Vd9rD9ivAY_wLHYYr1_94H-uTqylp
 const PUSH_FN=SUPA_URL+"/functions/v1/urturn-push";
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const sessionGet=k=>{ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }, sessionSet=(k,v)=>{ try{ sessionStorage.setItem(k,v); }catch(e){} };
+const instOff=()=>{ const v=+(ls.get("urturn.instOff")||0); return v>1&&Date.now()-v<6*3600e3; };
 const iosTipOff=()=>{ const v=+(ls.get("urturn.iosTipOff")||0); return v>1&&Date.now()-v<6*3600e3; };
 const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 // iPhone: on a café page, no fixed manifest, so "Add to Home Screen" keeps the exact page (with the order). Everywhere else use manifest.json.
@@ -378,6 +379,7 @@ function Customer(root,shop,opts){
       render(); return true;
     }catch(e){ return false; /* keep last state */ }
   }
+  const instHTML=()=>!opts.inFrame&&!isIOS&&!isStandalone()&&installEvt&&!instOff()?`<div class="ios-note push-note install-note" role="alert"><button type="button" class="ios-x" data-a="instx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("instNote")}</div><button class="btn small push-go" data-a="install" type="button">${t("instGo")}</button></div></div>`:"";
   function render(){
     const s=opts.store?opts.store.shop:shop;
     const state=!order?"enter":order.status;
@@ -417,8 +419,10 @@ function Customer(root,shop,opts){
         <div class="stars">${stars}</div>${rated>=4||rated===0?gbtn:`<div class="tip">${t("rateThanks")}</div>`}
         <button class="link-btn" data-a="new" type="button">${t("newOrder")}</button></div>`;
     }
-    const scanBar=!opts.inFrame&&(isStandalone()||!isIOS)&&(state==="enter"||state==="done")?`<div class="scan-bar"><button class="btn small" type="button" data-a="scan">${t("scanOther")}</button>${recentShops().length>1||isStandalone()?`<a class="btn small" href="${esc(BASE)}?v=app">${t("myShops")}</a>`:""}${isStandalone()?"":`<button class="btn small" type="button" data-a="install" data-install ${installEvt?"":"hidden"}>${t("installBtn")}</button>`}</div>`:"";
-    root.innerHTML=`<div class="cust">${head}${body}${scanBar}${foot}</div>`;
+    const scanBar=!opts.inFrame&&(isStandalone()||!isIOS)&&(state==="enter"||state==="done")?`<div class="scan-bar"><button class="btn small" type="button" data-a="scan">${t("scanOther")}</button>${recentShops().length>1||isStandalone()?`<a class="btn small" href="${esc(BASE)}?v=app">${t("myShops")}</a>`:""}</div>`:"";
+    const instNote=state==="enter"?instHTML():"";
+    void 0;
+    root.innerHTML=`<div class="cust">${head}${body}${scanBar}${foot}</div>${instNote}`;
     if(root.querySelector(".ios-note")) Ring.notify();
   }
   root.addEventListener("submit",async e=>{
@@ -434,6 +438,7 @@ function Customer(root,shop,opts){
     const a=e.target.closest("[data-a]"); if(!a) return;
     if(a.dataset.a==="lang"){ setLang(lang==="ar"?"en":"ar"); return; }
     if(a.dataset.a==="cancel"){ const id=orderId; setOrder(null); order=null; render(); rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }
+    if(a.dataset.a==="instx"){ ls.set("urturn.instOff",String(Date.now())); root.querySelectorAll(".install-note").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="pushx"){ sessionSet("urturn.pushOff","1"); root.querySelectorAll(".push-note").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff",String(Date.now())); root.querySelectorAll(".ios-note,.ios-arrow").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="scan"){ openScanner(); return; }
@@ -460,6 +465,7 @@ function Customer(root,shop,opts){
     backBusy=false;
   }
   document.addEventListener("visibilitychange",onBack);
+  document.addEventListener("urturn-install",()=>{ if(orderId||root.querySelector(".install-note")) return; const h=instHTML(); if(h){ root.insertAdjacentHTML("beforeend",h); Ring.notify(); } });
   window.addEventListener("pageshow",onBack); window.addEventListener("focus",onBack);
   try{ navigator.serviceWorker&&navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.type==="urturn-ring") onBack(); }); }catch(e){}
   if(orderId&&!opts.inFrame&&Push.state()==="granted") Push.subscribe(orderId).then(ok=>{ if(ok&&!pushOk){ pushOk=true; lastKey=""; render(); } });
@@ -1006,9 +1012,9 @@ async function demoPage(){
 
 // ---------- Android install prompt ----------
 let installEvt=null;
-window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; document.querySelectorAll("[data-install]").forEach(b=>b.hidden=false); });
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; document.querySelectorAll("[data-install]").forEach(b=>b.hidden=false); document.dispatchEvent(new Event("urturn-install")); });
 window.addEventListener("appinstalled",()=>{ installEvt=null; document.querySelectorAll("[data-install]").forEach(b=>b.hidden=true); });
-async function doInstall(){ if(!installEvt) return; installEvt.prompt(); try{ await installEvt.userChoice; }catch(e){} installEvt=null; document.querySelectorAll("[data-install]").forEach(b=>b.hidden=true); }
+async function doInstall(){ if(!installEvt) return; installEvt.prompt(); try{ await installEvt.userChoice; }catch(e){} installEvt=null; document.querySelectorAll("[data-install]").forEach(b=>b.hidden=true); document.querySelectorAll(".install-note").forEach(x=>x.remove()); }
 // ---------- in-app QR scanner (home-screen app works for every shop) ----------
 function slugFromQR(txt){ try{ const u=new URL(txt); const sl=u.searchParams.get("s"); if(sl&&(u.host===location.host||u.host.endsWith(".github.io"))) return sl; }catch(e){} return null; }
 function recentShops(){ try{ return JSON.parse(ls.get("urturn.recent")||"[]"); }catch(e){ return []; } }
