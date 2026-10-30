@@ -219,6 +219,14 @@ const Ring={ ctx:null,timer:null,on:false,
   chime(){ if(!this.ctx) return; const now=this.ctx.currentTime;
     [880,1175,1568,1175,1568].forEach((f,i)=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(this.ctx.destination);
       const s=now+i*0.16; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.4,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.15); o.start(s); o.stop(s+0.16); }); },
+  dinged:0,
+  ding(){ if(!this.ctx||this.ctx.state!=="running") return false; const now=this.ctx.currentTime;
+    [[1318.5,0],[1046.5,0.13],[1568,0.26]].forEach(([f,d])=>{ const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type="sine"; o.frequency.value=f; o.connect(g); g.connect(this.ctx.destination);
+      const s=now+d; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.35,s+0.015); g.gain.exponentialRampToValueAtTime(0.0001,s+0.4); o.start(s); o.stop(s+0.42); });
+    try{ navigator.vibrate&&navigator.vibrate([120,80,120]); }catch(e){} return true; },
+  notify(){ if(this.dinged>=2||this.on) return; this.unlock();
+    const go=()=>{ if(this.dinged>=2||this.on) return; if(this.ding()) this.dinged++; };
+    setTimeout(()=>{ if(this.ctx&&this.ctx.state==="running") go(); else document.addEventListener("pointerdown",()=>setTimeout(go,60),{once:true,passive:true}); },1300); },
   start(){ if(this.on) return; this.on=true; this.unlock(); const tick=()=>{ this.chime(); try{ navigator.vibrate&&navigator.vibrate([350,150,350,150,600]); }catch(e){} }; tick(); this.timer=setInterval(tick,1800); },
   stop(){ if(!this.on) return; this.on=false; clearInterval(this.timer); this.timer=null; try{ navigator.vibrate&&navigator.vibrate(0); }catch(e){} }
 };
@@ -370,6 +378,7 @@ function Customer(root,shop,opts){
     }
     const scanBar=!opts.inFrame&&(isStandalone()||!isIOS)&&(state==="enter"||state==="done")?`<div class="scan-bar"><button class="btn small" type="button" data-a="scan">${t("scanOther")}</button>${recentShops().length>1||isStandalone()?`<a class="btn small" href="${esc(BASE)}?v=app">${t("myShops")}</a>`:""}${isStandalone()?"":`<button class="btn small" type="button" data-a="install" data-install ${installEvt?"":"hidden"}>${t("installBtn")}</button>`}</div>`:"";
     root.innerHTML=`<div class="cust">${head}${body}${scanBar}${foot}</div>`;
+    if(root.querySelector(".ios-note")) Ring.notify();
   }
   root.addEventListener("submit",async e=>{
     e.preventDefault(); const inp=root.querySelector(".big-input"); const v=(inp.value||"").replace(/\D/g,"");
