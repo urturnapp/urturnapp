@@ -233,7 +233,7 @@ const Ring={ ctx:null,timer:null,on:false,
 let wakeLock=null;
 async function keepAwake(){ try{ if(navigator.wakeLock&&(!wakeLock||wakeLock.released)) wakeLock=await navigator.wakeLock.request("screen"); }catch(e){} }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") keepAwake(); });
-document.addEventListener("pointerdown",()=>Ring.unlock(),{passive:true});
+["pointerdown","touchend","keydown"].forEach(ev=>document.addEventListener(ev,()=>{ const was=Ring.ctx&&Ring.ctx.state; Ring.unlock(); if(Ring.on&&was!=="running") setTimeout(()=>Ring.chime(),80); },{passive:true}));
 // ---------- push notifications (ring even when the screen is off) ----------
 const VAPID_PUB="BCWk-h1YhyHgZOu5bp_pxZGM9PKLquMaw7Vd9rD9ivAY_wLHYYr1_94H-uTqylpvnDpcIucHXyuGWe7b7vYUp5w";
 const PUSH_FN=SUPA_URL+"/functions/v1/urturn-push";
@@ -334,8 +334,8 @@ function Customer(root,shop,opts){
       if(!order){ setOrder(null); }
       if(order&&order.status==="waiting"&&order.eta_at&&!order.eta_seen&&document.visibilityState==="visible"){ order.eta_seen=new Date().toISOString(); rpc("urturn_eta_seen",{p_id:orderId}).catch(()=>{}); }
       if(order&&order.status==="waiting"){ if(pollN%4===0||aheadCache==null){ aheadCache=(await Api.ahead(shop.id,order.created_at)).length; } order._ahead=aheadCache; }
-      render();
-    }catch(e){ /* keep last state */ }
+      render(); return true;
+    }catch(e){ return false; /* keep last state */ }
   }
   function render(){
     const s=opts.store?opts.store.shop:shop;
@@ -344,8 +344,8 @@ function Customer(root,shop,opts){
     const k=[state,isOpenNow(s),pushOk,order&&order.num,order&&order.ring_at,order&&order.eta_at,lang,rated,s.name,s.logo,s.color,s.welcome,s.review_url].join("|");
     if(state==="waiting"&&k===lastKey){ const el=root.querySelector("[data-ahead]"); if(el) el.textContent=t("ahead",order._ahead||0); return; }
     if(k===lastKey) return; lastKey=k;
-    const head=`<div class="cust-head">${logoHTML(s)}<h2>${esc(s.name)}</h2></div>`;
-    const foot=`<div class="powered">${t("powered")} <a href="${esc(BASE)}" target="_blank" rel="noopener">UR TURN</a> · <button class="link-btn" data-a="lang" type="button" style="font-size:12px;padding:0">${lang==="ar"?"English":"العربية"}</button></div>`;
+    const head=`<div class="cust-head">${logoHTML(s)}<h2><bdi>${esc(s.name)}</bdi></h2></div>`;
+    const foot=`<div class="powered">${t("powered")} <a href="${esc(BASE)}" target="_blank" rel="noopener">UR TURN</a> · <button class="link-btn" data-a="lang" type="button" style="font-size:13px;padding:8px 6px;min-height:32px">${lang==="ar"?"English":"العربية"}</button></div>`;
     let body="";
     if(state==="enter"&&!isOpenNow(s)){
       Ring.stop();
@@ -403,7 +403,19 @@ function Customer(root,shop,opts){
   setInterval(()=>{ const el=root.querySelector("[data-eta]"); if(!el) return; const left=new Date(el.dataset.eta)-Date.now(); el.textContent=left>0?fmtLeft(left):t("etaSoon"); el.classList.toggle("soon",left<=0); },1000);
   poll(); timer=setInterval(()=>{ if(orderId&&(!order||order.status!=="done")) poll(); },3000);
   setInterval(()=>{ if(!orderId) render(); },30000);
-  document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState!=="visible"||!orderId) return; Ring.unlock(); await poll(); if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); } });
+  // Coming back to the page: ring right away from the last known state, then refresh fast (retry while the network wakes up).
+  let backBusy=false, backAt=0;
+  async function onBack(){
+    if(document.visibilityState!=="visible"||!orderId||backBusy||Date.now()-backAt<800) return; backBusy=true; backAt=Date.now();
+    Ring.unlock();
+    if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); }
+    for(const d of [0,400,900,1800]){ if(d) await new Promise(r=>setTimeout(r,d)); if(await poll()) break; }
+    if(order&&order.status==="ready"){ if(!Ring.on) Ring.start(); } else Ring.stop();
+    backBusy=false;
+  }
+  document.addEventListener("visibilitychange",onBack);
+  window.addEventListener("pageshow",onBack); window.addEventListener("focus",onBack);
+  try{ navigator.serviceWorker&&navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.type==="urturn-ring") onBack(); }); }catch(e){}
   if(orderId&&!opts.inFrame&&Push.state()==="granted") Push.subscribe(orderId).then(ok=>{ if(ok&&!pushOk){ pushOk=true; lastKey=""; render(); } });
   return {render(){ lastKey=""; render(); }, poll,
     reset(){ const id=orderId; Ring.stop(); setOrder(null); order=null; rated=0; lastKey=""; render(); if(id) rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }};
@@ -472,7 +484,7 @@ function Owner(root,store,key){
       <div class="panel"><div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>${t("ledgerTitle")}</h2><button class="btn small" type="button" data-csv>${t("lCsv")}</button></div><small style="color:var(--muted)">${t("ledgerHint")}</small><div class="tbl-wrap" style="margin-top:10px"><table class="tbl ledger"><thead><tr><th>${t("lDay")}</th><th>${t("lOrders")}</th><th>${t("lDone")}</th><th>${t("lWait")}</th><th>${t("lRating")}</th><th>${t("lPeak")}</th></tr></thead><tbody data-ledger><tr><td colspan="6">…</td></tr></tbody></table></div></div>
       <div class="panel"><div class="panel-head"><h2>${t("ownerTitle")}</h2></div>
         <div class="list" style="display:grid;gap:10px">
-          <div><small style="color:var(--muted)">${t("fName")}</small><div style="font-weight:600">${esc(shop.name)}</div></div>
+          <div><small style="color:var(--muted)">${t("fName")}</small><div style="font-weight:600"><bdi>${esc(shop.name)}</bdi></div></div>
           <div><small style="color:var(--muted)">${t("fReview")}</small><div dir="ltr" style="word-break:break-all">${shop.review_url?`<a href="${esc(shop.review_url)}" target="_blank" rel="noopener">${esc(shop.review_url)}</a>`:"–"}</div></div>
           <div class="tip">${t("contactToEdit")}</div>
         </div></div>
@@ -483,7 +495,7 @@ function Owner(root,store,key){
     </div></div>`;
   copyBtn(root.querySelector("[data-copy]"),root.querySelector("#lk0"));
   const p=root.querySelector("[data-poster]");
-  p.innerHTML=`${logoHTML(shop,`style="color:${esc(shop.color)}"`)}<h3>${t("posterH")}</h3><div class="qr">${qrSVG(custURL(slug))}</div><p>${t("posterP")}</p><b>${esc(shop.name)}</b><span class="ur">UR TURN</span>`;
+  p.innerHTML=`${logoHTML(shop,`style="color:${esc(shop.color)}"`)}<h3>${t("posterH")}</h3><div class="qr">${qrSVG(custURL(slug))}</div><p>${t("posterP")}</p><b><bdi>${esc(shop.name)}</bdi></b><span class="ur">UR TURN</span>`;
   async function stats(){
     try{
       const rows=await Api.week(shop.id);
@@ -540,7 +552,7 @@ function Admin(root,akey){
       else if(s.stuck>0&&s.slug!==DEMO_SLUG){ cls="bad"; st=HT.stuck(s.stuck); issues++; }
       else if(!isOpenNow(s)){ cls="muted"; st=HT.closed; }
       else if(s.slug!==DEMO_SLUG&&s.orders_7d>=7&&s.last_order&&Date.now()-new Date(s.last_order)>3*3600e3){ cls="warn"; st=HT.quiet(Math.round((Date.now()-new Date(s.last_order))/3600e3)); issues++; }
-      return `<tr><td>${esc(s.name)}</td><td><span class="dl ${cls}">${st}</span></td><td>${s.last_order?ago(s.last_order):HT.never}</td><td>${s.orders_24h}</td></tr>`; }).join("");
+      return `<tr><td><bdi>${esc(s.name)}</bdi></td><td><span class="dl ${cls}">${st}</span></td><td>${s.last_order?ago(s.last_order):HT.never}</td><td>${s.orders_24h}</td></tr>`; }).join("");
     issues+=h.errors.length?1:0;
     const pct=Math.min(100,Math.round(h.db_mb/500*100));
     box.innerHTML=`<div class="health-sum ${issues?"warn":"good"}">${issues?HT.issues(issues):HT.allGood}</div>
@@ -589,7 +601,7 @@ function Admin(root,akey){
   function poster(){
     const p=$r("[data-poster]"); p.style.setProperty("--shop",draft.color); p.style.setProperty("--shop-ink",inkFor(draft.color));
     const name=draft.name||t("shopName");
-    p.innerHTML=`${logoHTML({...draft,name},`style="color:${esc(draft.color)}"`)}<h3>${t("posterH")}</h3><div class="qr">${qrSVG(custURL(curSlug()))}</div><p>${t("posterP")}</p><b>${esc(name)}</b><span class="ur">UR TURN</span>`;
+    p.innerHTML=`${logoHTML({...draft,name},`style="color:${esc(draft.color)}"`)}<h3>${t("posterH")}</h3><div class="qr">${qrSVG(custURL(curSlug()))}</div><p>${t("posterP")}</p><b><bdi>${esc(name)}</bdi></b><span class="ur">UR TURN</span>`;
     $r("[data-logo]").innerHTML=logoHTML({...draft,name},`style="color:${esc(draft.color)}"`);
     const sp=$r("[data-slugprev]"); if(sp) sp.textContent=custURL(curSlug());
     const cb=$r("[data-custbox]"); cb.hidden=!(mode==="edit"); $r("#a-cust").value=custURL(curSlug());
@@ -621,10 +633,10 @@ function Admin(root,akey){
   function waBtn(r){ return r.whatsapp?`<a class="btn small signal" href="${esc(waLink(r.whatsapp,waMsg(r)))}" target="_blank" rel="noopener">${t("sendWa")}</a>`:`<small style="color:var(--muted)">${t("noWa")}</small>`; }
   async function load(){
     try{ const rows=rowsCache=await rpc("urturn_admin_shops2",{p_admin:akey});
-      $r("[data-rows]").innerHTML=rows.map(r=>`<tr${r.active?"":' style="opacity:.55"'}><td>${esc(r.name)}</td><td dir="ltr"><a href="${esc(custURL(r.slug))}" target="_blank" rel="noopener">${esc(r.slug)}</a></td><td>${subCell(r)}</td><td>${r.orders_7d}</td><td>${r.avg_rating??"–"}</td>
+      $r("[data-rows]").innerHTML=rows.map(r=>`<tr${r.active?"":' style="opacity:.55"'}><td><bdi>${esc(r.name)}</bdi></td><td dir="ltr"><a href="${esc(custURL(r.slug))}" target="_blank" rel="noopener">${esc(r.slug)}</a></td><td>${subCell(r)}</td><td>${r.orders_7d}</td><td>${r.avg_rating??"–"}</td>
         <td><div style="display:flex;gap:6px;flex-wrap:wrap">${r.slug===DEMO_SLUG?"":`<button class="btn small primary" data-sub="${esc(r.slug)}" type="button">${t("renew")}</button>`}<button class="btn small" data-edit="${esc(r.slug)}" type="button">${t("edit")}</button><button class="btn small ghost" data-reset="${esc(r.slug)}" type="button">${t("newKey")}</button>${r.slug===DEMO_SLUG?"":`<button class="btn small ghost" data-arch="${esc(r.slug)}" data-on="${r.active?0:1}" type="button">${r.active?t("archive"):t("restore")}</button>`}</div></td></tr>`).join("");
       const al=rows.filter(r=>r.active&&r.ends_at&&r.plan!=="demo"&&daysLeft(r.ends_at)<=3);
-      $r("[data-alerts]").innerHTML=al.length?`<div class="orders">${al.map(r=>`<div class="order${daysLeft(r.ends_at)<=0?" late":""}"><div style="font-weight:600">${esc(r.name)}</div><div class="meta">${subCell(r)}</div><div class="acts">${waBtn(r)}<button class="btn small primary" data-sub="${esc(r.slug)}" type="button">${t("renew")}</button></div></div>`).join("")}</div>`:`<div class="empty">${t("noAlerts")}</div>`;
+      $r("[data-alerts]").innerHTML=al.length?`<div class="orders">${al.map(r=>`<div class="order${daysLeft(r.ends_at)<=0?" late":""}"><div style="font-weight:600"><bdi>${esc(r.name)}</bdi></div><div class="meta">${subCell(r)}</div><div class="acts">${waBtn(r)}<button class="btn small primary" data-sub="${esc(r.slug)}" type="button">${t("renew")}</button></div></div>`).join("")}</div>`:`<div class="empty">${t("noAlerts")}</div>`;
     }catch(e){ root.innerHTML=`<div class="center-msg"><h2>${t("badLink")}</h2></div>`; }
   }
   function openSub(slug){
@@ -706,7 +718,7 @@ function topbar(active){
 }
 function staffHead(shop,active,key){
   return `<div class="staff-head"><div class="wrap" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%">
-    ${logoHTML(shop)}<b>${esc(shop.name)}</b>
+    ${logoHTML(shop)}<b><bdi>${esc(shop.name)}</bdi></b>
     <nav class="tabs"><a href="${esc(cashURL(shop.slug,key))}" ${active==="cashier"?'aria-current="page"':""}>${t("navCashier")}</a><a href="${esc(ownURL(shop.slug,key))}" ${active==="owner"?'aria-current="page"':""}>${t("navOwner")}</a></nav>
     <button class="btn lang" type="button" data-lang>${lang==="ar"?"English":"العربية"}</button></div></div>`;
 }
@@ -963,7 +975,7 @@ function appHome(){
   const L=recentShops();
   app.innerHTML=`<div class="app-home"><img src="icon-192.png" width="84" height="84" alt=""><h1>UR TURN</h1><p>${t("appP")}</p>
     <button class="btn primary scan-big" type="button" data-scan>📷 ${t("scanBtn")}</button>
-    ${L.length?`<div class="recent"><h3>${t("recentT")}</h3>${L.map(r=>`<a class="recent-item" href="${esc(custURL(r.slug))}"><span class="dot" style="background:${esc(r.color||"#14181C")}"></span>${esc(r.name)}${ls.get("urturn.order."+r.slug)?`<span class="pill" style="margin-inline-start:auto">${t("activeOrder")}</span>`:""}</a>`).join("")}</div>`:""}
+    ${L.length?`<div class="recent"><h3>${t("recentT")}</h3>${L.map(r=>`<a class="recent-item" href="${esc(custURL(r.slug))}"><span class="dot" style="background:${esc(r.color||"#14181C")}"></span><bdi>${esc(r.name)}</bdi>${ls.get("urturn.order."+r.slug)?`<span class="pill" style="margin-inline-start:auto">${t("activeOrder")}</span>`:""}</a>`).join("")}</div>`:""}
     <button class="link-btn" type="button" data-lang2 style="margin-top:18px">${lang==="ar"?"English":"العربية"}</button></div>`;
   app.querySelector("[data-scan]").onclick=openScanner;
   app.querySelector("[data-lang2]").onclick=()=>setLang(lang==="ar"?"en":"ar");
@@ -1010,7 +1022,7 @@ async function staffPage(kind){
   if(kind==="cashier"){ $("#staff").className="wrap"; $("#staff").style.cssText="padding-block:20px;max-width:760px"; $("#staff").innerHTML=`<div id="cash"></div>`; store.lite=true; Cashier($("#cash"),store,KEY); store.start(3000); keepAwake(); }
   else { Owner($("#staff"),store,KEY); store.start(10000); }
   let headKey=shop.name+"|"+(shop.logo||"").length;
-  store.listeners.add(()=>{ const sh=store.shop, k=sh.name+"|"+(sh.logo||"").length; if(k===headKey) return; headKey=k; const h=app.querySelector(".staff-head .wrap"); if(!h) return; const b=h.querySelector(":scope > b"); if(b) b.textContent=sh.name; const lg=h.querySelector(":scope > .shop-logo"); if(lg) lg.outerHTML=logoHTML(sh); document.title=sh.name+" · UR TURN"; });
+  store.listeners.add(()=>{ const sh=store.shop, k=sh.name+"|"+(sh.logo||"").length; if(k===headKey) return; headKey=k; const h=app.querySelector(".staff-head .wrap"); if(!h) return; const b=h.querySelector(":scope > b"); if(b) b.innerHTML="<bdi>"+esc(sh.name)+"</bdi>"; const lg=h.querySelector(":scope > .shop-logo"); if(lg) lg.outerHTML=logoHTML(sh); document.title=sh.name+" · UR TURN"; });
   watchVersion();
 }
 function setLang(l){ lang=l; ls.set("urturn.lang",l); location.reload(); }

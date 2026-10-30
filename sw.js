@@ -13,7 +13,9 @@ self.addEventListener("push",e=>{
 self.addEventListener("notificationclick",e=>{
   e.notification.close(); const url=(e.notification.data&&e.notification.data.url)||self.registration.scope;
   e.waitUntil(self.clients.matchAll({type:"window",includeUncontrolled:true}).then(list=>{
-    for(const c of list){ if(c.url.split("#")[0]===url.split("#")[0]&&"focus" in c) return c.focus(); }
+    const slug=u=>{ try{ return new URL(u).searchParams.get("s")||""; }catch(_){ return ""; } };
+    const hit=list.find(c=>c.url.split("#")[0]===url.split("#")[0])||list.find(c=>slug(c.url)&&slug(c.url)===slug(url));
+    if(hit&&"focus" in hit){ try{ hit.postMessage({type:"urturn-ring"}); }catch(_){} return hit.focus(); }
     return self.clients.openWindow(url);
   }));
 });
