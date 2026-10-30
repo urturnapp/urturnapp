@@ -1,0 +1,21 @@
+const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:400,height:850}});
+let orders=[];
+await ctx.route('**/*',async route=>{const u=new URL(route.request().url());
+ if(u.host==='test.local'){let f=u.pathname.replace(/^\/+/,'')||'index.html';f=path.join((process.env.ROOT||require('path').join(__dirname,'..')),f);if(!fs.existsSync(f))return route.fulfill({status:404,body:''});const ct=f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':'text/html';return route.fulfill({status:200,contentType:ct,body:fs.readFileSync(f)});}
+ if(!u.host.includes('supabase'))return route.abort();const j=d=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(d)});
+ if(u.pathname.endsWith('/urturn_shops'))return j([{id:'s2',slug:'cafe',name:'Cafe',color:'#1E3A8A',active:true}]);
+ if(u.pathname.endsWith('/urturn_orders'))return j(orders);const fn=u.pathname.split('/rpc/')[1];
+ if(fn==='urturn_staff_check')return j(true);if(fn==='urturn_staff_status')return j({plan:'m1',ends_at:'2099-01-01',locked:false});return j(null);});
+const p=await ctx.newPage();p.on('pageerror',e=>console.log('ERR',e.message));
+await p.addInitScript(()=>{window.__d=0;const C=window.AudioContext;window.AudioContext=class extends C{createOscillator(){window.__d++;return super.createOscillator();}};});
+await p.goto('https://test.local/?s=cafe&v=cashier&k=K');await p.waitForTimeout(2000);
+console.log('sound bar visible:',await p.isVisible('.snd-bar'));await p.click('.snd-bar');await p.waitForTimeout(600);console.log('after tap visible:',await p.isVisible('.snd-bar'),'osc',await p.evaluate(()=>window.__d));
+const before=await p.evaluate(()=>window.__d);
+orders=[{id:'a1',num:'77',status:'waiting',source:'customer',created_at:new Date().toISOString(),shop_id:'s2'}];
+await p.waitForTimeout(4500);
+console.log('new order osc',await p.evaluate(()=>window.__d)-before,'highlight',await p.$$eval('.order.is-new',x=>x.length),'title',await p.title());
+await p.screenshot({path:''+(process.env.OUT||'/tmp')+'/newo.png'});
+const b2=await p.evaluate(()=>window.__d);orders=[...orders,{id:'a2',num:'78',status:'waiting',source:'staff',created_at:new Date().toISOString(),shop_id:'s2'}];await p.waitForTimeout(4000);
+console.log('staff order osc (should be 0):',await p.evaluate(()=>window.__d)-b2);
+await b.close();})();

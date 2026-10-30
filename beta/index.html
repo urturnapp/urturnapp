@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>UR TURN</title>
+<meta name="description" content="UR TURN: جوال الزبون صار البيجر. نظام نداء ذكي للمقاهي والمطاعم بدون تطبيق.">
+<meta name="theme-color" content="#14181C">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=202610300215">
+</head>
+<body>
+<div id="intro" hidden><div class="in-wrap"><img src="icon-512.png" alt="" width="112" height="112"><b>UR TURN</b><span id="intro-t"></span><i></i></div></div>
+<script>(function(){try{var sa=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+var el=document.getElementById("intro");if(!sa||sessionStorage.getItem("urturn.intro")){el.remove();return;}
+sessionStorage.setItem("urturn.intro","1");var en=localStorage.getItem("urturn.lang")==="en";
+document.getElementById("intro-t").textContent=en?"Your turn comes to you":"دورك بيوصلك لحالك";el.hidden=false;
+var done=function(){if(!el.parentNode)return;el.classList.add("out");setTimeout(function(){el.remove();},450);};
+setTimeout(done,1100);el.addEventListener("pointerdown",done);}catch(e){var x=document.getElementById("intro");if(x)x.remove();}})();</script>
+<header class="top" id="topbar" hidden>
+  <div class="wrap">
+    <a class="logo" href="./"><img src="icon.svg" width="32" height="32" alt="">UR TURN</a>
+    <nav class="tabs" id="tabs"></nav>
+    <div class="tools"><button class="btn lang" id="langBtn" type="button">English</button></div>
+  </div>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast" hidden></div>
+<script src="qrcode.js?v=202610300215"></script>
+<!-- app.js?v=202610300215 (lets pages from the old one-file version notice updates) -->
+<script src="core.js?v=202610300215"></script>
+<script>
+// Load only the part this page needs (customer / cashier / admin / home), then start.
+(function(){var p=new URLSearchParams(location.search),s=p.get("s")||"",v=p.get("v")||(s?"customer":"home"),
+sa=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true,ver="202610300215";
+var parts=v==="admin"?["admin"]:(v==="cashier"||v==="owner")?["cashier"]:((v==="home"&&!sa)||v==="demo")?["customer","cashier","home"]:["customer"];
+var i=0;(function next(){if(i>=parts.length){boot();return;}var sc=document.createElement("script");sc.src=parts[i++]+".js?v="+ver;sc.onload=next;
+sc.onerror=function(){document.getElementById("app").innerHTML='<div class="center-msg"><p>⚠️ تعذّر التحميل، اسحب الصفحة لتحت للتحديث.</p></div>';};document.head.appendChild(sc);})();})();
+</script>
+</body>
+</html>
