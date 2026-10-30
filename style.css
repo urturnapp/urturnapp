@@ -501,3 +501,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media (prefers-color-scheme:dark){.health-sum.good{background:#1E3320;color:#9FD39A}.health-sum.warn{background:#3A2A12;color:#F5B43C}}
 /* bigger tap targets on phones */
 .ios-note .ios-x{width:32px;height:32px;font-size:13px;top:6px;inset-inline-end:6px}
+/* cashier: new order alert */
+.snd-bar{display:block;width:100%;margin-bottom:12px;padding:12px;border:0;border-radius:12px;background:#FDF0DC;color:#8A4B06;font-weight:700;font-size:15px;cursor:pointer}
+.order.is-new{animation:newOrd 1s ease 0s 4;box-shadow:0 0 0 3px var(--signal,#F5B43C)}
+@keyframes newOrd{0%,100%{box-shadow:0 0 0 3px var(--signal,#F5B43C)}50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--signal,#F5B43C) 25%,transparent)}}

@@ -40,7 +40,7 @@ ar:{
  receiptLabel:"رقم الفاتورة",receiptPh:"مثلاً 128",waitBtn:"انتظر دوري",
  waitingTitle:"طلبك قيد التحضير",waitingP:"خلّي هالصفحة مفتوحة. رح يرن جوالك ويهتز لما يجهز الطلب.",
  ahead:(n)=> n===0?"طلبك هو التالي":(n===1?"قبلك طلب واحد":"قبلك "+n+" طلبات"),
- tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
+ tipSound:"خلّي صوت الجوال شغّال والشاشة مفتوحة.",nowLbl:"الآن",sndOn:"🔔 اضغط هون لتفعيل صوت الطلبات الجديدة",newOrderT:n=>"طلب جديد "+n,iosNote:"🔔 <b>عشان جوالك يرن حتى لو مقفول:</b> اضغط زر المشاركة <b>⬆️</b> تحت، وبعدين <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح من الأيقونة.",iosArrow:"زر المشاركة هون",iosTip:"📲 <b>نصيحة لأصحاب الآيفون:</b> اضغط زر المشاركة <b>⬆️</b> ثم <b>«إضافة إلى الشاشة الرئيسية»</b>، وافتح الصفحة من أيقونتها. هيك بيوصلك تنبيه لما يجهز طلبك حتى لو الجوال مقفول 🔔، ونفس الأيقونة بتشتغل بكل الكافيهات.",pushOn:"✅ رح يوصلك إشعار لما يجهز طلبك، حتى لو سكّرت الشاشة.",pushAsk:"🔔 فعّل الإشعارات عشان يوصلك تنبيه حتى لو الشاشة مطفية",cancel:"إلغاء ورقم مختلف",
  ready:"طلبك جاهز!",readyP:"تفضل استلمه من الكاونتر",gotIt:"استلمت طلبي",
  thanks:"بالعافية!",thanksP:"شكراً لزيارتك. كيف كانت تجربتك؟",rateGoogle:"قيّمنا على جوجل",
  rateThanks:"شكراً! رأيك بيوصل للإدارة مباشرة.",newOrder:"طلب جديد",powered:"يعمل بنظام",
@@ -107,7 +107,7 @@ en:{
  receiptLabel:"Receipt number",receiptPh:"e.g. 128",waitBtn:"Wait for my turn",
  waitingTitle:"Your order is being prepared",waitingP:"Keep this page open. Your phone will ring and vibrate when it's ready.",
  ahead:(n)=> n===0?"You're next":(n===1?"1 order ahead of you":n+" orders ahead of you"),
- tipSound:"Keep your sound on and the screen open.",nowLbl:"now",iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
+ tipSound:"Keep your sound on and the screen open.",nowLbl:"now",sndOn:"🔔 Tap here to turn on new-order sound",newOrderT:n=>"New order "+n,iosNote:"🔔 <b>Get alerted even with your phone locked:</b> tap Share <b>⬆️</b> below, then <b>“Add to Home Screen”</b>, and open from the icon.",iosArrow:"Share button here",iosTip:"📲 <b>iPhone tip:</b> tap Share <b>⬆️</b> then <b>“Add to Home Screen”</b> and open the page from its icon. You'll get an alert when your order is ready, even with your phone locked 🔔. The same icon works at every café.",pushOn:"✅ You'll get a notification when it's ready, even with the screen off.",pushAsk:"🔔 Turn on notifications to get alerted even with the screen off",cancel:"Cancel / different number",
  ready:"Your order is ready!",readyP:"Please pick it up at the counter",gotIt:"I picked it up",
  thanks:"Enjoy!",thanksP:"Thanks for visiting. How was your experience?",rateGoogle:"Rate us on Google",
  rateThanks:"Thank you! Your feedback goes straight to the manager.",newOrder:"New order",powered:"Powered by",
@@ -209,10 +209,12 @@ p{margin:0;font-size:13pt;opacity:.92;max-width:100mm}b{font-family:"Readex Pro"
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-printposter]"); if(!b) return; const p=b.parentElement.querySelector("[data-poster]"); if(p) printPoster(p); });
 function copyBtn(btn,input){ btn.addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(input.value); btn.textContent=t("copied"); setTimeout(()=>btn.textContent=t("copy"),1500);}catch(e){ input.select(); } }); }
 const custURL=slug=>BASE+"?s="+encodeURIComponent(slug);
-function syncManifest(){ try{ if(!isIOS||isStandalone()) return; const abs=u=>new URL(u,location.href).href;
+function syncManifest(hasOrder){ try{ if(!isIOS||isStandalone()) return;
+  if(!hasOrder){ const l0=document.querySelector('link[rel="manifest"]'); if(l0) l0.remove(); return; } const abs=u=>new URL(u,location.href).href;
   const m={name:"UR TURN",short_name:"UR TURN",display:"standalone",background_color:"#14181C",theme_color:"#14181C",scope:abs("./"),id:abs("./?v=app"),start_url:location.href,
     icons:[{src:abs("icon-192.png"),sizes:"192x192",type:"image/png"},{src:abs("icon-512.png"),sizes:"512x512",type:"image/png"}]};
-  const l=document.querySelector('link[rel="manifest"]'); if(l) l.href="data:application/manifest+json,"+encodeURIComponent(JSON.stringify(m)); }catch(e){} }
+  let l=document.querySelector('link[rel="manifest"]'); if(!l){ l=document.createElement("link"); l.rel="manifest"; document.head.appendChild(l); }
+  l.href="data:application/manifest+json,"+encodeURIComponent(JSON.stringify(m)); }catch(e){} }
 const cashURL=(slug,k)=>BASE+"?s="+encodeURIComponent(slug)+"&v=cashier&k="+encodeURIComponent(k);
 const ownURL=(slug,k)=>BASE+"?s="+encodeURIComponent(slug)+"&v=owner&k="+encodeURIComponent(k);
 function googleG(){ return `<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`; }
@@ -243,6 +245,8 @@ const VAPID_PUB="BCWk-h1YhyHgZOu5bp_pxZGM9PKLquMaw7Vd9rD9ivAY_wLHYYr1_94H-uTqylp
 const PUSH_FN=SUPA_URL+"/functions/v1/urturn-push";
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+// iPhone: on a café page, no fixed manifest, so "Add to Home Screen" keeps the exact page (with the order). Everywhere else use manifest.json.
+if(!(isIOS&&VIEW==="customer")){ const ml=document.createElement("link"); ml.rel="manifest"; ml.href="manifest.json"; document.head.appendChild(ml); }
 const Push={
   ok(){ return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window; },
   state(){ return this.ok()?Notification.permission:"unsupported"; },
@@ -330,7 +334,7 @@ function Customer(root,shop,opts){
   opts=opts||{};
   const lsKey="urturn.order."+shop.slug+(opts.suffix||"");
   let orderId=ls.get(lsKey), order=null, rated=0, lastKey="", seenRing=null, timer=null, pushOk=false, pollN=0, aheadCache=null;
-  const syncURL=()=>{ if(opts.inFrame) return; try{ const u=custURL(shop.slug)+(orderId?"&o="+encodeURIComponent(orderId):""); if(location.href!==u) history.replaceState(null,"",u); syncManifest(); }catch(e){} };
+  const syncURL=()=>{ if(opts.inFrame) return; try{ const u=custURL(shop.slug)+(orderId?"&o="+encodeURIComponent(orderId):""); if(location.href!==u) history.replaceState(null,"",u); syncManifest(!!orderId); }catch(e){} };
   const setOrder=id=>{ orderId=id; ls.set(lsKey,id); aheadCache=null; syncURL(); };
   if(!opts.inFrame){ const o=P.get("o"); if(o&&/^[0-9a-f-]{36}$/i.test(o)&&!orderId){ orderId=o; ls.set(lsKey,o); } syncURL(); }
   async function poll(){
@@ -436,9 +440,19 @@ function Cashier(root,store,key){
     <div class="col-title">${t("colReady")} <span class="count" data-c="r">0</span></div><div class="orders" data-l="r"></div>
     <form class="add-row" data-f="add" style="margin-top:18px"><input id="cash-add" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="${t("addPh")}" aria-label="${t("addPh")}"><button class="btn" type="submit">${t("addBtn")}</button></form>
   </div>`;
-  const slug=store.shop.slug; let lastW="", lastR="";
+  const slug=store.shop.slug; let lastW="", lastR="", seen=null, newIds=new Set(), titleT=null; const baseTitle=document.title;
+  // New-order alert: sound + vibration + highlight + tab title
+  const snd=document.createElement("button"); snd.type="button"; snd.className="snd-bar"; snd.textContent=t("sndOn"); snd.hidden=true; root.prepend(snd);
+  snd.onclick=()=>{ Ring.unlock(); setTimeout(()=>{ Ring.ding(); sndCheck(); },120); };
+  const sndCheck=()=>{ snd.hidden=!!(Ring.ctx&&Ring.ctx.state==="running"); };
+  setTimeout(sndCheck,1500); setInterval(sndCheck,5000); document.addEventListener("pointerdown",()=>setTimeout(sndCheck,200),{passive:true});
+  function alertNew(n){
+    let k=0; const beep=()=>{ Ring.ding(); if(++k<2) setTimeout(beep,700); }; beep();
+    try{ navigator.vibrate&&navigator.vibrate([200,100,200]); }catch(e){}
+    clearInterval(titleT); let on=false, c=0; titleT=setInterval(()=>{ document.title=(on=!on)?"🔔 "+t("newOrderT",n):baseTitle; if(++c>=12||document.hasFocus()&&c>=4){ clearInterval(titleT); document.title=baseTitle; } },1000);
+  }
   function row(o){
-    if(o.status==="waiting") return `<div class="order"><div class="num">${esc(o.num)}</div>
+    if(o.status==="waiting") return `<div class="order${newIds.has(o.id)?" is-new":""}"><div class="num">${esc(o.num)}</div>
       <div class="meta"><span class="pill">${t("colWaiting")}</span><span>${t("since",mins(o.created_at))} · ${o.source==="customer"?t("fromCustomer"):t("fromCashier")}</span>
         <div class="eta-pick"><span>${t("etaSet")}</span>${ETA_CHOICES.map(m=>`<button type="button" class="${o._eta===m?"on":""}" data-a="eta" data-m="${m}" data-id="${o.id}">${m}</button>`).join("")}<span class="mu">${t("minShort")}</span>${o.eta_at&&new Date(o.eta_at)>Date.now()?`<span class="left" data-left="${esc(o.eta_at)}">${t("etaLeft",fmtLeft(new Date(o.eta_at)-Date.now()))}</span>`:""}${o.eta_at?`<span class="seen ${o.eta_seen?"ok":""}">${t(o.eta_seen?"etaSeen":"etaSent")}</span>`:""}</div></div>
       <div class="acts"><button class="btn small ghost" data-a="delete" data-id="${o.id}" type="button">${t("remove")}</button><button class="btn ready-btn" data-a="ready" data-id="${o.id}" type="button">${t("readyBtn")}</button></div></div>`;
@@ -451,6 +465,9 @@ function Cashier(root,store,key){
     const dl=store.byStatus("done").filter(o=>new Date(o.done_at||0)>=today).length; const d=Math.max(dl,store.doneCount||0);
     root.querySelector('[data-s="w"]').textContent=w.length; root.querySelector('[data-s="r"]').textContent=r.length; root.querySelector('[data-s="d"]').textContent=d;
     root.querySelector('[data-c="w"]').textContent=w.length; root.querySelector('[data-c="r"]').textContent=r.length;
+    if(seen===null){ seen=new Set(w.map(o=>o.id)); }
+    else { const fresh=w.filter(o=>!seen.has(o.id)); fresh.forEach(o=>seen.add(o.id)); const fc=fresh.filter(o=>o.source==="customer");
+      if(fc.length){ fc.forEach(o=>{ newIds.add(o.id); setTimeout(()=>{ newIds.delete(o.id); lastW=""; render(); },8000); }); alertNew(fc.map(o=>o.num).join("، ")); } }
     const hw=w.length?w.map(row).join(""):`<div class="empty">${t("emptyWaiting")}</div>`, hr=r.length?r.map(row).join(""):`<div class="empty">${t("emptyReady")}</div>`;
     if(hw!==lastW){ lastW=hw; root.querySelector('[data-l="w"]').innerHTML=hw; }
     if(hr!==lastR){ lastR=hr; root.querySelector('[data-l="r"]').innerHTML=hr; }
