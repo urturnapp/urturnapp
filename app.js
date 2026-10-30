@@ -246,8 +246,8 @@ const Ring={ ctx:null,timer:null,on:false,el:null,elOk:false,
       const s=now+d; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.35,s+0.015); g.gain.exponentialRampToValueAtTime(0.0001,s+0.4); o.start(s); o.stop(s+0.42); });
     try{ navigator.vibrate&&navigator.vibrate([120,80,120]); }catch(e){} return true; },
   notify(){ if(this.dinged>=2||this.on) return; this.unlock();
-    const go=()=>{ if(this.dinged>=2||this.on) return; if(this.ding()) this.dinged++; };
-    setTimeout(()=>{ if(this.ctx&&this.ctx.state==="running") go(); else document.addEventListener("pointerdown",()=>setTimeout(go,60),{once:true,passive:true}); },1300); },
+    const go=(k=0)=>{ if(this.dinged>=2||this.on) return; if(this.ding()) this.dinged++; else if(k<15) setTimeout(()=>go(k+1),100); };
+    setTimeout(()=>{ if(this.ctx&&this.ctx.state==="running") go(); else document.addEventListener("pointerdown",()=>{ this.unlock(); setTimeout(go,60); },{once:true,passive:true}); },1300); },
   start(){ if(this.on) return; this.on=true; this.unlock(); this.useEl=false;
     if(this.el&&this.elOk){ try{ this.el.muted=false; this.el.currentTime=0; const p=this.el.play(); this.useEl=true; if(p&&p.catch) p.catch(()=>{ this.useEl=false; }); }catch(e){} }
     const tick=()=>{ if(!this.useEl||(this.el&&this.el.paused)){ this.useEl=false; this.chime(); } try{ navigator.vibrate&&navigator.vibrate([350,150,350,150,600]); }catch(e){} }; tick(); this.timer=setInterval(tick,1800); },
@@ -261,6 +261,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 const VAPID_PUB="BCWk-h1YhyHgZOu5bp_pxZGM9PKLquMaw7Vd9rD9ivAY_wLHYYr1_94H-uTqylpvnDpcIucHXyuGWe7b7vYUp5w";
 const PUSH_FN=SUPA_URL+"/functions/v1/urturn-push";
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const iosTipOff=()=>{ const v=+(ls.get("urturn.iosTipOff")||0); return v>1&&Date.now()-v<6*3600e3; };
 const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 // iPhone: on a café page, no fixed manifest, so "Add to Home Screen" keeps the exact page (with the order). Everywhere else use manifest.json.
 if(!(isIOS&&VIEW==="customer")){ const ml=document.createElement("link"); ml.rel="manifest"; ml.href="manifest.json"; document.head.appendChild(ml); }
@@ -382,12 +383,12 @@ function Customer(root,shop,opts){
       body=`<div class="cust-body"><p>${esc(s.welcome||t("welcome"))}</p>
         <form data-f="enter" style="display:grid;gap:12px"><label for="r-${esc(lsKey)}" style="font-weight:600">${t("receiptLabel")}</label>
         <input class="big-input" id="r-${esc(lsKey)}" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="8" placeholder="${t("receiptPh")}" required>
-        <button class="btn shop" type="submit">${t("waitBtn")}</button></form>${!opts.inFrame&&isIOS&&!isStandalone()&&!ls.get("urturn.iosTipOff")?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}</div>`;
+        <button class="btn shop" type="submit">${t("waitBtn")}</button></form>${!opts.inFrame&&isIOS&&!isStandalone()&&!iosTipOff()?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}</div>`;
     } else if(state==="waiting"){
       Ring.stop();
       body=`<div class="cust-body"><div class="wait-card"><small>${t("receiptLabel")}</small><div class="num">${esc(order.num)}</div>
         <b>${t("waitingTitle")}</b>${order.eta_at?`<div class="eta"><small>${t("etaLabel")}</small><b class="num" data-eta="${esc(order.eta_at)}">${fmtLeft(new Date(order.eta_at)-Date.now())}</b></div>`:""}<span data-ahead>${t("ahead",order._ahead||0)}</span><div class="wait-anim" aria-hidden="true"><span></span><span></span><span></span></div></div>
-        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"?`<button class="btn small" data-a="push" type="button">${t("pushAsk")}</button>`:isIOS&&!isStandalone()&&!ls.get("urturn.iosTipOff")?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}
+        <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"?`<button class="btn small" data-a="push" type="button">${t("pushAsk")}</button>`:isIOS&&!isStandalone()&&!iosTipOff()?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}
         <button class="link-btn" data-a="cancel" type="button">${t("cancel")}</button></div>`;
     } else if(state==="ready"){
       body=`<div class="cust-body"><div class="wait-card"><div class="num">${esc(order.num)}</div><b>${t("ready")}</b></div></div>
@@ -420,7 +421,7 @@ function Customer(root,shop,opts){
     const a=e.target.closest("[data-a]"); if(!a) return;
     if(a.dataset.a==="lang"){ setLang(lang==="ar"?"en":"ar"); return; }
     if(a.dataset.a==="cancel"){ const id=orderId; setOrder(null); order=null; render(); rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }
-    if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff","1"); root.querySelectorAll(".ios-note,.ios-arrow").forEach(x=>x.remove()); return; }
+    if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff",String(Date.now())); root.querySelectorAll(".ios-note,.ios-arrow").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="scan"){ openScanner(); return; }
     if(a.dataset.a==="install"){ doInstall(); return; }
     if(a.dataset.a==="push"){ await Push.ask(); pushOk=await Push.subscribe(orderId); lastKey=""; render(); return; }
