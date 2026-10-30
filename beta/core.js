@@ -240,7 +240,7 @@ function chimeWav(){ // build the ring sound as a small WAV file (5 notes, ~0.8s
   new Int16Array(b,44).set(d); return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
 const Ring={ ctx:null,timer:null,on:false,el:null,elOk:false,
   unlock(){ try{ if(navigator.audioSession&&navigator.audioSession.type!=="playback") navigator.audioSession.type="playback"; }catch(e){} // iPhone: play even when the silent switch is on
-    try{ if(!this.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(C) this.ctx=new C(); } this.ctx&&this.ctx.resume&&this.ctx.resume(); }catch(e){}
+    try{ if(!this.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(C) this.ctx=new C(); } if(this.ctx&&this.ctx.resume){ const r=this.ctx.resume(); if(r&&r.catch) r.catch(()=>{}); } }catch(e){}
     // Unlock with a silent clip first (so nothing is heard), then switch to the ring sound. iPhone keeps the element allowed after that.
     try{ if(!this.el){ this.el=new Audio(); this.el.setAttribute("playsinline",""); this.el.preload="auto"; this.chimeUrl=chimeWav(); this.silentUrl=silentWav(); }
       if(!this.elOk&&!this.on&&!this.unlocking){ const a=this.el; this.unlocking=true; a.loop=false; a.src=this.silentUrl; const p=a.play();

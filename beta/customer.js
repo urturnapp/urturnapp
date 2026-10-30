@@ -98,7 +98,7 @@ function Customer(root,shop,opts){
     Ring.unlock();
     if(order&&order.status==="ready"){ Ring.stop(); Ring.start(); }
     // iPhone needs a moment after coming back before audio is allowed again: keep trying for ~4s.
-    let tries=0; const kick=()=>{ if(!Ring.on||tries++>13) return; try{ Ring.ctx&&Ring.ctx.resume&&Ring.ctx.resume(); }catch(e){}
+    let tries=0; const kick=()=>{ if(!Ring.on||tries++>13) return; try{ if(Ring.ctx&&Ring.ctx.resume){ const r=Ring.ctx.resume(); if(r&&r.catch) r.catch(()=>{}); } }catch(e){}
       if(Ring.el&&Ring.elOk&&Ring.el.paused){ Ring.el.play().then(()=>{ Ring.useEl=true; }).catch(()=>{}); }
       if(Ring.el&&!Ring.el.paused) return; setTimeout(kick,300); }; setTimeout(kick,150);
     for(const d of [0,400,900,1800]){ if(d) await new Promise(r=>setTimeout(r,d)); if(await poll()) break; }
