@@ -506,13 +506,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .order.is-new{animation:newOrd 1s ease 0s 4;box-shadow:0 0 0 3px var(--signal,#F5B43C)}
 @keyframes newOrd{0%,100%{box-shadow:0 0 0 3px var(--signal,#F5B43C)}50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--signal,#F5B43C) 25%,transparent)}}
 /* app intro (opened from the home-screen icon) */
-#intro{position:fixed;inset:0;z-index:999;background:radial-gradient(120% 80% at 50% 40%,#22303A 0%,#14181C 70%);display:grid;place-items:center;color:#fff;transition:opacity .45s ease,transform .45s ease}
+#intro{position:fixed;inset:0;z-index:999;background:radial-gradient(120% 80% at 50% 40%,#22303A 0%,#14181C 70%);display:grid;place-items:center;color:#fff;transition:opacity .6s ease,transform .6s ease}
 #intro.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #intro .in-wrap{display:grid;justify-items:center;gap:10px;text-align:center}
-#intro img{border-radius:26px;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:inPop .7s cubic-bezier(.2,1.4,.4,1) both}
-#intro b{font-size:30px;letter-spacing:.08em;font-weight:800;animation:inUp .5s ease .35s both}
-#intro span{font-size:15px;opacity:.75;animation:inUp .5s ease .55s both}
-#intro i{width:46px;height:4px;border-radius:4px;background:#F5B43C;margin-top:8px;animation:inBar 1s ease .6s both}
+#intro img{border-radius:26px;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:inPop 1s cubic-bezier(.2,1.4,.4,1) both}
+#intro b{font-size:30px;letter-spacing:.08em;font-weight:800;animation:inUp .7s ease .7s both}
+#intro span{font-size:15px;opacity:.75;animation:inUp .7s ease 1.1s both}
+#intro i{width:46px;height:4px;border-radius:4px;background:#F5B43C;margin-top:8px;animation:inBar 1.4s ease 1.4s both}
 @keyframes inPop{from{transform:scale(.4) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
 @keyframes inUp{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:.95}}
 @keyframes inBar{from{width:0;opacity:0}to{width:46px;opacity:1}}
