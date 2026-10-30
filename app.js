@@ -173,7 +173,7 @@ async function rpc(name,args){
 let errSent=0; const errSeen=new Set();
 function reportErr(msg){ try{ msg=String(msg||"").slice(0,300); if(!msg||errSeen.has(msg)||errSent>=5) return; errSeen.add(msg); errSent++;
   fetch(SUPA_URL+"/rest/v1/rpc/urturn_log_error",{method:"POST",headers:H,keepalive:true,body:JSON.stringify({p_slug:SLUG,p_view:VIEW,p_msg:msg,p_ua:navigator.userAgent})}).catch(()=>{}); }catch(e){} }
-window.addEventListener("error",e=>{ const f=e.filename||""; if(f&&!f.includes(location.host)) return; reportErr((e.message||"error")+" @"+f.split("/").pop()+":"+(e.lineno||0)); });
+window.addEventListener("error",e=>{ const f=e.filename||""; if(!f||!f.includes(location.host)) return; reportErr((e.message||"error")+" @"+f.split("/").pop()+":"+(e.lineno||0)); });
 window.addEventListener("unhandledrejection",e=>{ const r=e.reason; reportErr("promise: "+((r&&r.message)||String(r))); });
 const Api={
   shop:slug=>rest("urturn_shops?select=*&slug=eq."+encodeURIComponent(slug)).then(r=>r[0]||null),
@@ -1065,6 +1065,7 @@ function setLang(l){ lang=l; ls.set("urturn.lang",l); location.reload(); }
 document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
 $("#langBtn").textContent=lang==="ar"?"English":"العربية";
 $("#langBtn").addEventListener("click",()=>setLang(lang==="ar"?"en":"ar"));
+if(isStandalone()){ try{ const k=Object.keys(localStorage).filter(x=>x.startsWith("urturn.order.")).length; reportErr("info: app opened "+location.search.replace(/o=[^&]+/,"o=ID")+" saved_orders="+k); }catch(e){} }
 if((VIEW==="home"&&isStandalone())||VIEW==="app") appHome();
 else if(VIEW==="home") homePage();
 else if(VIEW==="demo") demoPage();
