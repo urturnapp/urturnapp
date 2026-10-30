@@ -26,3 +26,6 @@ scan.test.js|url after scan: .*s=cafe
 sndbar.test.js|bar before tap true
 sndbar.test.js|should stay hidden\) false
 sndbar.test.js|ding plays on new order [1-9]
+tipagain.test.js|first tip 1
+tipagain.test.js|after x 0
+tipagain.test.js|second order tip 1

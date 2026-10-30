@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="style.css?v=202610300308">
+<link rel="stylesheet" href="style.css?v=202610301540">
 </head>
 <body>
 <div id="intro" hidden><div class="in-wrap"><img src="icon-512.png" alt="" width="112" height="112"><b>UR TURN</b><span id="intro-t"></span><i></i></div></div>
@@ -32,13 +32,13 @@ setTimeout(done,3600);var t0=Date.now();el.addEventListener("pointerdown",functi
 </header>
 <main id="app"></main>
 <div class="toast" id="toast" hidden></div>
-<script src="qrcode.js?v=202610300308"></script>
-<!-- app.js?v=202610300308 (lets pages from the old one-file version notice updates) -->
-<script src="core.js?v=202610300308"></script>
+<script src="qrcode.js?v=202610301540"></script>
+<!-- app.js?v=202610301540 (lets pages from the old one-file version notice updates) -->
+<script src="core.js?v=202610301540"></script>
 <script>
 // Load only the part this page needs (customer / cashier / admin / home), then start.
 (function(){var p=new URLSearchParams(location.search),s=p.get("s")||"",v=p.get("v")||(s?"customer":"home"),
-sa=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true,ver="202610300308";
+sa=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true,ver="202610301540";
 var parts=v==="admin"?["admin"]:(v==="cashier"||v==="owner")?["cashier"]:((v==="home"&&!sa)||v==="demo")?["customer","cashier","home"]:["customer"];
 var i=0;(function next(){if(i>=parts.length){boot();return;}var sc=document.createElement("script");sc.src=parts[i++]+".js?v="+ver;sc.onload=next;
 sc.onerror=function(){document.getElementById("app").innerHTML='<div class="center-msg"><p>⚠️ تعذّر التحميل، اسحب الصفحة لتحت للتحديث.</p></div>';};document.head.appendChild(sc);})();})();

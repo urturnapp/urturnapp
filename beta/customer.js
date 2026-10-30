@@ -71,7 +71,7 @@ function Customer(root,shop,opts){
     if(!v){ toast(t("badNumber")); inp.focus(); return; }
     Ring.unlock(); keepAwake(); rated=0; const perm=opts.inFrame?null:Push.ask();
     const btn=root.querySelector("button[type=submit]"); btn.disabled=true;
-    try{ const id=await rpc("urturn_create_order",{p_slug:shop.slug,p_num:v}); setOrder(id); await poll(); if(perm) perm.then(()=>Push.subscribe(id)).then(ok=>{ pushOk=ok; lastKey=""; render(); }); }
+    try{ const id=await rpc("urturn_create_order",{p_slug:shop.slug,p_num:v}); setOrder(id); ls.set("urturn.iosTipOff","0"); ls.set("urturn.instOff","0"); sessionSet("urturn.pushOff",""); await poll(); if(perm) perm.then(()=>Push.subscribe(id)).then(ok=>{ pushOk=ok; lastKey=""; render(); }); }
     catch(err){ const c=String(err.code||""); toast(c.includes("subscription")?t("custPaused"):c.includes("shop_closed")?t("closedTitle"):t("errGeneric")); btn.disabled=false; lastKey=""; render(); }
   });
   root.addEventListener("click",async e=>{
