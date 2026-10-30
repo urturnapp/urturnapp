@@ -221,6 +221,7 @@ function googleG(){ return `<svg width="18" height="18" viewBox="0 0 48 48" aria
 
 // ---------- sound + vibration ----------
 window.__ringRef=()=>Ring;
+try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
 function silentWav(){ const n=2205, b=new ArrayBuffer(44+n*2), v=new DataView(b), w=(o,str)=>{ for(let i=0;i<str.length;i++) v.setUint8(o+i,str.charCodeAt(i)); };
   w(0,"RIFF"); v.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,22050,true); v.setUint32(28,44100,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40,n*2,true);
   return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
@@ -231,7 +232,8 @@ function chimeWav(){ // build the ring sound as a small WAV file (5 notes, ~0.8s
   w(0,"RIFF"); v.setUint32(4,36+n*2,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40,n*2,true);
   new Int16Array(b,44).set(d); return URL.createObjectURL(new Blob([b],{type:"audio/wav"})); }
 const Ring={ ctx:null,timer:null,on:false,el:null,elOk:false,
-  unlock(){ try{ if(!this.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(C) this.ctx=new C(); } this.ctx&&this.ctx.resume&&this.ctx.resume(); }catch(e){}
+  unlock(){ try{ if(navigator.audioSession&&navigator.audioSession.type!=="playback") navigator.audioSession.type="playback"; }catch(e){} // iPhone: play even when the silent switch is on
+    try{ if(!this.ctx){ const C=window.AudioContext||window.webkitAudioContext; if(C) this.ctx=new C(); } this.ctx&&this.ctx.resume&&this.ctx.resume(); }catch(e){}
     // Unlock with a silent clip first (so nothing is heard), then switch to the ring sound. iPhone keeps the element allowed after that.
     try{ if(!this.el){ this.el=new Audio(); this.el.setAttribute("playsinline",""); this.el.preload="auto"; this.chimeUrl=chimeWav(); this.silentUrl=silentWav(); }
       if(!this.elOk&&!this.on&&!this.unlocking){ const a=this.el; this.unlocking=true; a.loop=false; a.src=this.silentUrl; const p=a.play();
