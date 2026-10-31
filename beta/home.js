@@ -184,6 +184,8 @@ function homePage(){
   </div>`;
   lpMotion();
   const vb=app.querySelector("[data-sound]"); if(vb){ vb.addEventListener("click",()=>{ const v=app.querySelector(".vid-frame video"); v.muted=!v.muted; if(!v.muted){ v.currentTime=0; v.play(); } vb.textContent=v.muted?(lang==="ar"?"🔊 شغّل الصوت":"🔊 Sound on"):(lang==="ar"?"🔇 اكتم":"🔇 Mute"); }); }
+  // links like /#contact open straight at that section (the page is drawn after load, so the browser can't jump by itself)
+  if(/^#[\w-]+$/.test(location.hash)){ const go=()=>{ const tg=document.getElementById(location.hash.slice(1)); if(tg) tg.scrollIntoView(); }; setTimeout(go,80); setTimeout(go,700); }
 }
 
 const DEMO_T={
