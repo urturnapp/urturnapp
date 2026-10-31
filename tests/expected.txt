@@ -35,3 +35,4 @@ denied.test.js|denied gate [01]
 denied.test.js|after ok 0
 gateinst.test.js|install gate [01]
 gateinst.test.js|gates left 0
+adminlinks.test.js|adminlinks (ok|old)
