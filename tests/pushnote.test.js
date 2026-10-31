@@ -10,4 +10,4 @@ await ctx.addInitScript(()=>{try{Object.defineProperty(Notification,'permission'
 await p.goto('https://test.local/?s=cafe');await p.waitForTimeout(500);await p.fill('.big-input','42');await p.click('button[type=submit]');await p.waitForTimeout(2500);
 console.log('note',await p.$$eval('.push-note',x=>x.length),'dinged',await p.evaluate(()=>window.__ringRef().dinged));
 await p.screenshot({path:'/tmp/push-note.png'});
-await p.click('[data-a=pushx]');console.log('after x',await p.$$eval('.push-note',x=>x.length));await b.close();})();
+{const g=await p.$('[data-a=gateskip]');console.log('gate',g?1:0);if(g)await g.click();}await p.click('[data-a=pushx]');console.log('after x',await p.$$eval('.push-note',x=>x.length));await b.close();})();

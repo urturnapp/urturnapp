@@ -20,6 +20,10 @@ function Customer(root,shop,opts){
       render(); return true;
     }catch(e){ return false; /* keep last state */ }
   }
+  const gateHTML=()=>{ if(opts.inFrame||pushOk||sessionGet("urturn.gate")===String(orderId)) return "";
+    if(Push.state()==="default") return `<div class="gate" role="dialog" aria-modal="true"><div class="gate-in"><div class="gate-bell" aria-hidden="true">🔔</div><h2>${t("gateT")}</h2><p>${t("gateP")}</p><button class="btn shop gate-go" data-a="push" type="button">${t("gateBtn")}</button><button class="link-btn gate-skip" data-a="gateskip" type="button">${t("gateSkip")}</button></div></div>`;
+    if(isIOS&&!isStandalone()) return `<div class="gate" role="dialog" aria-modal="true"><div class="gate-in"><div class="gate-bell" aria-hidden="true">🔔</div><h2>${t("gateIosT")}</h2><ol class="gate-steps"><li><span>1</span><div>${t("gateIos1")}</div></li><li><span>2</span><div>${t("gateIos2")}</div></li><li><span>3</span><div>${t("gateIos3")}</div></li></ol><button class="btn shop gate-go" data-a="gateskip" type="button">${t("gateIosOk")}</button></div><div class="gate-arrow" aria-hidden="true">⬇</div></div>`;
+    return ""; };
   const instHTML=()=>!opts.inFrame&&!isIOS&&!isStandalone()&&installEvt&&!instOff()?`<div class="ios-note push-note install-note" role="alert"><button type="button" class="ios-x" data-a="instx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("instNote")}</div><button class="btn small push-go" data-a="install" type="button">${t("instGo")}</button></div></div>`:"";
   function render(){
     const s=opts.store?opts.store.shop:shop;
@@ -45,7 +49,7 @@ function Customer(root,shop,opts){
       body=`<div class="cust-body"><div class="wait-card"><small>${t("receiptLabel")}</small><div class="num">${esc(order.num)}</div>
         <b>${t("waitingTitle")}</b>${order.eta_at?`<div class="eta"><small>${t("etaLabel")}</small><b class="num" data-eta="${esc(order.eta_at)}">${fmtLeft(new Date(order.eta_at)-Date.now())}</b></div>`:""}<span data-ahead>${t("ahead",order._ahead||0)}</span><div class="wait-anim" aria-hidden="true"><span></span><span></span><span></span></div></div>
         <p>${t("waitingP")}</p><div class="tip">${t("tipSound")}</div>${opts.inFrame?"":pushOk?`<div class="tip">${t("pushOn")}</div>`:Push.state()==="default"&&!sessionGet("urturn.pushOff")?`<div class="ios-note push-note" role="alert"><button type="button" class="ios-x" data-a="pushx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("pushNote")}</div><button class="btn small push-go" data-a="push" type="button">${t("pushGo")}</button></div></div>`:isIOS&&!isStandalone()&&!iosTipOff()?`<div class="ios-note" role="alert"><button type="button" class="ios-x" data-a="iosx" aria-label="x">✕</button><img src="icon-192.png" alt="" class="ios-ic"><div class="ios-body"><div class="ios-top"><b>UR TURN</b><span>${t("nowLbl")}</span></div><div class="ios-msg">${t("iosNote")}</div></div></div><div class="ios-arrow" aria-hidden="true">${t("iosArrow")}<span>⬇</span></div>`:""}
-        <button class="link-btn" data-a="cancel" type="button">${t("cancel")}</button></div>`;
+        <button class="link-btn" data-a="cancel" type="button">${t("cancel")}</button></div>${gateHTML()}`;
     } else if(state==="ready"){
       body=`<div class="cust-body"><div class="wait-card"><div class="num">${esc(order.num)}</div><b>${t("ready")}</b></div></div>
         <div class="ringing" role="alert"><div class="bell" aria-hidden="true">🔔</div><h2>${t("ready")}</h2><div class="num">${esc(order.num)}</div>
@@ -80,6 +84,7 @@ function Customer(root,shop,opts){
     if(a.dataset.a==="lang"){ setLang(lang==="ar"?"en":"ar"); return; }
     if(a.dataset.a==="cancel"){ const id=orderId; setOrder(null); order=null; render(); rpc("urturn_cancel_order",{p_id:id}).catch(()=>{}); }
     if(a.dataset.a==="instx"){ ls.set("urturn.instOff",String(Date.now())); root.querySelectorAll(".install-note").forEach(x=>x.remove()); return; }
+    if(a.dataset.a==="gateskip"){ sessionSet("urturn.gate",String(orderId)); root.querySelectorAll(".gate").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="pushx"){ sessionSet("urturn.pushOff","1"); root.querySelectorAll(".push-note").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff",String(Date.now())); root.querySelectorAll(".ios-note,.ios-arrow").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="scan"){ openScanner(); return; }

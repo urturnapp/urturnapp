@@ -10,7 +10,7 @@ await ctx.addInitScript(()=>{try{delete window.Notification;}catch(e){}});
 const p=await ctx.newPage();p.on('pageerror',e=>console.log('ERR',e.message));
 const order=async()=>{await p.goto('https://test.local/?s=cafe');await p.waitForTimeout(900);await p.fill('.big-input','42');await p.click('button[type=submit]');await p.waitForTimeout(1500);};
 await order();console.log('first tip',await p.$$eval('.ios-note',x=>x.length));
-await p.click('[data-a=iosx]');console.log('after x',await p.$$eval('.ios-note',x=>x.length));
+{const g=await p.$('[data-a=gateskip]');if(g)await g.click();}await p.click('[data-a=iosx]');console.log('after x',await p.$$eval('.ios-note',x=>x.length));
 await p.evaluate(()=>{for(const k of Object.keys(localStorage))if(k!=='urturn.iosTipOff')localStorage.removeItem(k);sessionStorage.clear();});
 ord={...ord,id:'22222222-2222-2222-2222-222222222222',num:'43'};
 await order();console.log('second order tip',await p.$$eval('.ios-note',x=>x.length));
