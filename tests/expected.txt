@@ -31,3 +31,5 @@ tipagain.test.js|after x 0
 tipagain.test.js|second order tip 1
 resumerej.test.js|audio rejections logged 0
 pushnote.test.js|gate [01]
+denied.test.js|denied gate [01]
+denied.test.js|after ok 0
