@@ -25,12 +25,13 @@ function Cashier(root,store,key){
     try{ navigator.vibrate&&navigator.vibrate([200,100,200]); }catch(e){}
     clearInterval(titleT); let on=false, c=0; titleT=setInterval(()=>{ document.title=(on=!on)?"🔔 "+t("newOrderT",n):baseTitle; if(++c>=12||document.hasFocus()&&c>=4){ clearInterval(titleT); document.title=baseTitle; } },1000);
   }
+  const bell=o=>("has_push" in o)&&o.source!=="cashier"?`<span class="pbell ${o.has_push?"on":"off"}" title="${esc(t(o.has_push?"pushYes":"pushNo"))}" aria-label="${esc(t(o.has_push?"pushYes":"pushNo"))}">${o.has_push?"🔔":"🔕"}</span>`:"";
   function row(o){
-    if(o.status==="waiting") return `<div class="order${newIds.has(o.id)?" is-new":""}"><div class="num">${esc(o.num)}</div>
+    if(o.status==="waiting") return `<div class="order${newIds.has(o.id)?" is-new":""}"><div class="num">${esc(o.num)}${bell(o)}</div>
       <div class="meta"><span class="pill">${t("colWaiting")}</span><span>${t("since",mins(o.created_at))} · ${o.source==="customer"?t("fromCustomer"):t("fromCashier")}</span>
         <div class="eta-pick"><span>${t("etaSet")}</span>${ETA_CHOICES.map(m=>`<button type="button" class="${o._eta===m?"on":""}" data-a="eta" data-m="${m}" data-id="${o.id}">${m}</button>`).join("")}<span class="mu">${t("minShort")}</span>${o.eta_at&&new Date(o.eta_at)>Date.now()?`<span class="left" data-left="${esc(o.eta_at)}">${t("etaLeft",fmtLeft(new Date(o.eta_at)-Date.now()))}</span>`:""}${o.eta_at?`<span class="seen ${o.eta_seen?"ok":""}">${t(o.eta_seen?"etaSeen":"etaSent")}</span>`:""}</div></div>
       <div class="acts"><button class="btn small ghost" data-a="delete" data-id="${o.id}" type="button">${t("remove")}</button><button class="btn ready-btn" data-a="ready" data-id="${o.id}" type="button">${t("readyBtn")}</button></div></div>`;
-    return `<div class="order ready"><div class="num">${esc(o.num)}</div><div class="meta"><span class="pill">${t("readyFor",mins(o.ready_at||o.created_at))}</span></div>
+    return `<div class="order ready"><div class="num">${esc(o.num)}${bell(o)}</div><div class="meta"><span class="pill">${t("readyFor",mins(o.ready_at||o.created_at))}</span></div>
       <div class="acts"><button class="btn small" data-a="ring" data-id="${o.id}" type="button">${t("ringAgain")}</button><button class="btn small ok" data-a="done" data-id="${o.id}" type="button">${t("delivered")}</button></div></div>`;
   }
   function render(){
