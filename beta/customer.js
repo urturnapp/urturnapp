@@ -20,7 +20,8 @@ function Customer(root,shop,opts){
       render(); return true;
     }catch(e){ return false; /* keep last state */ }
   }
-  const gateHTML=()=>{ if(opts.inFrame||pushOk||sessionGet("urturn.gate")===String(orderId)) return "";
+  const gateHTML=()=>{ if(opts.inFrame||sessionGet("urturn.gate")===String(orderId)) return "";
+    if(pushOk) return !isIOS&&!isStandalone()&&installEvt?`<div class="gate" role="dialog" aria-modal="true"><div class="gate-in"><div class="gate-bell" aria-hidden="true">📲</div><h2>${t("gateInstT")}</h2><p>${t("gateInstP")}</p><button class="btn shop gate-go" data-a="gateinst" type="button">${t("instGo")}</button><button class="link-btn gate-skip" data-a="gateskip" type="button">${t("gateLater")}</button></div></div>`:"";
     if(Push.state()==="default") return `<div class="gate" role="dialog" aria-modal="true"><div class="gate-in"><div class="gate-bell" aria-hidden="true">🔔</div><h2>${t("gateT")}</h2><p>${t("gateP")}</p><button class="btn shop gate-go" data-a="push" type="button">${t("gateBtn")}</button><button class="link-btn gate-skip" data-a="gateskip" type="button">${t("gateSkip")}</button></div></div>`;
     if(isIOS&&!isStandalone()) return `<div class="gate" role="dialog" aria-modal="true"><div class="gate-in"><div class="gate-bell" aria-hidden="true">🔔</div><h2>${t("gateIosT")}</h2><ol class="gate-steps"><li><span>1</span><div>${t("gateIos1")}</div></li><li><span>2</span><div>${t("gateIos2")}</div></li><li><span>3</span><div>${t("gateIos3")}</div></li></ol><button class="btn shop gate-go" data-a="gateskip" type="button">${t("gateIosOk")}</button></div><div class="gate-arrow" aria-hidden="true">⬇</div></div>`;
     if(Push.state()==="denied") return `<div class="gate" role="dialog" aria-modal="true"><div class="gate-in"><div class="gate-bell" aria-hidden="true">🔕</div><h2>${t("gateDenT")}</h2><ol class="gate-steps"><li><span>1</span><div>${t("gateDen1")}</div></li><li><span>2</span><div>${t("gateDen2")}</div></li><li><span>3</span><div>${t("gateDen3")}</div></li></ol><button class="btn shop gate-go" data-a="gateskip" type="button">${t("gateIosOk")}</button></div></div>`;
@@ -89,6 +90,7 @@ function Customer(root,shop,opts){
     if(a.dataset.a==="pushx"){ sessionSet("urturn.pushOff","1"); root.querySelectorAll(".push-note").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="iosx"){ ls.set("urturn.iosTipOff",String(Date.now())); root.querySelectorAll(".ios-note,.ios-arrow").forEach(x=>x.remove()); return; }
     if(a.dataset.a==="scan"){ openScanner(); return; }
+    if(a.dataset.a==="gateinst"){ sessionSet("urturn.gate",String(orderId)); root.querySelectorAll(".gate").forEach(x=>x.remove()); doInstall(); return; }
     if(a.dataset.a==="install"){ doInstall(); return; }
     if(a.dataset.a==="push"){ await Push.ask(); pushOk=await Push.subscribe(orderId); lastKey=""; render(); return; }
     if(a.dataset.a==="got"){ Ring.stop(); try{ await rpc("urturn_picked_up",{p_id:orderId}); }catch(err){} await poll(); }
@@ -112,7 +114,7 @@ function Customer(root,shop,opts){
     backBusy=false;
   }
   document.addEventListener("visibilitychange",onBack);
-  document.addEventListener("urturn-install",()=>{ if(orderId||root.querySelector(".install-note")) return; const h=instHTML(); if(h){ root.insertAdjacentHTML("beforeend",h); Ring.notify(); } });
+  document.addEventListener("urturn-install",()=>{ if(orderId&&pushOk&&!root.querySelector(".gate")){ lastKey=""; render(); return; } if(orderId||root.querySelector(".install-note")) return; const h=instHTML(); if(h){ root.insertAdjacentHTML("beforeend",h); Ring.notify(); } });
   window.addEventListener("pageshow",onBack); window.addEventListener("focus",onBack);
   try{ navigator.serviceWorker&&navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.type==="urturn-ring") onBack(); }); }catch(e){}
   if(orderId&&!opts.inFrame&&Push.state()==="granted") Push.subscribe(orderId).then(ok=>{ if(ok&&!pushOk){ pushOk=true; lastKey=""; render(); } });
