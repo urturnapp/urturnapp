@@ -83,12 +83,21 @@ function Admin(root,akey){
     swatches(); poster();
   }
   function read(){ draft.name=$r("#a-name").value.trim(); draft.review_url=$r("#a-review").value.trim(); draft.welcome=$r("#a-welcome").value.trim(); draft.open_at=$r("#a-open").value||null; draft.close_at=$r("#a-close").value||null; }
-  function showLinks(slug,k){
-    const box=$r("[data-result]");
-    box.innerHTML=`<div class="tip" style="margin-top:14px">${t("created")}</div><div class="links" style="margin-top:12px">
-      ${[["custLink",custURL(slug)],["cashLink",cashURL(slug,k)],["ownLink",ownURL(slug,k)]].map(([l,u],i)=>`<div><label>${t(l)}</label><div class="copy-row"><input id="al${i}" readonly value="${esc(u)}"><button class="btn small" type="button" data-copy2="al${i}">${t("copy")}</button></div></div>`).join("")}</div>`;
+  const waShare=u=>"https://wa.me/?text="+encodeURIComponent(u);
+  function showLinks(slug,k,o={}){
+    const box=$r("[data-result]"), r=rowsCache.find(x=>x.slug===slug);
+    const links=[["custLink",custURL(slug)]]; if(k){ links.push(["cashLink",cashURL(slug,k)],["ownLink",ownURL(slug,k)]); }
+    const head=o.created?`<div class="tip" style="margin-top:14px">${t("created")}</div>`:`<div class="label" style="margin-top:14px">🔗 ${t("linksTitle")}</div>${r?`<div style="margin:6px 0">${subCell(r)}${r.slug===DEMO_SLUG?"":` <button class="btn small primary" data-sub="${esc(slug)}" type="button">${t("renew")}</button>`}</div>`:""}`;
+    const paste=!k&&o.ok?`<div data-pastebox><label for="a-paste">${t("cashLink")}</label><small style="display:block;color:var(--muted);margin-bottom:6px">${t("pasteCash")}</small><div class="copy-row"><input id="a-paste" dir="ltr" placeholder="https://...&v=cashier&k=..."><button class="btn small primary" type="button" data-a="savelink" data-slug="${esc(slug)}">${t("saveLink")}</button></div></div>`:"";
+    box.innerHTML=`${head}<div class="links" style="margin-top:12px">
+      ${links.map(([l,u],i)=>`<div><label>${t(l)}</label><div class="copy-row"><input id="al${i}" readonly dir="ltr" value="${esc(u)}"><button class="btn small" type="button" data-copy2="al${i}">${t("copy")}</button><a class="btn small signal" href="${esc(waShare(u))}" target="_blank" rel="noopener">WhatsApp</a></div></div>`).join("")}${paste}</div>`;
     box.querySelectorAll("[data-copy2]").forEach(b=>copyBtn(b,box.querySelector("#"+b.dataset.copy2)));
-    box.scrollIntoView({behavior:"smooth",block:"center"});
+    if(o.created) box.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  async function shopCard(slug){
+    let k=null, ok=true;
+    try{ k=await rpc("urturn_admin_shop_link",{p_admin:akey,p_slug:slug}); }catch(e){ ok=false; }
+    if(mode==="edit"&&draft.slug===slug) showLinks(slug,k,{ok});
   }
   let rowsCache=[], subSlug=null;
   function subCell(r){
@@ -101,7 +110,7 @@ function Admin(root,akey){
   function waBtn(r){ return r.whatsapp?`<a class="btn small signal" href="${esc(waLink(r.whatsapp,waMsg(r)))}" target="_blank" rel="noopener">${t("sendWa")}</a>`:`<small style="color:var(--muted)">${t("noWa")}</small>`; }
   async function load(){
     try{ const rows=rowsCache=await rpc("urturn_admin_shops2",{p_admin:akey});
-      $r("[data-rows]").innerHTML=rows.map(r=>`<tr${r.active?"":' style="opacity:.55"'}><td><bdi>${esc(r.name)}</bdi></td><td dir="ltr"><a href="${esc(custURL(r.slug))}" target="_blank" rel="noopener">${esc(r.slug)}</a></td><td>${subCell(r)}</td><td>${r.orders_7d}</td><td>${r.avg_rating??"–"}</td>
+      $r("[data-rows]").innerHTML=rows.map(r=>`<tr${r.active?"":' style="opacity:.55"'}><td><button class="link-btn" type="button" data-edit="${esc(r.slug)}" style="font-weight:600"><bdi>${esc(r.name)}</bdi></button></td><td dir="ltr"><a href="${esc(custURL(r.slug))}" target="_blank" rel="noopener">${esc(r.slug)}</a></td><td>${subCell(r)}</td><td>${r.orders_7d}</td><td>${r.avg_rating??"–"}</td>
         <td><div style="display:flex;gap:6px;flex-wrap:wrap">${r.slug===DEMO_SLUG?"":`<button class="btn small primary" data-sub="${esc(r.slug)}" type="button">${t("renew")}</button>`}<button class="btn small" data-edit="${esc(r.slug)}" type="button">${t("edit")}</button><button class="btn small ghost" data-reset="${esc(r.slug)}" type="button">${t("newKey")}</button>${r.slug===DEMO_SLUG?"":`<button class="btn small ghost" data-arch="${esc(r.slug)}" data-on="${r.active?0:1}" type="button">${r.active?t("archive"):t("restore")}</button>`}</div></td></tr>`).join("");
       const al=rows.filter(r=>r.active&&r.ends_at&&r.plan!=="demo"&&daysLeft(r.ends_at)<=3);
       $r("[data-alerts]").innerHTML=al.length?`<div class="orders">${al.map(r=>`<div class="order${daysLeft(r.ends_at)<=0?" late":""}"><div style="font-weight:600"><bdi>${esc(r.name)}</bdi></div><div class="meta">${subCell(r)}</div><div class="acts">${waBtn(r)}<button class="btn small primary" data-sub="${esc(r.slug)}" type="button">${t("renew")}</button></div></div>`).join("")}</div>`:`<div class="empty">${t("noAlerts")}</div>`;
@@ -147,7 +156,7 @@ function Admin(root,akey){
         const k=await rpc("urturn_admin_create_shop",{p_admin:akey,p_slug:slug,p_name:draft.name});
         await rpc("urturn_admin_save_shop",{...args,p_slug:slug});
         await rpc("urturn_admin_set_hours",{p_admin:akey,p_slug:slug,p_open:draft.open_at||"",p_close:draft.close_at||""});
-        draft.slug=slug; mode="edit"; fill(); showLinks(slug,k);
+        draft.slug=slug; mode="edit"; fill(); await load(); showLinks(slug,k,{created:true});
         await load(); openSub(slug); return;
       } else {
         await rpc("urturn_admin_save_shop",{...args,p_slug:draft.slug});
@@ -169,9 +178,12 @@ function Admin(root,akey){
     if(a&&a.dataset.a==="nologo"){ draft.logo=null; poster(); return; }
     if(a&&a.dataset.a==="new"){ mode="new"; draft=blank(); slugTouched=false; $r("[data-result]").innerHTML=""; fill(); return; }
     const ed=e.target.closest("[data-edit]");
-    if(ed){ const s=await loadShop(ed.dataset.edit); if(s){ draft={...s}; mode="edit"; $r("[data-result]").innerHTML=""; fill(); root.scrollIntoView({behavior:"smooth"}); } return; }
+    if(ed){ const s=await loadShop(ed.dataset.edit); if(s){ draft={...s}; mode="edit"; $r("[data-result]").innerHTML=""; fill(); shopCard(s.slug); root.querySelector("[data-title]").scrollIntoView({behavior:"smooth",block:"start"}); } return; }
+    if(a&&a.dataset.a==="savelink"){ const v=($r("#a-paste").value||"").trim(); let k=v; try{ k=new URL(v).searchParams.get("k")||v; }catch(_){ }
+      if(!k) return; try{ await rpc("urturn_admin_save_link",{p_admin:akey,p_slug:a.dataset.slug,p_key:k}); toast(t("linkSaved")); shopCard(a.dataset.slug); }catch(err){ toast(String(err.message||err.code||"").includes("wrong_key")?t("wrongLink"):t("errGeneric")); } return; }
     const b=e.target.closest("[data-reset]"); if(!b) return;
-    try{ const k=await rpc("urturn_admin_reset_key",{p_admin:akey,p_slug:b.dataset.reset}); const s=await loadShop(b.dataset.reset); if(s){ draft={...s}; mode="edit"; fill(); } showLinks(b.dataset.reset,k); }catch(err){ toast(t("errGeneric")); }
+    { const r=rowsCache.find(x=>x.slug===b.dataset.reset); if(!confirm(t("confirmReset",r?r.name:b.dataset.reset))) return; }
+    try{ const k=await rpc("urturn_admin_reset_key",{p_admin:akey,p_slug:b.dataset.reset}); const s=await loadShop(b.dataset.reset); if(s){ draft={...s}; mode="edit"; fill(); } showLinks(b.dataset.reset,k,{created:true}); }catch(err){ toast(t("errGeneric")); }
   });
   fill(); load(); loadHealth();
   root.querySelector("[data-hrefresh]").addEventListener("click",loadHealth);
