@@ -11,6 +11,26 @@ function Admin(root,akey){
     :{title:"System health",refresh:"Refresh",db:"Data size",of:"of",orders:"All orders",errs:"Errors, last 7 days",ok:"OK",archived:"Archived",closed:"Closed now",stuck:n=>n+" order(s) stuck over 3h",quiet:h=>"Open, no orders for "+h+"h",never:"No orders yet",last:"Last order",today:"Last 24h",noErr:"No errors ✓",times:"×",allGood:"All systems OK ✓",issues:n=>n+" item(s) need attention"};
   const ago=v=>{ if(!v) return "–"; const m=Math.round((Date.now()-new Date(v))/60000); return m<60?(lang==="ar"?"قبل "+m+" د":m+"m ago"):m<1440?(lang==="ar"?"قبل "+Math.round(m/60)+" س":Math.round(m/60)+"h ago"):(lang==="ar"?"قبل "+Math.round(m/1440)+" يوم":Math.round(m/1440)+"d ago"); };
   const dev=ua=>!ua?"":/iPhone|iPad/.test(ua)?"iPhone":/Android/.test(ua)?"Android":/Mac/.test(ua)?"Mac":/Windows/.test(ua)?"Windows":"other";
+  // Orders per shop per working day (04:00 → 04:00 Cairo), to see if shops are growing.
+  const DT=lang==="ar"?{title:"الطلبات باليوم",today:"اليوم",avg:"معدل آخر 7 أيام",perDay:"باليوم",vs:"عن الأسبوع اللي قبله",fresh:"أول أسبوع",push:"فعّلوا التنبيه",of:"من",none:"لسا ما في محلات شغالة",need:"القسم بيشتغل بعد ما تشغّل ملف daily_orders.sql بـ Supabase"}
+    :{title:"Orders per day",today:"Today",avg:"7-day average",perDay:"/day",vs:"vs the week before",fresh:"First week",push:"turned on alerts",of:"of",none:"No active shops yet",need:"Shows up after daily_orders.sql is run in Supabase"};
+  async function loadDaily(){
+    const box=root.querySelector("[data-daily]"); if(!box) return;
+    let rows; try{ rows=await rpc("urturn_admin_daily",{p_admin:akey,p_days:14}); }catch(e){ box.innerHTML=`<div class="empty">${DT.need}</div>`; return; }
+    if(!rows||!rows.length){ box.innerHTML=`<div class="empty">${DT.none}</div>`; return; }
+    box.innerHTML=rows.map(r=>{
+      const d=r.days||[], n=d.map(x=>x.n), last=d[d.length-1]||{n:0,p:0};
+      const sum=a=>a.reduce((x,y)=>x+y,0), w1=sum(n.slice(-7)), w0=sum(n.slice(-14,-7));
+      const avg=Math.round(w1/7*10)/10, pct=w0?Math.round((w1-w0)/w0*100):null;
+      const trend=pct===null?`<span style="color:#5E676E">${DT.fresh}</span>`:`<span style="color:${pct>=0?"#2E9E5B":"#C0392B"};font-weight:700">${pct>=0?"▲":"▼"} ${Math.abs(pct)}%</span> <small style="color:#5E676E">${DT.vs}</small>`;
+      const mx=Math.max(1,...n);
+      const bars=d.map((x,i)=>{ const isT=i===d.length-1, h=Math.round(x.n/mx*70); const dd=new Date(x.d+"T12:00:00");
+        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0" title="${esc(x.d)}: ${x.n}"><small style="font-size:11px;font-weight:700">${x.n||""}</small><div style="width:70%;max-width:22px;height:${Math.max(h,x.n?4:2)}px;border-radius:5px;background:${isT?"#FFB21A":x.n?"#0E5E5A":"#D8DCD5"}"></div><small style="font-size:10px;color:#5E676E">${dd.getDate()}</small></div>`; }).join("");
+      return `<div style="border:1px solid #E3E6E1;border-radius:16px;padding:14px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><b><bdi>${esc(r.name)}</bdi></b><span>${DT.today}: <b style="font-size:22px">${last.n}</b></span></div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 10px;font-size:14px"><span>${DT.avg}: <b>${avg}</b> ${DT.perDay}</span><span>${trend}</span>${last.n?`<span>🔔 ${last.p} ${DT.of} ${last.n} ${DT.push}</span>`:""}</div>
+        <div style="display:flex;gap:2px;align-items:flex-end;height:100px;direction:ltr" data-bars>${bars}</div></div>`; }).join("");
+  }
   async function loadHealth(){
     const box=root.querySelector("[data-health]"); if(!box) return;
     let h; try{ h=await rpc("urturn_admin_health",{p_admin:akey}); }catch(e){ box.innerHTML=`<div class="empty">${t("netErr")}</div>`; return; }
@@ -32,6 +52,7 @@ function Admin(root,akey){
   const inputCss="border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);width:100%";
   root.innerHTML=`<div class="wrap owner">
     <div style="display:grid;gap:16px;min-width:0">
+      <div class="panel"><div class="panel-head"><h2>📈 ${DT.title}</h2></div><div data-daily><div class="empty">…</div></div></div>
       <div class="panel"><div class="panel-head"><h2>🩺 ${HT.title}</h2><button class="btn small ghost" type="button" data-hrefresh>${HT.refresh}</button></div><div data-health><div class="empty">…</div></div></div>
       <div class="panel"><div class="panel-head"><h2>🔔 ${t("alertsTitle")}</h2></div><div data-alerts></div></div>
       <div class="panel" data-subpanel hidden><div class="panel-head"><h2 data-subtitle></h2></div>
@@ -185,9 +206,9 @@ function Admin(root,akey){
     { const r=rowsCache.find(x=>x.slug===b.dataset.reset); if(!confirm(t("confirmReset",r?r.name:b.dataset.reset))) return; }
     try{ const k=await rpc("urturn_admin_reset_key",{p_admin:akey,p_slug:b.dataset.reset}); const s=await loadShop(b.dataset.reset); if(s){ draft={...s}; mode="edit"; fill(); } showLinks(b.dataset.reset,k,{created:true}); }catch(err){ toast(t("errGeneric")); }
   });
-  fill(); load(); loadHealth();
-  root.querySelector("[data-hrefresh]").addEventListener("click",loadHealth);
-  setInterval(()=>{ if(document.visibilityState==="visible") loadHealth(); },120000);
+  fill(); load(); loadHealth(); loadDaily();
+  root.querySelector("[data-hrefresh]").addEventListener("click",()=>{ loadHealth(); loadDaily(); });
+  setInterval(()=>{ if(document.visibilityState==="visible"){ loadHealth(); loadDaily(); } },120000);
 }
 
 

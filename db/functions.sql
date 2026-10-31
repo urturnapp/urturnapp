@@ -406,3 +406,35 @@ CREATE OR REPLACE FUNCTION public.urturn_sub_ok(p_shop uuid)
  SET search_path TO 'public'
 AS $function$ select coalesce((select ends_at > now() from urturn_subscriptions where shop_id = p_shop), true) $function$
 ;
+
+-- Added 2026-11-01: orders per shop per working day (admin panel)
+create or replace function public.urturn_admin_daily(p_admin text, p_days int default 14)
+returns json
+language plpgsql
+stable security definer
+set search_path to 'public'
+as $function$
+declare
+  v_today date := ((now() at time zone 'Africa/Cairo') - interval '4 hours')::date;
+  v_days int := least(greatest(coalesce(p_days,14),1),90);
+begin
+  if not urturn_admin_ok(p_admin) then raise exception 'not_allowed'; end if;
+  return coalesce((
+    select json_agg(json_build_object('slug',s.slug,'name',s.name,'days',(
+      select json_agg(json_build_object('d',x.d,'n',x.n,'p',x.p) order by x.d)
+      from (
+        select g.d,
+          count(o.id) as n,
+          count(o.id) filter (where o.has_push) as p
+        from (select (v_today - i) as d from generate_series(0, v_days-1) i) g
+        left join urturn_orders o
+          on o.shop_id = s.id
+         and o.created_at >= ((g.d + time '04:00') at time zone 'Africa/Cairo')
+         and o.created_at <  ((g.d + 1 + time '04:00') at time zone 'Africa/Cairo')
+        group by g.d
+      ) x)) order by s.name)
+    from urturn_shops s
+    where s.active and s.slug <> 'demo'), '[]'::json);
+end $function$;
+
+grant execute on function public.urturn_admin_daily(text,int) to anon, authenticated;

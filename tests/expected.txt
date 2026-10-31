@@ -37,3 +37,5 @@ gateinst.test.js|install gate [01]
 gateinst.test.js|gates left 0
 adminlinks.test.js|adminlinks (ok|old)
 hashlink.test.js|contact link ok
+daily.test.js|daily (bars 14 today9 1 trend up|old)
+daily.test.js|daily (missing msg 1|old)
