@@ -4,7 +4,7 @@
 const SUPA_URL = "https://hlbccdgdsbgfuxppqiuc.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsYmNjZGdkc2JnZnV4cHBxaXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMDQ5NjYsImV4cCI6MjEwODg4MDk2Nn0.5I4DTGNYoLC-43-6qJYgYdES-5S0FqwzkeV7q34Fzxw";
 const DEMO_SLUG = "demo";
-const OUR_WA = "+201055602979"; // UR TURN sales WhatsApp
+const OUR_WA = "+201037374409"; // UR TURN sales WhatsApp
 const BRAND = { instagram:"urturn.app", email:"urturnapp1@gmail.com", owner:"Azmi Elwahedi", reg:"" }; // fill in: instagram handle (no @), email, legal owner name, commercial reg. no.
 const DEMO_KEY = "7d4ff772fa0a253cfabc7855"; // demo shop only: settings are locked on the server
 const BASE = location.origin + location.pathname.replace(/index\.html$/,"");

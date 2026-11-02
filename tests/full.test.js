@@ -24,10 +24,10 @@ async function mk(w,h){
   if(fn==='urturn_create_order') return j(orders[0].id);
   if(fn==='urturn_public_status') return j({locked:false});
   if(fn==='urturn_staff_check') return j(true);
-  if(fn==='urturn_staff_status') return j({plan:'m1',ends_at:new Date(now+20*864e5).toISOString(),locked:false,whatsapp:'+201055602979'});
+  if(fn==='urturn_staff_status') return j({plan:'m1',ends_at:new Date(now+20*864e5).toISOString(),locked:false,whatsapp:'+201037374409'});
   if(fn==='urturn_admin_shops2') return j([{slug:'cafe',name:'Cafe Nile',active:true,plan:'trial',ends_at:new Date(now+2*864e5).toISOString(),orders_7d:3,avg_rating:4.5}]);
   if(fn==='urturn_admin_health') return j({db_mb:9.4,orders_total:120,shops:[{slug:'cafe',name:'Cafe Nile',active:true,open_at:null,close_at:null,last_order:new Date(now-4*3600e3).toISOString(),orders_24h:12,orders_7d:80,stuck:0},{slug:'demo',name:'Demo',active:true,last_order:null,orders_24h:0,orders_7d:0,stuck:2}],errors:[{day:'2026-10-29',slug:'cafe',view:'customer',msg:"TypeError: Cannot read properties of null (reading 'x') @app.js:12",ua:'Mozilla iPhone',n:3,last_at:new Date(now-600000).toISOString()}]});
-  if(fn==='urturn_admin_get_contact') return j({whatsapp:'+201055602979'});
+  if(fn==='urturn_admin_get_contact') return j({whatsapp:'+201037374409'});
   if(fn==='urturn_admin_check'||fn==='urturn_admin_ok') return j(true);
   return j(null);
  });

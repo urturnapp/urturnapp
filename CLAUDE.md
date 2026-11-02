@@ -64,4 +64,4 @@ Schedule: `CRON_TZ=Africa/Cairo 13 0,3,10-23 * * *`. What it does:
 5. Messages in Levantine Arabic: at 10:13 always one short morning summary; at other times only if something needs attention or was fixed.
 
 ## Other project material
-Marketing files, previews, shop messages and the private links file live in the Claude project's files (`/mnt/project-files/ur-turn/`). The owner keeps their own copy. Contacts: WhatsApp +201055602979, Instagram @urturn.app, email urturnapp1@gmail.com.
+Marketing files, previews, shop messages and the private links file live in the Claude project's files (`/mnt/project-files/ur-turn/`). The owner keeps their own copy. Contacts: WhatsApp +201037374409, Instagram @urturn.app, email urturnapp1@gmail.com.
