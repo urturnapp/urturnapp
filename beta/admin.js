@@ -75,6 +75,7 @@ function Admin(root,akey){
           <div class="field"><label for="a-review">${t("fReview")}</label><input type="url" id="a-review" dir="ltr" placeholder="https://g.page/r/..." style="${inputCss}"><small>${t("fReviewHint")}</small></div>
           <div class="field"><label for="a-welcome">${t("fWelcome")}</label><input type="text" id="a-welcome" maxlength="280" placeholder="${esc(t("welcome"))}" style="${inputCss}"></div>
           <div class="field"><label>${t("fHours")}</label><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span>${t("fOpen")}</span><input type="time" id="a-open" style="${inputCss};width:auto"><span>${t("fClose")}</span><input type="time" id="a-close" style="${inputCss};width:auto"></div><small style="color:var(--muted)">${t("hoursHint")}</small></div>
+          <div class="field"><label for="a-lneed">${t("fLoyal")}</label><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span>${t("fLoyalNeed")}</span><input type="number" id="a-lneed" min="0" max="20" inputmode="numeric" style="${inputCss};width:90px"><input type="text" id="a-lgift" maxlength="60" placeholder="${esc(t("fLoyalPh"))}" style="${inputCss};flex:1;min-width:160px"></div><small style="color:var(--muted)">${t("fLoyalHint")}</small></div>
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit" data-submit></button><span class="saved" data-saved hidden>${t("saved")}</span></div>
         </form>
         <div data-result></div></div>
@@ -101,9 +102,11 @@ function Admin(root,akey){
     $r("[data-slugf]").hidden= mode==="edit"; $r("#a-slug").required= mode!=="edit";
     $r("[data-submit]").textContent= mode==="edit"? t("save") : t("create");
     $r("#a-name").value=draft.name||""; $r("#a-slug").value=mode==="edit"?draft.slug:""; $r("#a-review").value=draft.review_url||""; $r("#a-welcome").value=draft.welcome||""; $r("#a-open").value=draft.open_at?String(draft.open_at).slice(0,5):""; $r("#a-close").value=draft.close_at?String(draft.close_at).slice(0,5):"";
+    $r("#a-lneed").value=draft.loyal_need||0; $r("#a-lgift").value=draft.loyal_gift||"";
     swatches(); poster();
   }
-  function read(){ draft.name=$r("#a-name").value.trim(); draft.review_url=$r("#a-review").value.trim(); draft.welcome=$r("#a-welcome").value.trim(); draft.open_at=$r("#a-open").value||null; draft.close_at=$r("#a-close").value||null; }
+  function read(){ draft.name=$r("#a-name").value.trim(); draft.review_url=$r("#a-review").value.trim(); draft.welcome=$r("#a-welcome").value.trim(); draft.open_at=$r("#a-open").value||null; draft.close_at=$r("#a-close").value||null; draft.loyal_need=Math.max(0,Math.min(20,parseInt($r("#a-lneed").value,10)||0)); draft.loyal_gift=$r("#a-lgift").value.trim(); }
+  async function saveLoyal(slug){ try{ await rpc("urturn_admin_set_loyal",{p_admin:akey,p_slug:slug,p_need:draft.loyal_need||0,p_gift:draft.loyal_gift||""}); }catch(e){ if(draft.loyal_need) toast(t("loyalSql")); } }
   const waShare=u=>"https://wa.me/?text="+encodeURIComponent(u);
   function showLinks(slug,k,o={}){
     const box=$r("[data-result]"), r=rowsCache.find(x=>x.slug===slug);
@@ -177,11 +180,13 @@ function Admin(root,akey){
         const k=await rpc("urturn_admin_create_shop",{p_admin:akey,p_slug:slug,p_name:draft.name});
         await rpc("urturn_admin_save_shop",{...args,p_slug:slug});
         await rpc("urturn_admin_set_hours",{p_admin:akey,p_slug:slug,p_open:draft.open_at||"",p_close:draft.close_at||""});
+        await saveLoyal(slug);
         draft.slug=slug; mode="edit"; fill(); await load(); showLinks(slug,k,{created:true});
         await load(); openSub(slug); return;
       } else {
         await rpc("urturn_admin_save_shop",{...args,p_slug:draft.slug});
         await rpc("urturn_admin_set_hours",{p_admin:akey,p_slug:draft.slug,p_open:draft.open_at||"",p_close:draft.close_at||""});
+        await saveLoyal(draft.slug);
         const s=$r("[data-saved]"); s.hidden=false; setTimeout(()=>s.hidden=true,2500); fill();
       }
       load();
